@@ -1,6 +1,23 @@
+// DASHBOARD SORT LIBRARY
+const wrapper = document.querySelector('.sort-wrapper')
 
-const example1 = document.querySelector('.sort-wrapper')
-new Sortable(example1, {
-    animation: 150,
-    ghostClass: 'blue-background-class'
+new Sortable(wrapper, {
+    handle: '.sort-handler', 
+    forceFallback: false,
+    animation: 200,
+});
+
+
+// BOOTSTRAP SLIDER JQUERY
+$( function() {
+	$( "#slider" ).slider({
+		range: "min",
+		max: 100,
+		value: 40,
+	});
+	$( "#slider-range" ).slider({
+		range: true,
+		min: 0,
+		max: 100,
+	});
 });
