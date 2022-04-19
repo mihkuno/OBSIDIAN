@@ -138,27 +138,29 @@ class Table {
 			animation: 200,
 		});
 		this.rowCount = 0; // set number of rows
-		this.itemCount = 0; // set number of dropdown item 
 	}
 
 	// add a row method
 	addRow(title, status) {
 		this.rowCount++; console.log('num of rows', this.rowCount);
+		this.itemCount = 0; // set number of dropdown item 
 
 		// set button states
 		const btnSelect =(state, contextClass) => {
 			let colorClass, icon, attributes;
 
 			// is it a button or an dropdown item?
+			// these attributes are part of bootstrap dropdown
 			if(contextClass=='item') {
 				// attributes="onclick=>console.log(dropdown button clicked)";
 				this.itemCount++; 
 				// add the row ID attribute
-				attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
+				attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount} onclick="console.log(this)"`;
 				contextClass = 'dropdown-item';
 			}
 			else if (contextClass=='drop') {
-				attributes=`data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="table-${this.tableID}-status-${this.rowCount}"`;
+				// given unique ID to dropdown button accociated to its row count
+				attributes=`data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="table-${this.tableID}-status-${this.rowCount}" onclick="console.log(this)"`;
 				contextClass = 'dropdown-toggle';
 			}
 
@@ -182,7 +184,7 @@ class Table {
 			}
 
 			const btn = `
-			<!-- ${status.toUpperCase()} -->
+			<!-- ${state.toUpperCase()} -->
 			<!-- make button text white, set fixed width -->
 			<button class="btn ${contextClass} ${colorClass}" style="color: white; width: 8rem;" ${attributes}>
 				<span class="btn-label">
@@ -257,7 +259,7 @@ class Table {
 	}
 }
 
-let mytable = new Table('Something');
+let mytable = new Table('FEATURES');
 mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
 mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
 mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
