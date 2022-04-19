@@ -13,23 +13,26 @@ $( function() {
 });
 
 
+// static method to count the number of tables created
+var tableCount = 0;
 // TABLE COMPONENT
 class Table {
 	constructor(headerTitle) {
-		// table properties
-		this.headerTitle = headerTitle;
-
+		// increment the static variable
+		tableCount++; console.log('tables created:', tableCount);
+		// set table header
+		this.headerTitle = headerTitle; 
 		// get the target container as the root 
 		this.cardBody = document.querySelector("div.page-category");
-
 		// create the table body
 		this.tableElement = document.createElement('div')
 		// add the table class attribute
 		this.tableElement.setAttribute('class', 'col-md-12')
-
+		// add the table ID attribute
+		this.tableID = tableCount;
 		// table content
 		this.content = `
-		<!-- TABLE -->
+		<!-- TABLE CARD -->
 		<div class="card">
 			<div class="card-header">
 				<div class="d-flex align-items-center">
@@ -110,10 +113,9 @@ class Table {
 						</thead>
 						
 						<!-- TABLE BODY -->
-						<tbody class="sort-wrapper">
+						<tbody class="sort-wrapper" id=table-${this.tableID}>
 							<!-- TABLE ROWS -->
-							
-							<!-- END TABLE ROWS>	
+							<!-- ADD TABLE ROWS>	
 						<!-- END TABLE BODY -->
 						</tbody>
 					</table>
@@ -121,14 +123,13 @@ class Table {
 			</div>
 		</div>`;
 
-		// CREATE TABLE AUTOMATICALLY
 		// append created container to target container
 		this.cardBody.appendChild(this.tableElement);
 		// insert string contents to created container  
 		this.tableElement.insertAdjacentHTML('beforeend', this.content);
 
 		// the created table body container after appending to target container
-		this.tBodyContainer = document.querySelector('tbody.sort-wrapper')
+		this.tBodyContainer = document.querySelector(`tbody.sort-wrapper#table-${this.tableID}`);
 
 		// make sortable the tbody content (rows)
 		new Sortable(this.tBodyContainer, { // SORTABLE JS LIBRARY 
@@ -136,21 +137,28 @@ class Table {
 			forceFallback: false,
 			animation: 200,
 		});
+		this.rowCount = 0; // set number of rows
+		this.itemCount = 0; // set number of dropdown item 
 	}
 
 	// add a row method
 	addRow(title, status) {
+		this.rowCount++; console.log('num of rows', this.rowCount);
+
 		// set button states
 		const btnSelect =(state, contextClass) => {
 			let colorClass, icon, attributes;
 
 			// is it a button or an dropdown item?
 			if(contextClass=='item') {
-				attributes='onclick="statusChange(event)"'; 
+				// attributes="onclick=>console.log(dropdown button clicked)";
+				this.itemCount++; 
+				// add the row ID attribute
+				attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
 				contextClass = 'dropdown-item';
 			}
 			else if (contextClass=='drop') {
-				attributes='data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"';
+				attributes=`data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="table-${this.tableID}-status-${this.rowCount}"`;
 				contextClass = 'dropdown-toggle';
 			}
 
@@ -185,8 +193,11 @@ class Table {
 			`;
 			return btn;
 		}
+
+
+
 		const rowContent = `
-		<tr draggable="true">
+		<tr draggable="true" id=table${this.tableID}-row-${this.rowCount}>
 			<!-- TITLE -->
 			<td>${title}</td>
 			<!-- STATUS -->
@@ -248,3 +259,10 @@ class Table {
 
 let mytable = new Table('Something');
 mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
+mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
+mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
+
+let herTable = new Table('Something');
+herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
+herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
+herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
