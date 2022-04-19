@@ -155,12 +155,16 @@ class Table {
 				// attributes="onclick=>console.log(dropdown button clicked)";
 				this.itemCount++; 
 				// add the row ID attribute
-				attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount} onclick="console.log(this)"`;
+				attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
 				contextClass = 'dropdown-item';
+					
 			}
 			else if (contextClass=='drop') {
 				// given unique ID to dropdown button accociated to its row count
-				attributes=`data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="table-${this.tableID}-status-${this.rowCount}" onclick="console.log(this)"`;
+				attributes=`data-toggle="dropdown" 
+					aria-haspopup="true" 
+					aria-expanded="false" 
+					id="table-${this.tableID}-row-${this.rowCount}-status"`;
 				contextClass = 'dropdown-toggle';
 			}
 
@@ -193,10 +197,9 @@ class Table {
 				${state}
 			</button>
 			`;
+			
 			return btn;
 		}
-
-
 
 		const rowContent = `
 		<tr draggable="true" id=table${this.tableID}-row-${this.rowCount}>
@@ -254,8 +257,21 @@ class Table {
 				</div>
 			</td>
 		</tr>`;
+
 		// insert the row to table body
 		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
+
+		// add event listeners to buttons
+		for (let itemBtn = 1; itemBtn <= this.itemCount; itemBtn++) {
+			let item = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${itemBtn}`);
+			let dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
+			item.addEventListener('click', ()=> {
+				console.log(item);
+				dropBtn.textContent = item.textContent;
+				console.log(dropBtn.textContent);
+			})
+			
+		}
 	}
 }
 
