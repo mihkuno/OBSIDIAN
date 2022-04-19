@@ -143,63 +143,75 @@ class Table {
 	// add a row method
 	addRow(title, status) {
 		this.rowCount++; console.log('num of rows', this.rowCount);
-		this.itemCount = 0; // set number of dropdown item 
+		var itemCount = 0; // set number of dropdown item 
 
-		// set button states
-		const btnSelect =(state, contextClass) => {
-			let colorClass, icon, attributes;
+		class Button {
+			constructor(state, contextClass) {
+				this.state = state;
+				this.contextClass = contextClass;
+				this.colorClass;
+				this.icon;
+				this.attributes;
 
-			// is it a button or an dropdown item?
-			// these attributes are part of bootstrap dropdown
-			if(contextClass=='item') {
-				// attributes="onclick=>console.log(dropdown button clicked)";
-				this.itemCount++; 
-				// add the row ID attribute
-				attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
-				contextClass = 'dropdown-item';
-					
+				// is it a button or an dropdown item?
+				// these attributes are part of bootstrap dropdown
+				if(contextClass=='item') {
+					// attributes="onclick=>console.log(dropdown button clicked)";
+					itemCount++; 
+					// add the row ID attribute
+					this.attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
+					this.contextClass = 'dropdown-item';
+						
+				}
+				else if (contextClass=='drop') {
+					// given unique ID to dropdown button accociated to its row count
+					this.attributes=`data-toggle="dropdown" 
+						aria-haspopup="true" 
+						aria-expanded="false" 
+						id="table-${this.tableID}-row-${this.rowCount}-status"`;
+					this.contextClass = 'dropdown-toggle';
+				}
+
+				// change the text, icon, color
+				switch(this.state) {
+					case 'Complete':
+						this.colorClass = 'btn-success';
+						this.icon = 'icon-check';
+						break;
+					case 'Develop':
+						this.colorClass = 'btn-warning';
+						this.icon = 'icon-information';
+						break;
+					case 'Stuck':
+						this.colorClass = 'btn-danger';
+						this.icon = 'icon-close';
+						break;
+					default:
+						this.colorClass = 'btn-secondary';
+						this.icon = 'icon-direction';
+				}
 			}
-			else if (contextClass=='drop') {
-				// given unique ID to dropdown button accociated to its row count
-				attributes=`data-toggle="dropdown" 
-					aria-haspopup="true" 
-					aria-expanded="false" 
-					id="table-${this.tableID}-row-${this.rowCount}-status"`;
-				contextClass = 'dropdown-toggle';
-			}
 
-			// change the text, icon, color
-			switch(state) {
-				case 'Complete':
-					colorClass = 'btn-success';
-					icon = 'icon-check';
-					break;
-				case 'Develop':
-					colorClass = 'btn-warning';
-					icon = 'icon-information';
-					break;
-				case 'Stuck':
-					colorClass = 'btn-danger';
-					icon = 'icon-close';
-					break;
-				default:
-					colorClass = 'btn-secondary';
-					icon = 'icon-direction';
+			select () {
+				const btn = `
+				<!-- ${this.state.toUpperCase()} -->
+				<!-- make button text white, set fixed width -->
+				<button class="btn ${this.contextClass} ${this.colorClass}" style="color: white; width: 8rem;" ${this.attributes}>
+					<span class="btn-label">
+						<i class="fa ${this.icon}"></i>
+					</span>
+					${this.state}
+				</button>
+				`;
+				return btn;
 			}
-
-			const btn = `
-			<!-- ${state.toUpperCase()} -->
-			<!-- make button text white, set fixed width -->
-			<button class="btn ${contextClass} ${colorClass}" style="color: white; width: 8rem;" ${attributes}>
-				<span class="btn-label">
-					<i class="fa ${icon}"></i>
-				</span>
-				${state}
-			</button>
-			`;
-			
-			return btn;
 		}
+
+		let statusBtn = new Button(status,'drop').select();
+		let soonBtn = new Button('Soon','item').select();
+		let stuckBtn = new Button('Stuck','item').select();
+		let developBtn = new Button('Develop','item').select();
+		let completeBtn = new Button('Complete','item').select();
 
 		const rowContent = `
 		<tr draggable="true" id=table${this.tableID}-row-${this.rowCount}>
@@ -209,14 +221,14 @@ class Table {
 			<td>
 				<div class="btn-group bg-dark2">
 					<!-- OUTPUT STATUS BUTTON -->
-					${btnSelect(status,'drop')}
+					${statusBtn}
 
 					<!-- DROPDOWN BUTTONS-->
 					<div class="dropdown-menu bg-dark p-2">
-						${btnSelect('Soon','item')}
-						${btnSelect('Stuck','item')}
-						${btnSelect('Develop','item')}
-						${btnSelect('Complete','item')}
+						${soonBtn}
+						${stuckBtn}
+						${developBtn}
+						${completeBtn}
 					</div>
 				</div>
 			</td>
@@ -262,17 +274,31 @@ class Table {
 		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
 
 		// add event listeners to buttons
-		for (let itemBtn = 1; itemBtn <= this.itemCount; itemBtn++) {
-			let item = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${itemBtn}`);
-			let dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
-			item.addEventListener('click', ()=> {
-				console.log(item);
-				dropBtn.textContent = item.textContent;
-				console.log(dropBtn.textContent);
-			})
+		// for (let itemBtn = 1; itemBtn <= this.itemCount; itemBtn++) {
+		// 	let item = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${itemBtn}`);
+		// 	let dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
+		// 	item.addEventListener('click', ()=> {
+		// 		console.log(item);
+		// 		dropBtn.innerHTML = `<span class="btn-label"><i class="fa ${this.icon}"></i></span>${item.textContent}`
+		// 		// console.log(dropBtn.textContent);
+		// 	})
 			
-		}
+		// }
+		
+		console.log(soonBtn);
+
 	}
+
+
+
+
+
+
+
+
+
+
+
 }
 
 let mytable = new Table('FEATURES');
