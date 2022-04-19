@@ -5,11 +5,6 @@
   opacity: 0;
 }
 
-/* adjust status dropdown width*/
-.dropdown-menu {
-  min-width: 7rem !important;
-}
-
 /* make dropdown horizontal*/
 .dropdown-menu.show {
   display: flex !important;

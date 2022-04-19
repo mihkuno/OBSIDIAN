@@ -13,14 +13,14 @@ $( function() {
 });
 
 
-
+// TABLE COMPONENT
 class Table {
-	constructor(title) {
+	constructor(headerTitle) {
 		// table properties
-		this.headerTitle = title;
+		this.headerTitle = headerTitle;
 
-		// get the root container 
-		this.cardBody = document.querySelector(".page-category");
+		// get the target container as the root 
+		this.cardBody = document.querySelector("div.page-category");
 
 		// create the table body
 		this.tableElement = document.createElement('div')
@@ -120,69 +120,87 @@ class Table {
 				</div>
 			</div>
 		</div>`;
-	}
-	// table create method
-	create() {
+
+		// CREATE TABLE AUTOMATICALLY
 		// append created container to target container
 		this.cardBody.appendChild(this.tableElement);
 		// insert string contents to created container  
 		this.tableElement.insertAdjacentHTML('beforeend', this.content);
 
-		// make rows sortable
-		// DASHBOARD SORT LIBRARY
-		const wrapper = document.querySelector('.sort-wrapper')
-		new Sortable(wrapper, {
+		// the created table body container after appending to target container
+		this.tBodyContainer = document.querySelector('tbody.sort-wrapper')
+
+		// make sortable the tbody content (rows)
+		new Sortable(this.tBodyContainer, { // SORTABLE JS LIBRARY 
 			handle: '.sort-handler', 
 			forceFallback: false,
 			animation: 200,
 		});
 	}
 
-	addRow() {
-		const row = `
+	// add a row method
+	addRow(title, status) {
+		// set button states
+		const btnSelect =(state, contextClass) => {
+			let colorClass, icon, attributes;
+
+			// is it a button or an dropdown item?
+			if(contextClass=='item') {
+				attributes='onclick="statusChange(event)"'; 
+				contextClass = 'dropdown-item';
+			}
+			else if (contextClass=='drop') {
+				attributes='data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"';
+				contextClass = 'dropdown-toggle';
+			}
+
+			// change the text, icon, color
+			switch(state) {
+				case 'Complete':
+					colorClass = 'btn-success';
+					icon = 'icon-check';
+					break;
+				case 'Develop':
+					colorClass = 'btn-warning';
+					icon = 'icon-information';
+					break;
+				case 'Stuck':
+					colorClass = 'btn-danger';
+					icon = 'icon-close';
+					break;
+				default:
+					colorClass = 'btn-secondary';
+					icon = 'icon-direction';
+			}
+
+			const btn = `
+			<!-- ${status.toUpperCase()} -->
+			<!-- make button text white, set fixed width -->
+			<button class="btn ${contextClass} ${colorClass}" style="color: white; width: 8rem;" ${attributes}>
+				<span class="btn-label">
+					<i class="fa ${icon}"></i>
+				</span>
+				${state}
+			</button>
+			`;
+			return btn;
+		}
+		const rowContent = `
 		<tr draggable="true">
 			<!-- TITLE -->
-			<td>DYNAMIC FORECASTING (ARIMA)</td>
+			<td>${title}</td>
 			<!-- STATUS -->
 			<td>
 				<div class="btn-group bg-dark2">
 					<!-- OUTPUT STATUS BUTTON -->
-					<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<span class="btn-label">
-							<i class="fa icon-close"></i>
-						</span>
-						Stuck
-					</button>
+					${btnSelect(status,'drop')}
+
 					<!-- DROPDOWN BUTTONS-->
 					<div class="dropdown-menu bg-dark p-2">
-						<!-- SOON -->
-						<button class="dropdown-item btn btn-secondary" style="color: white;">
-							<span class="btn-label">
-								<i class="fa icon-direction"></i>
-							</span>
-							Soon
-						</button>
-						<!-- STUCK -->
-						<button class="dropdown-item btn btn-danger" style="color: white;">
-							<span class="btn-label">
-								<i class="fa icon-close"></i>
-							</span>
-							Stuck
-						</button>
-						<!-- PROGRESSING -->
-						<button class="dropdown-item btn btn-warning" style="color: white;">
-							<span class="btn-label">
-								<i class="fa icon-information"></i>
-							</span>
-							Progressing
-						</button>
-						<!-- COMPLETED -->
-						<button class="dropdown-item btn btn-success" style="color: white;">
-							<span class="btn-label">
-								<i class="fa icon-check"></i>
-							</span>
-							Completed
-						</button>
+						${btnSelect('Soon','item')}
+						${btnSelect('Stuck','item')}
+						${btnSelect('Develop','item')}
+						${btnSelect('Complete','item')}
 					</div>
 				</div>
 			</td>
@@ -223,8 +241,10 @@ class Table {
 				</div>
 			</td>
 		</tr>`;
+		// insert the row to table body
+		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
 	}
 }
 
-new Table('Something').create();
-
+let mytable = new Table('Something');
+mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
