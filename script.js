@@ -81,6 +81,8 @@ class Table {
 	constructor(headerTitle) {
 		// increment the static variable
 		tableCount++; console.log('tables created:', tableCount);
+		this.rowCount = 0; // set number of rows
+
 		
 		this.tableID = tableCount; // add counter as ID
 		this.headerTitle = headerTitle; // set table header
@@ -143,21 +145,20 @@ class Table {
 
 		// make sortable the tbody content (rows)
 		new Sortable(this.tBodyContainer, { // SORTABLE JS LIBRARY 
-			handle: '.sort-handle',
-			forceFallback: false,
-			animation: 200,
+			selectedClass: 'btn-light', // color of multidrag
+			handle: '.sort-handle', //  a component to drag on
+			forceFallback: false, // hides ghost, different mouse cursor
+			group: 'shared', // make rows movable to different tables
+			multiDrag: true, // enable selection of multiple rows
+			animation: 200, // animation speed
 		});
-		this.rowCount = 0; // set number of rows
 
 		
 		// make sortable the card parent of the table
 		new Sortable(this.tableCardParent, { // SORTABLE JS LIBRARY 
 			forceFallback: false,
-			multiDrag: true,
 			animation: 400,
 		});
-
-
 
 		// addrow click listener
 		const addRowButton = document.querySelector(`button#table-${this.tableID}-addrow`);
