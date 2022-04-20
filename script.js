@@ -82,22 +82,20 @@ class Table {
 		// increment the static variable
 		tableCount++; console.log('tables created:', tableCount);
 		
-		// set table header
-		this.headerTitle = headerTitle; 
-		// get the target container as the root of the table
-		this.cardBody = document.querySelector("div.page-category");
-		// create the table body
-		this.tableElement = document.createElement('div')
-		// add the table class attribute
-		this.tableElement.setAttribute('class', 'col-md-12')
-		// add the table ID attribute
-		this.tableID = tableCount;
+		this.tableID = tableCount; // add counter as ID
+		this.headerTitle = headerTitle; // set table header
+		this.tableCardParent = document.querySelector("div.page-category"); // get the target container as the root
+		
+		this.tableElement = document.createElement('div') // create the table's card parent
+		this.tableCardClass = `table-${this.tableID}-card`; // add class to the parent
+		this.tableElement.setAttribute('class', `col-md-12 ${this.tableCardClass}`);
+		
 		// append created table body to target container
-		this.cardBody.appendChild(this.tableElement);
+		this.tableCardParent.appendChild(this.tableElement);
 		// table content
 		this.content = `
 		<!-- TABLE CARD -->
-		<div class="card table-striped">
+		<div class="card table-striped" draggable="true">
 			<div class="card-header">
 				<div class="d-flex align-items-center">
 					<!-- HEADER TITLE -->
@@ -145,14 +143,19 @@ class Table {
 
 		// make sortable the tbody content (rows)
 		new Sortable(this.tBodyContainer, { // SORTABLE JS LIBRARY 
-			handle: '.sort-handler', 
+			handle: '.sort-handle',
 			forceFallback: false,
 			animation: 200,
 		});
 		this.rowCount = 0; // set number of rows
 
-		// addtable click listener
-
+		
+		// make sortable the card parent of the table
+		new Sortable(this.tableCardParent, { // SORTABLE JS LIBRARY 
+			forceFallback: false,
+			multiDrag: true,
+			animation: 400,
+		});
 
 
 
@@ -171,7 +174,6 @@ class Table {
 			},{
 				// settings
 				element: 'body',
-				position: null,
 				type: "info",
 				allow_dismiss: true,
 				newest_on_top: false,
@@ -185,15 +187,10 @@ class Table {
 				z_index: 1031,
 				delay: 700,
 				timer: 850,
-				mouse_over: null,
 				animate: {
 					enter: 'animated fadeInDown',
 					exit: 'animated fadeOutUp'
 				},
-				onShow: null,
-				onShown: null,
-				onClose: null,
-				onClosed: null,
 				icon_type: 'class',
 				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
 					'<span data-notify="icon"></span> ' +
@@ -315,7 +312,6 @@ class Table {
 					},{
 						// settings
 						element: 'body',
-						position: null,
 						type: "warning",
 						allow_dismiss: true,
 						newest_on_top: false,
@@ -329,15 +325,10 @@ class Table {
 						z_index: 1031,
 						delay: 700,
 						timer: 850,
-						mouse_over: null,
 						animate: {
 							enter: 'animated fadeInDown',
 							exit: 'animated fadeOutUp'
 						},
-						onShow: null,
-						onShown: null,
-						onClose: null,
-						onClosed: null,
 						icon_type: 'class',
 						template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
 							'<span data-notify="icon"></span> ' +
@@ -398,5 +389,13 @@ mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Complete');
 mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
 
 let herTable = new Table('Something');
-herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
-herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
+herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Soon');
+herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Develop');
+
+const createTableID = 'table-create';
+const createTableButton = document.querySelector(`button#${createTableID}`);
+
+createTableButton.addEventListener('click', () => {
+	const table = new Table('Something');
+});
+
