@@ -90,18 +90,19 @@ class Table {
 		
 		this.tableElement = document.createElement('div') // create the table's card parent
 		this.tableCardClass = `table-${this.tableID}-card`; // add class to the parent
-		this.tableElement.setAttribute('class', `col-md-12 ${this.tableCardClass}`);
+		this.tableElement.setAttribute('class', `${this.tableCardClass} card `);
 		
 		// append created table body to target container
 		this.tableCardParent.appendChild(this.tableElement);
 		// table content
 		this.content = `
 		<!-- TABLE CARD -->
-		<div class="card table-striped draggable="true">
+		<div class="table-striped" draggable="true">
 			<div class="card-header">
 				<div class="d-flex align-items-center">
-					<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-secondary sort-handler">
-						<i class="fas fa-grip-horizontal sorttable-handle"></i>
+					<!-- TABLE SORT HANDLER -->
+					<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-secondary sorttable-handle">
+						<i class="fas fa-grip-horizontal"></i>
 					</button>
 					<!-- HEADER TITLE -->
 					<input type="text" class="form-control input-border-bottom ml-2" style='border: 0; font-size: 17px;' placeholder="table-${this.tableID}" value="${this.headerTitle}"> 
@@ -149,11 +150,11 @@ class Table {
 		this.tableElement.insertAdjacentHTML('beforeend', this.content);
 
 		// select the created table body container after appending to target container
-		this.tBodyContainer = document.querySelector(`tbody.sort-wrapper#table-${this.tableID}`);
+		this.tBodyContainer = document.querySelector(`tbody#table-${this.tableID}`);
 
-		// make sortable the tbody content (rows)
-		new Sortable(this.tBodyContainer, { // SORTABLE JS LIBRARY 
-			selectedClass: 'btn-light', // color of multidrag
+		// make sortable the rows
+		let rowSortable = new Sortable(this.tBodyContainer, { // SORTABLE JS LIBRARY 
+			selectedClass: 'row-selected', // color of multidrag
 			handle: '.sortrow-handle', //  a component to drag on
 			forceFallback: false, // hides ghost, different mouse cursor
 			group: 'shared-row', // make rows movable to different tables
@@ -163,16 +164,16 @@ class Table {
 
 		
 		// make sortable the card parent of the table
-		new Sortable(this.tableCardParent, { // SORTABLE JS LIBRARY 
-			selectedClass: 'bg-secondary',
+		let cardSortable = new Sortable(this.tableCardParent, { // SORTABLE JS LIBRARY 
+			selectedClass: 'table-selected',
 			handle: '.sorttable-handle', //  a component to drag on
 			forceFallback: false,
-			group: 'shared-table',
 			multiDrag: true,
 			swapThreshold: 0.95,
    			invertSwap: true,
 			animation: 400,
 		});
+
 
 		// addrow click listener
 		const addRowButton = document.querySelector(`button#table-${this.tableID}-addrow`);
@@ -326,8 +327,8 @@ class Table {
 					<button id='${rowEditID}' type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
 						<i class="fas fa-times text-danger"></i>
 					</button>
-					<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-secondary sort-handler">
-						<i class="fas fa-ellipsis-h sortrow-handle"></i>
+					<button type="button" class="btn btn-link btn-secondary sortrow-handle">
+						<i class="fas fa-ellipsis-h"></i>
 					</button>
 				</div>
 			</td>
@@ -456,7 +457,7 @@ createTableButton.addEventListener('click', () => {
 	// notification
 	$.notify({
 		// options
-		icon: 'flaticon-add',
+		icon: 'fa fa-table',
 		title: 'Created Table',
 		message: ''
 	},{
@@ -488,3 +489,6 @@ createTableButton.addEventListener('click', () => {
 
 });
 
+// disable row drag if table is clicked
+const isRowSelected = document.querySelector('button.row-selected');
+console.log(isRowSelected); 

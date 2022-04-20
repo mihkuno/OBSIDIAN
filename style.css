@@ -10,3 +10,7 @@
   display: flex !important;
   transform: none !important;
 }
+
+/* sortablejs table and row selected*/
+.table-selected { border: 2px dashed #f7f1e3; }
+.row-selected { background-color: #f7f1e3 !important;}
