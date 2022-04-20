@@ -151,11 +151,56 @@ class Table {
 		});
 		this.rowCount = 0; // set number of rows
 
+		// addtable click listener
+
+
+
+
 		// addrow click listener
 		const addRowButton = document.querySelector(`button#table-${this.tableID}-addrow`);
 		addRowButton.addEventListener('click', () => {
-			const consume = this.addRow('Something', 'Soon');
-			console.log(`-- created new row ${consume} --`);
+			this.addRow('Something', 'Soon');
+			console.log(`-- created new row --`);
+			
+			// notification
+			$.notify({
+				// options
+				icon: 'flaticon-add',
+				title: 'Added Row',
+				message: ''
+			},{
+				// settings
+				element: 'body',
+				position: null,
+				type: "info",
+				allow_dismiss: true,
+				newest_on_top: false,
+				showProgressbar: false,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 700,
+				timer: 850,
+				mouse_over: null,
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				onShow: null,
+				onShown: null,
+				onClose: null,
+				onClosed: null,
+				icon_type: 'class',
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<span data-notify="icon"></span> ' +
+					'<span data-notify="title">{1}</span> ' +
+				'</div>' 
+			});
+
 		});
 	}
 
@@ -243,6 +288,7 @@ class Table {
 		const editRowButton = document.querySelector(`button#${rowEditID}`); 
 		editRowButton.addEventListener('click', () => {
 			// console.log(editRowButton);
+			// MODAL CONFIRMATION
 			swal({
 				title: 'Are you sure?',
 				text: "You won't be able to revert this!",
@@ -260,15 +306,49 @@ class Table {
 			}).then((Delete) => {
 				if (Delete) {
 					document.querySelector(`tr#${tableRowID}`).remove(); // deletes the row based on ID
+					// notification
+					$.notify({
+						// options
+						icon: 'flaticon-exclamation',
+						title: 'Removed Row',
+						message: ''
+					},{
+						// settings
+						element: 'body',
+						position: null,
+						type: "warning",
+						allow_dismiss: true,
+						newest_on_top: false,
+						showProgressbar: false,
+						placement: {
+							from: "top",
+							align: "right"
+						},
+						offset: 20,
+						spacing: 10,
+						z_index: 1031,
+						delay: 700,
+						timer: 850,
+						mouse_over: null,
+						animate: {
+							enter: 'animated fadeInDown',
+							exit: 'animated fadeOutUp'
+						},
+						onShow: null,
+						onShown: null,
+						onClose: null,
+						onClosed: null,
+						icon_type: 'class',
+						template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+							'<span data-notify="icon"></span> ' +
+							'<span data-notify="title">{1}</span> ' +
+						'</div>' 
+					});
 					swal({
-						title: 'Deleted!',
-						text: 'Your file has been deleted.',
+						title: 'Removed!',
+						text: '',
 						icon: 'success',
-						buttons : {
-							confirm: {
-								className : 'btn btn-success'
-							}
-						}
+						timer: 550
 					});
 				} else {
 					swal.close();
@@ -276,7 +356,6 @@ class Table {
 			});
 		});
 		
-		// row edit listener
 	
 
 		// loop through each dropdown item
