@@ -151,15 +151,16 @@ class Table {
 		});
 		this.rowCount = 0; // set number of rows
 
+		// addrow click listener
 		const addRowButton = document.querySelector(`button#table-${this.tableID}-addrow`);
 		addRowButton.addEventListener('click', () => {
-			this.addRow('Something', 'Soon');
-			console.log('ive have been clicked');
+			const consume = this.addRow('Something', 'Soon');
+			console.log(`-- created new row ${consume} --`);
 		});
 	}
 
 	// add a row method
-	addRow(title, status) {
+	addRow(label, status) {
 		this.rowCount++; console.log('num of rows', this.rowCount);
 		var itemCount = 0; // set number of dropdown item 
 		// returns a html content NOT an object
@@ -170,10 +171,13 @@ class Table {
 		let developBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Develop','item').select();
 		let completeBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Complete','item').select();
 
+		const tableRowID = `table${this.tableID}-row-${this.rowCount}`;
+		const rowLabelID = `table-${this.tableID}-row-${this.rowCount}-label`;
+
 		const rowContent = `
-		<tr draggable="true" id=table${this.tableID}-row-${this.rowCount}>
-			<!-- TITLE -->
-			<td>${title}</td>
+		<tr draggable="true" id="${tableRowID}">
+			<!-- LABEL -->
+			<td id='${rowLabelID}'>${label}</td>
 			<!-- STATUS -->
 			<td>
 				<div class="btn-group bg-dark2">
@@ -229,6 +233,9 @@ class Table {
 
 		// insert the row to table body
 		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
+		
+		// make the row label editable
+		document.querySelector(`td#${rowLabelID}`).contentEditable = true;
 
 		// add event listeners to status buttons
 		for (let i = 1; i < itemCount; i++) {
@@ -262,8 +269,6 @@ class Table {
 				// document.querySelectorAll("div.show").forEach(e => e.classList.remove("show")); bootstrap does it automatically
 			});
 		}
-
-
 	}
 }
 
