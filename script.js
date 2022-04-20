@@ -177,7 +177,11 @@ class Table {
 		const rowContent = `
 		<tr draggable="true" id="${tableRowID}">
 			<!-- LABEL -->
-			<td id='${rowLabelID}'>${label}</td>
+			<td>
+			<div class="form-group">
+				<input type="text" class="form-control input-border-bottom" id="${rowLabelID}" style='border: 0; color: #828282;' placeholder="row-${this.rowCount}">
+			</div>
+			</td>
 			<!-- STATUS -->
 			<td>
 				<div class="btn-group bg-dark2">
@@ -235,7 +239,7 @@ class Table {
 		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
 		
 		// make the row label editable
-		document.querySelector(`td#${rowLabelID}`).contentEditable = true;
+		// document.querySelector(`td#${rowLabelID}`).contentEditable = true;
 
 		// add event listeners to status buttons
 		for (let i = 1; i < itemCount; i++) {
