@@ -97,7 +97,7 @@ class Table {
 		// table content
 		this.content = `
 		<!-- TABLE CARD -->
-		<div class="card">
+		<div class="card table-striped">
 			<div class="card-header">
 				<div class="d-flex align-items-center">
 					<!-- HEADER TITLE -->
@@ -173,6 +173,7 @@ class Table {
 
 		const tableRowID = `table${this.tableID}-row-${this.rowCount}`;
 		const rowLabelID = `table-${this.tableID}-row-${this.rowCount}-label`;
+		const rowEditID  = `table-${this.tableID}-row-${this.rowCount}-edit`;
 
 		const rowContent = `
 		<tr draggable="true" id="${tableRowID}">
@@ -225,8 +226,8 @@ class Table {
 			<!-- FORM ACTION AND SORTABLE -->
 			<td>
 				<div class="form-button-action">
-					<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-						<i class="fa fa-edit"></i>
+					<button id='${rowEditID}' type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+						<i class="fa fa-edit text-danger"></i>
 					</button>
 					<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-secondary sort-handler">
 						<i class="fas fa-ellipsis-h sort-handle"></i>
@@ -237,18 +238,55 @@ class Table {
 
 		// insert the row to table body
 		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
-		
-		// make the row label editable
-		// document.querySelector(`td#${rowLabelID}`).contentEditable = true;
 
-		// add event listeners to status buttons
+		// row edit listener
+		const editRowButton = document.querySelector(`button#${rowEditID}`); 
+		editRowButton.addEventListener('click', () => {
+			// console.log(editRowButton);
+			swal({
+				title: 'Are you sure?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						className: 'btn btn-danger'
+					},
+					confirm: {
+						text : 'Yes, delete it!',
+						className : 'btn btn-success',
+					}
+				}
+			}).then((Delete) => {
+				if (Delete) {
+					document.querySelector(`tr#${tableRowID}`).remove(); // deletes the row based on ID
+					swal({
+						title: 'Deleted!',
+						text: 'Your file has been deleted.',
+						icon: 'success',
+						buttons : {
+							confirm: {
+								className : 'btn btn-success'
+							}
+						}
+					});
+				} else {
+					swal.close();
+				}
+			});
+		});
+		
+		// row edit listener
+	
+
+		// loop through each dropdown item
 		for (let i = 1; i < itemCount; i++) {
 			const dropItem = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${i}`);
 			const dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
-
+			// change the text, icon, color when dropdown item is clicked
 			dropItem.addEventListener('click', ()=> {
 				const state = dropItem.textContent.trim(); 
-				// change the text, icon, color
+				
 				let cc, ii;
 				switch(state) {
 					case 'Complete':
