@@ -12,6 +12,67 @@ $( function() {
 	});
 });
 
+class Button {
+	constructor(tableID, rowCount, itemCount, state, contextClass) {
+		this.tableID = tableID;
+		this.rowCount = rowCount;
+		this.itemCount = itemCount;
+		this.state = state;
+		this.contextClass = contextClass;
+		this.colorClass; this.icon; this.attributes;
+
+		// is it a button or an dropdown item?
+		// these attributes are part of bootstrap dropdown
+		if(contextClass=='item') {
+			// attributes="onclick=>console.log(dropdown button clicked)";
+			itemCount++; 
+			// add the row ID attribute
+			this.attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
+			this.contextClass = 'dropdown-item';
+				
+		}
+		else if (contextClass=='drop') {
+			// given unique ID to dropdown button accociated to its row count
+			this.attributes=`data-toggle="dropdown" 
+				aria-haspopup="true" 
+				aria-expanded="false" 
+				id="table-${this.tableID}-row-${this.rowCount}-status"`;
+			this.contextClass = 'dropdown-toggle';
+		}
+		// change the text, icon, color
+		switch(this.state) {
+			case 'Complete':
+				this.colorClass = 'btn-success';
+				this.icon = 'icon-check';
+				break;
+			case 'Develop':
+				this.colorClass = 'btn-warning';
+				this.icon = 'icon-information';
+				break;
+			case 'Stuck':
+				this.colorClass = 'btn-danger';
+				this.icon = 'icon-close';
+				break;
+			default:
+				this.colorClass = 'btn-secondary';
+				this.icon = 'icon-direction';
+		}
+	}
+	select () {
+		const btn = `
+		<button class="btn ${this.contextClass} ${this.colorClass}" style="color: white; width: 8.3rem;" ${this.attributes}>
+			<!-- SELECTED STATUS IS <${this.state.toUpperCase()}> -->
+			<!-- make button text white, set fixed width -->
+			<span class="btn-label">
+				<i class="fa ${this.icon}"></i>
+			</span>
+			${this.state}
+		</button>
+		`;
+		return btn;
+	}
+}
+
 
 // static method to count the number of tables created
 var tableCount = 0;
@@ -20,9 +81,10 @@ class Table {
 	constructor(headerTitle) {
 		// increment the static variable
 		tableCount++; console.log('tables created:', tableCount);
+		
 		// set table header
 		this.headerTitle = headerTitle; 
-		// get the target container as the root 
+		// get the target container as the root of the table
 		this.cardBody = document.querySelector("div.page-category");
 		// create the table body
 		this.tableElement = document.createElement('div')
@@ -30,6 +92,8 @@ class Table {
 		this.tableElement.setAttribute('class', 'col-md-12')
 		// add the table ID attribute
 		this.tableID = tableCount;
+		// append created table body to target container
+		this.cardBody.appendChild(this.tableElement);
 		// table content
 		this.content = `
 		<!-- TABLE CARD -->
@@ -122,13 +186,10 @@ class Table {
 				</div>
 			</div>
 		</div>`;
-
-		// append created container to target container
-		this.cardBody.appendChild(this.tableElement);
 		// insert string contents to created container  
 		this.tableElement.insertAdjacentHTML('beforeend', this.content);
 
-		// the created table body container after appending to target container
+		// select the created table body container after appending to target container
 		this.tBodyContainer = document.querySelector(`tbody.sort-wrapper#table-${this.tableID}`);
 
 		// make sortable the tbody content (rows)
@@ -144,74 +205,13 @@ class Table {
 	addRow(title, status) {
 		this.rowCount++; console.log('num of rows', this.rowCount);
 		var itemCount = 0; // set number of dropdown item 
-
-		class Button {
-			constructor(state, contextClass) {
-				this.state = state;
-				this.contextClass = contextClass;
-				this.colorClass;
-				this.icon;
-				this.attributes;
-
-				// is it a button or an dropdown item?
-				// these attributes are part of bootstrap dropdown
-				if(contextClass=='item') {
-					// attributes="onclick=>console.log(dropdown button clicked)";
-					itemCount++; 
-					// add the row ID attribute
-					this.attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
-					this.contextClass = 'dropdown-item';
-						
-				}
-				else if (contextClass=='drop') {
-					// given unique ID to dropdown button accociated to its row count
-					this.attributes=`data-toggle="dropdown" 
-						aria-haspopup="true" 
-						aria-expanded="false" 
-						id="table-${this.tableID}-row-${this.rowCount}-status"`;
-					this.contextClass = 'dropdown-toggle';
-				}
-
-				// change the text, icon, color
-				switch(this.state) {
-					case 'Complete':
-						this.colorClass = 'btn-success';
-						this.icon = 'icon-check';
-						break;
-					case 'Develop':
-						this.colorClass = 'btn-warning';
-						this.icon = 'icon-information';
-						break;
-					case 'Stuck':
-						this.colorClass = 'btn-danger';
-						this.icon = 'icon-close';
-						break;
-					default:
-						this.colorClass = 'btn-secondary';
-						this.icon = 'icon-direction';
-				}
-			}
-
-			select () {
-				const btn = `
-				<!-- ${this.state.toUpperCase()} -->
-				<!-- make button text white, set fixed width -->
-				<button class="btn ${this.contextClass} ${this.colorClass}" style="color: white; width: 8rem;" ${this.attributes}>
-					<span class="btn-label">
-						<i class="fa ${this.icon}"></i>
-					</span>
-					${this.state}
-				</button>
-				`;
-				return btn;
-			}
-		}
-
-		let statusBtn = new Button(status,'drop').select();
-		let soonBtn = new Button('Soon','item').select();
-		let stuckBtn = new Button('Stuck','item').select();
-		let developBtn = new Button('Develop','item').select();
-		let completeBtn = new Button('Complete','item').select();
+		// returns a html content NOT an object
+		// the first three parameters creates a unique ID 
+		let statusBtn = new Button(this.tableID,this.rowCount, itemCount++, status,'drop').select();
+		let soonBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Soon','item').select();
+		let stuckBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Stuck','item').select();
+		let developBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Develop','item').select();
+		let completeBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Complete','item').select();
 
 		const rowContent = `
 		<tr draggable="true" id=table${this.tableID}-row-${this.rowCount}>
@@ -274,39 +274,44 @@ class Table {
 		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
 
 		// add event listeners to buttons
-		// for (let itemBtn = 1; itemBtn <= this.itemCount; itemBtn++) {
-		// 	let item = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${itemBtn}`);
-		// 	let dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
-		// 	item.addEventListener('click', ()=> {
-		// 		console.log(item);
-		// 		dropBtn.innerHTML = `<span class="btn-label"><i class="fa ${this.icon}"></i></span>${item.textContent}`
-		// 		// console.log(dropBtn.textContent);
-		// 	})
-			
-		// }
-		
-		console.log(soonBtn);
+		for (let i = 1; i < itemCount; i++) {
+			const dropItem = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${i}`);
+			const dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
 
+			dropItem.addEventListener('click', ()=> {
+				const state = dropItem.textContent.trim(); 
+				// change the text, icon, color
+				let cc, ii;
+				switch(state) {
+					case 'Complete':
+						cc = 'btn-success';
+						ii = 'icon-check';
+						break;
+					case 'Develop':
+						cc = 'btn-warning';
+						ii = 'icon-information';
+						break;
+					case 'Stuck':
+						cc = 'btn-danger';
+						ii = 'icon-close';
+						break;
+					default:
+						cc = 'btn-secondary';
+						ii = 'icon-direction';
+				}
+				dropBtn.innerHTML = "";
+				dropBtn.setAttribute('class', `btn dropdown-toggle ${cc}`)
+				dropBtn.insertAdjacentHTML('beforeend',`<span class="btn-label"><i class="fa ${ii}"></i></span> ${state} `); // add space
+				// document.querySelectorAll("div.show").forEach(e => e.classList.remove("show")); bootstrap does it automatically
+			});
+		}
 	}
-
-
-
-
-
-
-
-
-
-
-
 }
 
 let mytable = new Table('FEATURES');
-mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
-mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
+mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Complete');
 mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
 
 let herTable = new Table('Something');
-herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
 herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
 herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
