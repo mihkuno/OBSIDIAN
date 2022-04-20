@@ -97,13 +97,21 @@ class Table {
 		// table content
 		this.content = `
 		<!-- TABLE CARD -->
-		<div class="card table-striped" draggable="true">
+		<div class="card table-striped draggable="true">
 			<div class="card-header">
 				<div class="d-flex align-items-center">
+					<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-secondary sort-handler">
+						<i class="fas fa-grip-horizontal sorttable-handle"></i>
+					</button>
 					<!-- HEADER TITLE -->
-					<h4 class="card-title">${this.headerTitle}</h4>
+					<input type="text" class="form-control input-border-bottom ml-2" style='border: 0; font-size: 17px;' placeholder="table-${this.tableID}" value="${this.headerTitle}"> 
+					<!-- REMOVE ROW BUTTON -->
+					<button class="btn btn-danger btn-round ml-auto mr-2" id='table-${this.tableID}-removetable'>
+						<i class="fa fa-trash-alt"></i>
+						Remove
+					</button>
 					<!-- ADD ROW BUTTON -->
-					<button class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#addRowModal" id='table-${this.tableID}-addrow'>
+					<button class="btn btn-primary btn-round ml-auto mr-2" id='table-${this.tableID}-addrow'>
 						<i class="fa fa-plus"></i>
 						Add Row
 					</button>
@@ -123,7 +131,7 @@ class Table {
 								<th>Progress</th>
 								<th>Owner</th>
 								<th>Last Updated</th>
-								<th style="width: 10%">Action</th>
+								<th style="width: 10%; text-align:center" colspan=2>Action</th>
 							</tr>
 						</thead>
 						
@@ -146,9 +154,9 @@ class Table {
 		// make sortable the tbody content (rows)
 		new Sortable(this.tBodyContainer, { // SORTABLE JS LIBRARY 
 			selectedClass: 'btn-light', // color of multidrag
-			handle: '.sort-handle', //  a component to drag on
+			handle: '.sortrow-handle', //  a component to drag on
 			forceFallback: false, // hides ghost, different mouse cursor
-			group: 'shared', // make rows movable to different tables
+			group: 'shared-row', // make rows movable to different tables
 			multiDrag: true, // enable selection of multiple rows
 			animation: 200, // animation speed
 		});
@@ -156,7 +164,13 @@ class Table {
 		
 		// make sortable the card parent of the table
 		new Sortable(this.tableCardParent, { // SORTABLE JS LIBRARY 
+			selectedClass: 'bg-secondary',
+			handle: '.sorttable-handle', //  a component to drag on
 			forceFallback: false,
+			group: 'shared-table',
+			multiDrag: true,
+			swapThreshold: 0.95,
+   			invertSwap: true,
 			animation: 400,
 		});
 
@@ -169,13 +183,53 @@ class Table {
 			// notification
 			$.notify({
 				// options
-				icon: 'flaticon-add',
+				icon: 'fa fa-plus',
 				title: 'Added Row',
 				message: ''
 			},{
 				// settings
 				element: 'body',
 				type: "info",
+				allow_dismiss: true,
+				newest_on_top: false,
+				showProgressbar: false,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 700,
+				timer: 850,
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				icon_type: 'class',
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<span data-notify="icon"></span> ' +
+					'<span data-notify="title">{1}</span> ' +
+				'</div>' 
+			});
+
+		});
+
+		// remove table click listener
+		const removeTableButton = document.querySelector(`button#table-${this.tableID}-removetable`);
+		removeTableButton.addEventListener('click', () => {
+			console.log(`-- removed deleted table --`);
+			
+			// notification
+			$.notify({
+				// options
+				icon: 'fa fa-trash-alt',
+				title: 'Deleted Table',
+				message: ''
+			},{
+				// settings
+				element: 'body',
+				type: "default",
 				allow_dismiss: true,
 				newest_on_top: false,
 				showProgressbar: false,
@@ -223,7 +277,7 @@ class Table {
 			<!-- LABEL -->
 			<td>
 			<div class="form-group">
-				<input type="text" class="form-control input-border-bottom" id="${rowLabelID}" style='border: 0; color: #828282;' placeholder="row-${this.rowCount}">
+				<input type="text" class="form-control input-border-bottom" id="${rowLabelID}" style='border: 0; color: #828282;' placeholder="row-${this.rowCount}" value="${label}">
 			</div>
 			</td>
 			<!-- STATUS -->
@@ -270,10 +324,10 @@ class Table {
 			<td>
 				<div class="form-button-action">
 					<button id='${rowEditID}' type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-						<i class="fa fa-edit text-danger"></i>
+						<i class="fas fa-times text-danger"></i>
 					</button>
 					<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-secondary sort-handler">
-						<i class="fas fa-ellipsis-h sort-handle"></i>
+						<i class="fas fa-ellipsis-h sortrow-handle"></i>
 					</button>
 				</div>
 			</td>
@@ -340,7 +394,7 @@ class Table {
 						title: 'Removed!',
 						text: '',
 						icon: 'success',
-						timer: 550
+						timer: 650
 					});
 				} else {
 					swal.close();
@@ -386,17 +440,51 @@ class Table {
 }
 
 let mytable = new Table('FEATURES');
-mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Complete');
-mytable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Stuck');
+mytable.addRow('sdfasdfsadf', 'Complete');
+mytable.addRow('safdsafdsdf', 'Stuck');
 
 let herTable = new Table('Something');
-herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Soon');
-herTable.addRow('DYNAMIC FORECASTING (ARIMA)', 'Develop');
+herTable.addRow('asdfsadfsaf', 'Soon');
+herTable.addRow('asdfsdfsadfd', 'Develop');
 
 const createTableID = 'table-create';
 const createTableButton = document.querySelector(`button#${createTableID}`);
 
 createTableButton.addEventListener('click', () => {
-	const table = new Table('Something');
+	const table = new Table('');
+	
+	// notification
+	$.notify({
+		// options
+		icon: 'flaticon-add',
+		title: 'Created Table',
+		message: ''
+	},{
+		// settings
+		element: 'body',
+		type: "info",
+		allow_dismiss: true,
+		newest_on_top: false,
+		showProgressbar: false,
+		placement: {
+			from: "top",
+			align: "right"
+		},
+		offset: 20,
+		spacing: 10,
+		z_index: 1031,
+		delay: 700,
+		timer: 850,
+		animate: {
+			enter: 'animated fadeInDown',
+			exit: 'animated fadeOutUp'
+		},
+		icon_type: 'class',
+		template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+			'<span data-notify="icon"></span> ' +
+			'<span data-notify="title">{1}</span> ' +
+		'</div>' 
+	});
+
 });
 
