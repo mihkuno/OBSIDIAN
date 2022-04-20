@@ -74,7 +74,7 @@ class Button {
 }
 
 
-// static method to count the number of tables created
+// static to count the number of tables created
 var tableCount = 0;
 // TABLE COMPONENT
 class Table {
@@ -103,62 +103,13 @@ class Table {
 					<!-- HEADER TITLE -->
 					<h4 class="card-title">${this.headerTitle}</h4>
 					<!-- ADD ROW BUTTON -->
-					<button class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#addRowModal">
+					<button class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#addRowModal" id='table-${this.tableID}-addrow'>
 						<i class="fa fa-plus"></i>
 						Add Row
 					</button>
 				</div>
 			</div>
 			<div class="card-body">
-				<!-- MODAL -->
-				<div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content">
-							<div class="modal-header no-bd">
-								<h5 class="modal-title">
-									<span class="fw-mediumbold">
-									New</span> 
-									<span class="fw-light">
-										Row
-									</span>
-								</h5>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">
-								<p class="small">Create a new row using this form, make sure you fill them all</p>
-								<form>
-									<div class="row">
-										<div class="col-sm-12">
-											<div class="form-group form-group-default">
-												<label>Name</label>
-												<input id="addName" type="text" class="form-control" placeholder="fill name">
-											</div>
-										</div>
-										<div class="col-md-6 pr-0">
-											<div class="form-group form-group-default">
-												<label>Position</label>
-												<input id="addPosition" type="text" class="form-control" placeholder="fill position">
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group form-group-default">
-												<label>Office</label>
-												<input id="addOffice" type="text" class="form-control" placeholder="fill office">
-											</div>
-										</div>
-									</div>
-								</form>
-							</div>
-							<div class="modal-footer no-bd">
-								<button type="button" id="addRowButton" class="btn btn-primary">Add</button>
-								<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- END MODAL -->
 
 				<!-- TABLE CONTENT -->
 				<div class="table-responsive">
@@ -199,6 +150,12 @@ class Table {
 			animation: 200,
 		});
 		this.rowCount = 0; // set number of rows
+
+		const addRowButton = document.querySelector(`button#table-${this.tableID}-addrow`);
+		addRowButton.addEventListener('click', () => {
+			this.addRow('Something', 'Soon');
+			console.log('ive have been clicked');
+		});
 	}
 
 	// add a row method
@@ -273,7 +230,7 @@ class Table {
 		// insert the row to table body
 		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
 
-		// add event listeners to buttons
+		// add event listeners to status buttons
 		for (let i = 1; i < itemCount; i++) {
 			const dropItem = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${i}`);
 			const dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
@@ -305,6 +262,8 @@ class Table {
 				// document.querySelectorAll("div.show").forEach(e => e.classList.remove("show")); bootstrap does it automatically
 			});
 		}
+
+
 	}
 }
 
