@@ -137,7 +137,7 @@ class Table {
 		this.tableCard.setAttribute('class', `table-card card `);
 		this.tableCard.setAttribute('id', `${this.tableCardID}`);
 		// append card parent to root container
-		this.tableCardRoot = document.querySelector("div.page-category");
+		this.tableCardRoot = document.querySelector("div.page-category#index-content");
 		this.tableCardRoot.appendChild(this.tableCard);
 
 		// table content
@@ -358,9 +358,9 @@ class Table {
 		<tr draggable="true" id="${tableRowID}">
 			<!-- LABEL -->
 			<td>
-			<div class="form-group">
-				<input type="text" class="form-control input-border-bottom row-label" id="${rowLabelID}" style='border: 0; color: #828282;' placeholder="row-${this.rowCount}" value="${label}">
-			</div>
+				<div class="form-group">
+					<input type="text" class="form-control input-border-bottom row-label" id="${rowLabelID}" style='border: 0; color: #828282;' placeholder="row-${this.rowCount}" value="${label}">
+				</div>
 			</td>
 			<!-- STATUS -->
 			<td>
@@ -378,7 +378,9 @@ class Table {
 				</div>
 			</td>
 			<!-- TIMELINE -->
-			<td>Apr 1 - 13</td>
+			<td>
+				<button class="btn btn-secondary btn-border btn-round">Apr 1 - 13</button>
+			</td>
 			<!-- PROGRESS -->
 			<td>
 				<div id="slider" class="slider-primary"></div>
@@ -568,12 +570,3 @@ createTableButton.addEventListener('click', () => {
 
 });
 
-
-
-
-
-
-
-
-
-		// if table is deselected, then add rowhandler function

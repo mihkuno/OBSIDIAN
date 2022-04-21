@@ -22,6 +22,15 @@
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/atlantis.min.css">
 
+	
+	
+	<!-- CALENDAR LIBRARY -->
+	<link rel='stylesheet' href='https://fullcalendar.io/js/fullcalendar-3.1.0/fullcalendar.min.css' />
+	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/moment.min.js'></script>
+	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery.min.js'></script>
+	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery-ui.min.js'></script>
+	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/fullcalendar.min.js'></script>
+
 	<!-- CUSTOM STYLES -->
 	<link rel="stylesheet" href="style.css">
 
@@ -287,20 +296,20 @@
 						</div>
 					</div>
 					<ul class="nav nav-primary">
-						<li class="nav-item active">
-							<a href="#dashboard" class="collapsed">
+						<li class="nav-item">
+							<a href="index.html">
 								<i class="fas fa-th-list"></i>
 								<p>Dashboard</p>
 							</a>
 						</li>
 						<li class="nav-item">
-							<a href="#charts" class="collapsed">
+							<a href="#charts">
 								<i class="far fa-chart-bar"></i>
 								<p>Charts</p>
 							</a>
 						</li>
-						<li class="nav-item">
-							<a href="calendar.html">
+						<li class="nav-item active">
+							<a href="#calendar">
 								<i class="far icon-calendar"></i>
 								<p>Calendar</p>
 							</a>
@@ -329,7 +338,7 @@
 					<!-- HEADER -->
 					<div class="page-header">
 						<!-- PAGE TITLE -->
-						<h4 class="page-title">Dashboard</h4>
+						<h4 class="page-title">Calendar</h4>
 						<!-- BREADCRUMBS -->
 						<ul class="breadcrumbs">
 							<li class="nav-home">
@@ -347,26 +356,151 @@
 								<i class="flaticon-right-arrow"></i>
 							</li>
 							<li class="nav-item">
-								<a href="#">Dashboard</a>
+								<a href="#">Calendar</a>
 							</li>
 						</ul>
 					</div>
-					<ul class="nav nav-pills nav-secondary  nav-pills-no-bd mb-4" id="pills-tab" role="tablist">
-						<li class="nav-item">
-							<button class="btn btn-secondary" id="table-create">
-								<span class="btn-label">
-									<i class="fa fa-table"></i>
-								</span>
-								Create Table
-							</button>
-						</li>
-					</ul>
 					<!-- END HEADER -->
-					<div class="page-category" id="index-content">
+					<div class="page-category" id="calendar-content">
 						<!-- Inner page content goes here -->
 						
+                        <!-- CALENDAR APPENDED HERE -->	
+						<div class="card p-5">
+							<div class="card-body">
+								<div id="calendar"></div>
+							</div>
+						</div>
 						
-						<!-- TABLE APPENDED HERE -->						
+						<script>
+							/* initialize the calendar
+							-----------------------------------------------------------------*/
+					
+							var date = new Date();
+							var d = date.getDate();
+							var m = date.getMonth();
+							var y = date.getFullYear();
+							var className = Array('fc-primary', 'fc-danger', 'fc-black', 'fc-success', 'fc-info', 'fc-warning', 'fc-danger-solid', 'fc-warning-solid', 'fc-success-solid', 'fc-black-solid', 'fc-success-solid', 'fc-primary-solid');
+					
+							$calendar = $('#calendar');
+							$calendar.fullCalendar({
+								header: {
+									left: 'prev,next today',
+									center: 'title',
+									right: 'month,agendaDay,listWeek'
+								},
+								selectable : true,
+								selectHelper: true,
+								select: function(start, end) {
+					
+									// on select we show the Sweet Alert modal with an input
+									swal({
+										title: 'Create an Event',
+										html: '',
+										content: {
+											element: "input",
+											attributes: {
+												placeholder: "Event Title",
+												type: "text",
+												id: "input-field",
+												className: "form-control"
+											},
+										},
+										buttons: {
+											cancel: true,
+											confirm: true,
+										},
+									}).then(
+									function() {
+										var eventData;
+										var classRandom = className[Math.floor(Math.random()*className.length)];
+										event_title = $('#input-field').val();
+					
+										if (event_title) {
+											eventData = {
+												title: event_title,
+												start: start,
+												className: classRandom,
+												end: end
+											};
+											$calendar.fullCalendar('renderEvent', eventData, true); // stick? = true
+										}
+					
+										$calendar.fullCalendar('unselect');
+									}
+									);
+								},
+								events: [
+								{
+									title: 'All Day Event',
+									start: new Date(y, m, 1),
+									className: 'fc-black'
+								},
+								{
+									id: 999,
+									title: 'Repeating Event',
+									start: new Date(y, m, d - 3, 16, 0),
+									allDay: false,
+									className: 'fc-warning'
+								},
+								{
+									id: 999,
+									title: 'Repeating Event',
+									start: new Date(y, m, d + 4, 16, 0),
+									allDay: false,
+									className: 'fc-info'
+								},
+								{
+									title: 'Meeting',
+									start: new Date(y, m, d, 10, 30),
+									allDay: false,
+									className: 'fc-danger'
+								},
+								{
+									title: 'Lunch',
+									start: new Date(y, m, d, 12, 0),
+									end: new Date(y, m, d, 14, 0),
+									allDay: false,
+									className: 'fc-primary',
+									description: 'Eat Bro'
+								},
+								{
+									title: 'Meeting',
+									start: new Date(y, m, d + 3, 13, 30),
+									allDay: false,
+									className: 'fc-primary-solid',
+									description: 'Meeting'
+								},
+								{
+									title: 'Birthday Party',
+									start: new Date(y, m, d + 1, 19, 0),
+									end: new Date(y, m, d + 1, 22, 30),
+									allDay: false,
+									className: 'fc-success',
+									description: 'Coba Googling dulu'
+								},
+								{
+									title: 'Lunch',
+									start: new Date(y, m, d + 6, 13, 30),
+									allDay: false,
+									className: 'fc-success-solid',
+									description: 'Lunch'
+								},
+								{
+									title: 'Click for Google',
+									start: new Date(y, m, 28),
+									end: new Date(y, m, 29),
+									allDay: false,
+									url: 'http://google.com/',
+									className: 'fc-info-solid',
+								}
+								],
+					
+					
+							});
+					
+						</script>
+                
+											
 					</div>
 				</div>
 			</div>
@@ -404,7 +538,7 @@
 <div>
 
 <!--   Core JS Files   -->
-<script src="assets/js/core/jquery.3.2.1.min.js"></script>
+<!-- <script src="assets/js/core/jquery.3.2.1.min.js"></script> -->
 <script src="assets/js/core/popper.min.js"></script>
 <script src="assets/js/core/bootstrap.min.js"></script>
 
