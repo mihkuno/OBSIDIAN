@@ -12,6 +12,53 @@ $( function() {
 	});
 });
 
+// CLASS CHANGE EVENT LISTENER
+// new ClassWatcher(targetNode, 'trigger', workOnClassAdd, workOnClassRemoval);
+class ClassWatcher {
+
+    constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
+        this.targetNode = targetNode
+        this.classToWatch = classToWatch
+        this.classAddedCallback = classAddedCallback
+        this.classRemovedCallback = classRemovedCallback
+        this.observer = null
+        this.lastClassState = targetNode.classList.contains(this.classToWatch)
+
+        this.init()
+    }
+
+    init() {
+        this.observer = new MutationObserver(this.mutationCallback)
+        this.observe()
+    }
+
+    observe() {
+        this.observer.observe(this.targetNode, { attributes: true })
+    }
+
+    disconnect() {
+        this.observer.disconnect()
+    }
+
+    mutationCallback = mutationsList => {
+        for(let mutation of mutationsList) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                let currentClassState = mutation.target.classList.contains(this.classToWatch)
+                if(this.lastClassState !== currentClassState) {
+                    this.lastClassState = currentClassState
+                    if(currentClassState) {
+                        this.classAddedCallback()
+                    }
+                    else {
+                        this.classRemovedCallback()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// BUTTON COMPONENT
 class Button {
 	constructor(tableID, rowCount, itemCount, state, contextClass) {
 		this.tableID = tableID;
@@ -73,27 +120,26 @@ class Button {
 	}
 }
 
-
-// static to count the number of tables created
-var tableCount = 0;
 // TABLE COMPONENT
+var tableCount = 0; // static to count the number of tables created
 class Table {
 	constructor(headerTitle) {
 		// increment the static variable
 		tableCount++; console.log('tables created:', tableCount);
 		this.rowCount = 0; // set number of rows
 
-		
 		this.tableID = tableCount; // add counter as ID
 		this.headerTitle = headerTitle; // set table header
-		this.tableCardParent = document.querySelector("div.page-category"); // get the target container as the root
 		
-		this.tableElement = document.createElement('div') // create the table's card parent
-		this.tableCardClass = `table-${this.tableID}-card`; // add class to the parent
-		this.tableElement.setAttribute('class', `${this.tableCardClass} card `);
-		
-		// append created table body to target container
-		this.tableCardParent.appendChild(this.tableElement);
+		// CREATE TABLE CARD PARENT
+		this.tableCardID = `table-${this.tableID}-card`; // add ID to the parent
+		this.tableCard = document.createElement('div') 
+		this.tableCard.setAttribute('class', `table-card card `);
+		this.tableCard.setAttribute('id', `${this.tableCardID}`);
+		// append card parent to root container
+		this.tableCardRoot = document.querySelector("div.page-category");
+		this.tableCardRoot.appendChild(this.tableCard);
+
 		// table content
 		this.content = `
 		<!-- TABLE CARD -->
@@ -101,7 +147,7 @@ class Table {
 			<div class="card-header">
 				<div class="d-flex align-items-center">
 					<!-- TABLE SORT HANDLER -->
-					<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-secondary sorttable-handle">
+					<button type="button" data-toggle="tooltip" class="btn btn-link btn-secondary table-handle" id="table-${this.tableID}-handle">
 						<i class="fas fa-grip-horizontal"></i>
 					</button>
 					<!-- HEADER TITLE -->
@@ -147,32 +193,38 @@ class Table {
 			</div>
 		</div>`;
 		// insert string contents to created container  
-		this.tableElement.insertAdjacentHTML('beforeend', this.content);
+		this.tableCard.insertAdjacentHTML('beforeend', this.content);
 
 		// select the created table body container after appending to target container
-		this.tBodyContainer = document.querySelector(`tbody#table-${this.tableID}`);
+		this.tableRow = document.querySelector(`tbody#table-${this.tableID}`);
 
 		// make sortable the rows
-		let rowSortable = new Sortable(this.tBodyContainer, { // SORTABLE JS LIBRARY 
+		this.rowSortable = new Sortable(this.tableRow, { // SORTABLE JS LIBRARY 
 			selectedClass: 'row-selected', // color of multidrag
-			handle: '.sortrow-handle', //  a component to drag on
+			handle: '.row-handle', //  a component to drag on
 			forceFallback: false, // hides ghost, different mouse cursor
 			group: 'shared-row', // make rows movable to different tables
 			multiDrag: true, // enable selection of multiple rows
 			animation: 200, // animation speed
 		});
 
-		
-		// make sortable the card parent of the table
-		let cardSortable = new Sortable(this.tableCardParent, { // SORTABLE JS LIBRARY 
+		// make sortable the tablecard parent
+		this.cardSortable = new Sortable(this.tableCardRoot, { // SORTABLE JS LIBRARY 
 			selectedClass: 'table-selected',
-			handle: '.sorttable-handle', //  a component to drag on
+			handle: '.table-handle', //  a component to drag on
 			forceFallback: false,
 			multiDrag: true,
 			swapThreshold: 0.95,
    			invertSwap: true,
 			animation: 400,
 		});
+
+		// locks row handle when select-sorting table handle  
+		const classWatcher = new ClassWatcher(
+			this.tableCard, 
+			'table-selected', 
+			() => document.querySelectorAll('button.row-listener').forEach(handle => handle.classList.remove('row-handle')), 
+			() => document.querySelectorAll('button.row-listener').forEach(handle => handle.classList.add('row-handle')));
 
 
 		// addrow click listener
@@ -327,7 +379,7 @@ class Table {
 					<button id='${rowEditID}' type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
 						<i class="fas fa-times text-danger"></i>
 					</button>
-					<button type="button" class="btn btn-link btn-secondary sortrow-handle">
+					<button type="button" class="btn btn-link btn-secondary row-handle row-listener">
 						<i class="fas fa-ellipsis-h"></i>
 					</button>
 				</div>
@@ -335,12 +387,11 @@ class Table {
 		</tr>`;
 
 		// insert the row to table body
-		this.tBodyContainer.insertAdjacentHTML('beforeend', rowContent);
+		this.tableRow.insertAdjacentHTML('beforeend', rowContent);
 
-		// row edit listener
-		const editRowButton = document.querySelector(`button#${rowEditID}`); 
-		editRowButton.addEventListener('click', () => {
-			// console.log(editRowButton);
+		// delete row button listener
+		const deleteRowButton = document.querySelector(`button#${rowEditID}`); 
+		deleteRowButton.addEventListener('click', () => {
 			// MODAL CONFIRMATION
 			swal({
 				title: 'Are you sure?',
@@ -402,8 +453,6 @@ class Table {
 				}
 			});
 		});
-		
-	
 
 		// loop through each dropdown item
 		for (let i = 1; i < itemCount; i++) {
@@ -489,6 +538,12 @@ createTableButton.addEventListener('click', () => {
 
 });
 
-// disable row drag if table is clicked
-const isRowSelected = document.querySelector('button.row-selected');
-console.log(isRowSelected); 
+
+
+
+
+
+
+
+
+		// if table is deselected, then add rowhandler function
