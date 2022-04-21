@@ -1,17 +1,3 @@
-// BOOTSTRAP SLIDER JQUERY
-$( function() {
-	$( "#slider" ).slider({
-		range: "min",
-		max: 100,
-		value: 40,
-	});
-	$( "#slider-range" ).slider({
-		range: true,
-		min: 0,
-		max: 100,
-	});
-});
-
 // CLASS CHANGE EVENT LISTENER
 // new ClassWatcher(targetNode, 'trigger', workOnClassAdd, workOnClassRemoval);
 class ClassWatcher {
@@ -58,8 +44,8 @@ class ClassWatcher {
     }
 }
 
-// BUTTON COMPONENT
-class Button {
+// STATUS COMPONENT
+class StatusButton {
 	constructor(tableID, rowCount, itemCount, state, contextClass) {
 		this.tableID = tableID;
 		this.rowCount = rowCount;
@@ -175,7 +161,6 @@ class Table {
 								<th>Label</th>
 								<th>Status</th>
 								<th>Timeline</th>
-								<th>Progress</th>
 								<th>Owner</th>
 								<th>Last Updated</th>
 								<th style="width: 10%; text-align:center" colspan=2>Action</th>
@@ -225,7 +210,6 @@ class Table {
 			'table-selected', 
 			() => document.querySelectorAll('button.row-listener').forEach(handle => handle.classList.remove('row-handle')), 
 			() => document.querySelectorAll('button.row-listener').forEach(handle => handle.classList.add('row-handle')));
-
 
 		// addrow click listener
 		const addRowButton = document.querySelector(`button#table-${this.tableID}-addrow`);
@@ -344,11 +328,11 @@ class Table {
 		var itemCount = 0; // set number of dropdown item 
 		// returns a html content NOT an object
 		// the first three parameters creates a unique ID 
-		let statusBtn = new Button(this.tableID,this.rowCount, itemCount++, status,'drop').select();
-		let soonBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Soon','item').select();
-		let stuckBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Stuck','item').select();
-		let developBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Develop','item').select();
-		let completeBtn = new Button(this.tableID,this.rowCount, itemCount++, 'Complete','item').select();
+		let statusBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, status,'drop').select();
+		let soonBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, 'Soon','item').select();
+		let stuckBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, 'Stuck','item').select();
+		let developBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, 'Develop','item').select();
+		let completeBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, 'Complete','item').select();
 
 		const tableRowID = `table${this.tableID}-row-${this.rowCount}`;
 		const rowLabelID = `table-${this.tableID}-row-${this.rowCount}-label`;
@@ -379,11 +363,28 @@ class Table {
 			</td>
 			<!-- TIMELINE -->
 			<td>
-				<button class="btn btn-secondary btn-border btn-round">Apr 1 - 13</button>
-			</td>
-			<!-- PROGRESS -->
-			<td>
-				<div id="slider" class="slider-primary"></div>
+				<!-- Button trigger modal -->
+				<button type="button" class="btn btn-primary btn-border btn-round" data-toggle="modal" data-target="#table-${this.tableID}-row${this.rowCount}-timeline">
+					Launch demo modal
+				</button>
+
+				<!-- Modal -->
+				<div class="modal fade" id="table-${this.tableID}-row${this.rowCount}-timeline" tabindex="-1" role="dialog" aria-labelledby="table-${this.tableID}-row${this.rowCount}-timelineLabel" aria-hidden="true">
+					<div class="modal-dialog" style="min-width: 60% !important; margin: auto;" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class='calendar'></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+			
 			</td>
 			<!-- OWNER -->
 			<td>
@@ -523,11 +524,8 @@ class Table {
 
 let mytable = new Table('FEATURES');
 mytable.addRow('sdfasdfsadf', 'Complete');
-mytable.addRow('safdsafdsdf', 'Stuck');
 
-let herTable = new Table('Something');
-herTable.addRow('asdfsadfsaf', 'Soon');
-herTable.addRow('asdfsdfsadfd', 'Develop');
+
 
 const createTableID = 'table-create';
 const createTableButton = document.querySelector(`button#${createTableID}`);

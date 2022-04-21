@@ -365,142 +365,11 @@
 						<!-- Inner page content goes here -->
 						
                         <!-- CALENDAR APPENDED HERE -->	
-						<div class="card p-5">
-							<div class="card-body">
-								<div id="calendar"></div>
-							</div>
+						<div class="card">
+							<div class="card-body calendar"></div>
 						</div>
-						
-						<script>
-							/* initialize the calendar
-							-----------------------------------------------------------------*/
-					
-							var date = new Date();
-							var d = date.getDate();
-							var m = date.getMonth();
-							var y = date.getFullYear();
-							var className = Array('fc-primary', 'fc-danger', 'fc-black', 'fc-success', 'fc-info', 'fc-warning', 'fc-danger-solid', 'fc-warning-solid', 'fc-success-solid', 'fc-black-solid', 'fc-success-solid', 'fc-primary-solid');
-					
-							$calendar = $('#calendar');
-							$calendar.fullCalendar({
-								header: {
-									left: 'prev,next today',
-									center: 'title',
-									right: 'month,agendaDay,listWeek'
-								},
-								selectable : true,
-								selectHelper: true,
-								select: function(start, end) {
-					
-									// on select we show the Sweet Alert modal with an input
-									swal({
-										title: 'Create an Event',
-										html: '',
-										content: {
-											element: "input",
-											attributes: {
-												placeholder: "Event Title",
-												type: "text",
-												id: "input-field",
-												className: "form-control"
-											},
-										},
-										buttons: {
-											cancel: true,
-											confirm: true,
-										},
-									}).then(
-									function() {
-										var eventData;
-										var classRandom = className[Math.floor(Math.random()*className.length)];
-										event_title = $('#input-field').val();
-					
-										if (event_title) {
-											eventData = {
-												title: event_title,
-												start: start,
-												className: classRandom,
-												end: end
-											};
-											$calendar.fullCalendar('renderEvent', eventData, true); // stick? = true
-										}
-					
-										$calendar.fullCalendar('unselect');
-									}
-									);
-								},
-								events: [
-								{
-									title: 'All Day Event',
-									start: new Date(y, m, 1),
-									className: 'fc-black'
-								},
-								{
-									id: 999,
-									title: 'Repeating Event',
-									start: new Date(y, m, d - 3, 16, 0),
-									allDay: false,
-									className: 'fc-warning'
-								},
-								{
-									id: 999,
-									title: 'Repeating Event',
-									start: new Date(y, m, d + 4, 16, 0),
-									allDay: false,
-									className: 'fc-info'
-								},
-								{
-									title: 'Meeting',
-									start: new Date(y, m, d, 10, 30),
-									allDay: false,
-									className: 'fc-danger'
-								},
-								{
-									title: 'Lunch',
-									start: new Date(y, m, d, 12, 0),
-									end: new Date(y, m, d, 14, 0),
-									allDay: false,
-									className: 'fc-primary',
-									description: 'Eat Bro'
-								},
-								{
-									title: 'Meeting',
-									start: new Date(y, m, d + 3, 13, 30),
-									allDay: false,
-									className: 'fc-primary-solid',
-									description: 'Meeting'
-								},
-								{
-									title: 'Birthday Party',
-									start: new Date(y, m, d + 1, 19, 0),
-									end: new Date(y, m, d + 1, 22, 30),
-									allDay: false,
-									className: 'fc-success',
-									description: 'Coba Googling dulu'
-								},
-								{
-									title: 'Lunch',
-									start: new Date(y, m, d + 6, 13, 30),
-									allDay: false,
-									className: 'fc-success-solid',
-									description: 'Lunch'
-								},
-								{
-									title: 'Click for Google',
-									start: new Date(y, m, 28),
-									end: new Date(y, m, 29),
-									allDay: false,
-									url: 'http://google.com/',
-									className: 'fc-info-solid',
-								}
-								],
-					
-					
-							});
-					
-						</script>
-                
-											
+						<!-- CALENDAR END HERE -->	
+
 					</div>
 				</div>
 			</div>
@@ -536,45 +405,36 @@
 
 <!-- JAVASCRIPT DEPENDENCIES-->
 <div>
+	<!--   Core JS Files   -->
+	<!-- <script src="assets/js/core/jquery.3.2.1.min.js"></script> -->
+	<script src="assets/js/core/popper.min.js"></script>
+	<script src="assets/js/core/bootstrap.min.js"></script>
 
-<!--   Core JS Files   -->
-<!-- <script src="assets/js/core/jquery.3.2.1.min.js"></script> -->
-<script src="assets/js/core/popper.min.js"></script>
-<script src="assets/js/core/bootstrap.min.js"></script>
+	<!-- jQuery UI -->
+	<script src="assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+	<script src="assets/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
 
-<!-- jQuery UI -->
-<script src="assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
-<script src="assets/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
+	<!-- jQuery Scrollbar -->
+	<script src="assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 
-<!-- jQuery Scrollbar -->
-<script src="assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+	<!-- Chart JS -->
+	<script src="assets/js/plugin/chart.js/chart.min.js"></script>
 
-<!-- Chart JS -->
-<script src="assets/js/plugin/chart.js/chart.min.js"></script>
+	<!-- jQuery Sparkline -->
+	<script src="assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>>
 
-<!-- jQuery Sparkline -->
-<script src="assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+	<!-- Datatables -->
+	<script src="assets/js/plugin/datatables/datatables.min.js"></script>
 
-<!-- Chart Circle -->
-<script src="assets/js/plugin/chart-circle/circles.min.js"></script>
+	<!-- Bootstrap Notify -->
+	<script src="assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
 
-<!-- Datatables -->
-<script src="assets/js/plugin/datatables/datatables.min.js"></script>
+	<!-- Sweet Alert -->
+	<script src="assets/js/plugin/sweetalert/sweetalert.min.js"></script>
 
-<!-- Bootstrap Notify -->
-<script src="assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<!-- Atlantis JS -->
+	<script src="assets/js/atlantis.min.js"></script>
 
-<!-- jQuery Vector Maps -->
-<script src="assets/js/plugin/jqvmap/jquery.vmap.min.js"></script>
-<script src="assets/js/plugin/jqvmap/maps/jquery.vmap.world.js"></script>
-
-<!-- Sweet Alert -->
-<script src="assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-
-<!-- Atlantis JS -->
-<script src="assets/js/atlantis.min.js"></script>
-
-<!-- CUSTOM SCRIPTS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.10.2/Sortable.min.js"></script>
-<script src="script.js"></script>
+	<!-- CUSTOM SCRIPTS -->>
+	<script src="calendar.js"></script>
 </div>
