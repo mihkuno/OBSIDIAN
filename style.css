@@ -11,6 +11,11 @@
   transform: none !important;
 }
 
+/* highlight table and row label when editing */
+input.row-label:focus, input.table-label:focus {
+  color: #7d5fff !important;
+}
+
 /* sortablejs table and row selected*/
 .table-selected { border: 2px dashed #f7f1e3; }
 .row-selected { background-color: #f7f1e3 !important;}

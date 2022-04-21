@@ -151,7 +151,7 @@ class Table {
 						<i class="fas fa-grip-horizontal"></i>
 					</button>
 					<!-- HEADER TITLE -->
-					<input type="text" class="form-control input-border-bottom ml-2" style='border: 0; font-size: 17px;' placeholder="table-${this.tableID}" value="${this.headerTitle}"> 
+					<input type="text" class="form-control input-border-bottom ml-2 table-label" style='border: 0; font-size: 17px;' placeholder="table-${this.tableID}" value="${this.headerTitle}"> 
 					<!-- REMOVE ROW BUTTON -->
 					<button class="btn btn-danger btn-round ml-auto mr-2" id='table-${this.tableID}-removetable'>
 						<i class="fa fa-trash-alt"></i>
@@ -359,7 +359,7 @@ class Table {
 			<!-- LABEL -->
 			<td>
 			<div class="form-group">
-				<input type="text" class="form-control input-border-bottom" id="${rowLabelID}" style='border: 0; color: #828282;' placeholder="row-${this.rowCount}" value="${label}">
+				<input type="text" class="form-control input-border-bottom row-label" id="${rowLabelID}" style='border: 0; color: #828282;' placeholder="row-${this.rowCount}" value="${label}">
 			</div>
 			</td>
 			<!-- STATUS -->
