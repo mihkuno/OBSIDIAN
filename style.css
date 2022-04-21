@@ -6,7 +6,7 @@
 }
 
 /* make dropdown horizontal*/
-.dropdown-menu.show {
+.dropdown-status.dropdown-menu.show {
   display: flex !important;
   transform: none !important;
 }

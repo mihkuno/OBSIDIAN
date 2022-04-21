@@ -369,7 +369,7 @@ class Table {
 					${statusBtn}
 
 					<!-- DROPDOWN BUTTONS-->
-					<div class="dropdown-menu bg-dark p-2">
+					<div class="dropdown-status dropdown-menu bg-dark p-2">
 						${soonBtn}
 						${stuckBtn}
 						${developBtn}
