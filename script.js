@@ -219,7 +219,7 @@ class Table {
 			animation: 400,
 		});
 
-		// locks row handle when select-sorting table handle  
+		// locks row handle when select-sorting   
 		const classWatcher = new ClassWatcher(
 			this.tableCard, 
 			'table-selected', 
@@ -272,40 +272,69 @@ class Table {
 		const removeTableButton = document.querySelector(`button#table-${this.tableID}-removetable`);
 		removeTableButton.addEventListener('click', () => {
 			console.log(`-- removed deleted table --`);
-			
-			// notification
-			$.notify({
-				// options
-				icon: 'fa fa-trash-alt',
-				title: 'Deleted Table',
-				message: ''
-			},{
-				// settings
-				element: 'body',
-				type: "default",
-				allow_dismiss: true,
-				newest_on_top: false,
-				showProgressbar: false,
-				placement: {
-					from: "top",
-					align: "right"
-				},
-				offset: 20,
-				spacing: 10,
-				z_index: 1031,
-				delay: 700,
-				timer: 850,
-				animate: {
-					enter: 'animated fadeInDown',
-					exit: 'animated fadeOutUp'
-				},
-				icon_type: 'class',
-				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-					'<span data-notify="icon"></span> ' +
-					'<span data-notify="title">{1}</span> ' +
-				'</div>' 
-			});
 
+
+
+			// MODAL CONFIRMATION
+			swal({
+				title: 'Are you sure?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						className: 'btn btn-danger'
+					},
+					confirm: {
+						text : 'Yes, delete it!',
+						className : 'btn btn-success',
+					}
+				}
+			}).then((Delete) => {
+				if (Delete) {
+					this.tableCard.remove(); // deletes the row based on ID
+					// notification
+					$.notify({
+						// options
+						icon: 'fa fa-trash-alt',
+						title: 'Deleted Table',
+						message: ''
+					},{
+						// settings
+						element: 'body',
+						type: "default",
+						allow_dismiss: true,
+						newest_on_top: false,
+						showProgressbar: false,
+						placement: {
+							from: "top",
+							align: "right"
+						},
+						offset: 20,
+						spacing: 10,
+						z_index: 1031,
+						delay: 700,
+						timer: 850,
+						animate: {
+							enter: 'animated fadeInDown',
+							exit: 'animated fadeOutUp'
+						},
+						icon_type: 'class',
+						template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+							'<span data-notify="icon"></span> ' +
+							'<span data-notify="title">{1}</span> ' +
+						'</div>' 
+					});
+					swal({
+						title: 'Removed!',
+						text: '',
+						icon: 'success',
+						timer: 650
+					});
+				} else {
+					swal.close();
+				}
+			});
 		});
 	}
 
@@ -454,6 +483,7 @@ class Table {
 			});
 		});
 
+		// status change listener
 		// loop through each dropdown item
 		for (let i = 1; i < itemCount; i++) {
 			const dropItem = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${i}`);
