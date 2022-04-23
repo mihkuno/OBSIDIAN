@@ -153,7 +153,7 @@ class Table {
 			<div class="card-body">
 
 				<!-- TABLE CONTENT -->
-				<div class="table-responsive">
+				<div class="table-responsive" style="overflow: visible">
 					<table id="add-row" class="display table" >
 						<!-- TABLE HEADER -->
 						<thead>
@@ -364,27 +364,19 @@ class Table {
 			<!-- TIMELINE -->
 			<td>
 				<!-- Button trigger modal -->
-				<button type="button" class="btn btn-primary btn-border btn-round" data-toggle="modal" data-target="#table-${this.tableID}-row${this.rowCount}-timeline">
-					Launch demo modal
+				<div class="btn-group">
+				<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Action
 				</button>
-
-				<!-- Modal -->
-				<div class="modal fade" id="table-${this.tableID}-row${this.rowCount}-timeline" tabindex="-1" role="dialog" aria-labelledby="table-${this.tableID}-row${this.rowCount}-timelineLabel" aria-hidden="true">
-					<div class="modal-dialog" style="min-width: 60% !important; margin: auto;" role="document">
-						<div class="modal-content">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">
-								<div class='calendar'></div>
-							</div>
-						</div>
-					</div>
+				<div class="dropdown-menu mao">
+					<a class="dropdown-item" href="#">Action</a>
+					<a class="dropdown-item" href="#">Another action</a>
+					<a class="dropdown-item" href="#">Something else here</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="#">Separated link</a>
 				</div>
-			
-			
+			</div>
+
 			</td>
 			<!-- OWNER -->
 			<td>
@@ -568,3 +560,6 @@ createTableButton.addEventListener('click', () => {
 
 });
 
+$(document).on('click', 'div.dropdown-menu', function (e) {
+	e.stopPropagation();
+});
