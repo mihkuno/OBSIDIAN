@@ -363,19 +363,15 @@ class Table {
 			</td>
 			<!-- TIMELINE -->
 			<td>
-				<!-- Button trigger modal -->
-				<div class="btn-group">
-				<button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Action
-				</button>
-				<div class="dropdown-menu mao">
-					<a class="dropdown-item" href="#">Action</a>
-					<a class="dropdown-item" href="#">Another action</a>
-					<a class="dropdown-item" href="#">Something else here</a>
-					<div class="dropdown-divider"></div>
-					<a class="dropdown-item" href="#">Separated link</a>
+				<div>
+					<div id="datepicker" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:140px"> &nbsp;
+						<i class="fa fa-calendar">
+							<span id="date"></span>
+							<i class="fa fa-caret-down"></i>
+						</i>
+					</div>
 				</div>
-			</div>
+
 
 			</td>
 			<!-- OWNER -->
@@ -514,14 +510,13 @@ class Table {
 	}
 }
 
+// create a table template
 let mytable = new Table('FEATURES');
 mytable.addRow('sdfasdfsadf', 'Complete');
 
-
-
+// create table button functionality
 const createTableID = 'table-create';
 const createTableButton = document.querySelector(`button#${createTableID}`);
-
 createTableButton.addEventListener('click', () => {
 	const table = new Table('');
 	
@@ -560,6 +555,14 @@ createTableButton.addEventListener('click', () => {
 
 });
 
-$(document).on('click', 'div.dropdown-menu', function (e) {
-	e.stopPropagation();
+// prevent all dropdowns from closing when clicking inside
+// $(document).on('click', 'div.dropdown-menu', function (e) { e.stopPropagation(); });
+
+// timeline date-range-picker functionality
+$('#datepicker').daterangepicker({
+	autoApply: false,
+}, function(start, end) {
+	$('#date').html(start.format('MMM DD')+' - '+end.format('MMM DD'));
+	var start_date = start.toISOString();
+	var end_date = end.toISOString();
 });

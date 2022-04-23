@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<!-- internet explorer compatibility -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>Obsidian - ICI System</title>
-	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-	<link rel="icon" href="assets/img/icon.ico" type="image/x-icon"/>
 
-	<!-- Fonts and icons -->
+	<!-- ICON -->
+	<link rel="icon" href="assets/img/icon.ico" type="image/x-icon"/> 
+
+	<title>Obsidian - ICI System</title>
+	<meta name="author" content="Joeninyo Cainday">
+	<meta name="description" content="An Iligan Computer Institute Project Management System">
+	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
+
+	<!-- LOCAL: Fonts and icons -->
 	<script src="assets/js/plugin/webfont/webfont.min.js"></script>
 	<script>
 		WebFont.load({
@@ -18,19 +24,14 @@
 		});
 	</script>
 
-	<!-- CSS Files -->
+	<!-- LOCAL: CSS Files -->
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/atlantis.min.css">
 
-	<!-- CALENDAR LIBRARY -->
-	<link rel='stylesheet' href='https://fullcalendar.io/js/fullcalendar-3.1.0/fullcalendar.min.css' />
-	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/moment.min.js'></script>
-	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery.min.js'></script>
-	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery-ui.min.js'></script>
-	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/fullcalendar.min.js'></script>
-
 	<!-- CUSTOM STYLES -->
-	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="assets/css/plugin/daterangepicker.css">
+	<link rel="stylesheet" href="assets/css/style.css">
+  
 
 </head>
 <body data-background-color="dark">
@@ -369,6 +370,9 @@
 						</li>
 					</ul>
 					<!-- END HEADER -->
+
+
+
 					<div class="page-category" id="index-content">
 						<!-- Inner page content  goes here -->
 						
@@ -376,6 +380,7 @@
 					</div>
 				</div>
 			</div>
+			
 			<!-- <footer class="footer">
 				<div class="container-fluid">
 					<nav class="pull-left">
@@ -408,45 +413,54 @@
 
 <!-- JAVASCRIPT DEPENDENCIES-->
 <div>
-	<!--   Core JS Files   -->
-	<!-- <script src="assets/js/core/jquery.3.2.1.min.js"></script> -->
-	<script src="assets/js/core/popper.min.js"></script>
-	<script src="assets/js/core/bootstrap.min.js"></script>
+	<!-- JQUERY -->
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
-	<!-- jQuery UI -->
-	<script src="assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
-	<script src="assets/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
+	<!-- WEB: Popper JS Tooltips -->
+	<script src="assets/js/core/popper.min.js"></script> <!-- stable unknown ver -->
 
-	<!-- jQuery Scrollbar -->
+	<!-- LOCAL: Date Range Picker -->
+	<script type="text/javascript" src="assets/js/plugin/daterangepicker/moment.js"></script>      
+	<script type="text/javascript" src="assets/js/plugin/daterangepicker/daterangepicker.js"></script>     
+
+	<!-- LOCAL: jQuery UI -->
+	<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery-ui.min.js'></script>
+
+	<!-- WEB: BOOTSTRAP v4.3.1 Core JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	
+	<!-- LOCAL: jQuery Scrollbar -->
 	<script src="assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 
-	<!-- Chart JS -->
+	<!-- LOCAL: Chart JS -->
 	<script src="assets/js/plugin/chart.js/chart.min.js"></script>
 
-	<!-- jQuery Sparkline -->
+	<!-- LOCAL: jQuery Sparkline -->
 	<script src="assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
 
-	<!-- Chart Circle -->
+	<!-- LOCAL: Chart Circle -->
 	<script src="assets/js/plugin/chart-circle/circles.min.js"></script>
 
-	<!-- Datatables -->
+	<!-- LOCAL: Datatables -->
 	<script src="assets/js/plugin/datatables/datatables.min.js"></script>
 
-	<!-- Bootstrap Notify -->
+	<!-- LOCAL: Bootstrap Notify -->
 	<script src="assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
 
-	<!-- jQuery Vector Maps -->
+	<!-- LOCAL: jQuery Vector Maps -->
 	<script src="assets/js/plugin/jqvmap/jquery.vmap.min.js"></script>
 	<script src="assets/js/plugin/jqvmap/maps/jquery.vmap.world.js"></script>
 
-	<!-- Sweet Alert -->
+	<!-- LOCAL: Sweet Alert -->
 	<script src="assets/js/plugin/sweetalert/sweetalert.min.js"></script>
 
-	<!-- Atlantis JS -->
+	<!-- LOCAL: Atlantis JS -->
 	<script src="assets/js/atlantis.min.js"></script>
 
-	<!-- CUSTOM SCRIPTS -->
+	<!-- WEB: Sortable JS -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.10.2/Sortable.min.js"></script>
-	<script src="index.js"></script>
-	<script src="calendar.js"></script>
+
+	<!-- LOCAL: CUSTOM SCRIPTS -->
+	<script src="assets/js/index.js"></script>
+	<!-- <script src="assets/js/calendar.js"></script> -->
 </div>

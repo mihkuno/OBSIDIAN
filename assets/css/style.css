@@ -20,8 +20,10 @@ input.row-label:focus, input.table-label:focus {
 .table-selected { border: 2px dashed #f7f1e3; }
 .row-selected { background-color: #f7f1e3 !important;}
 
-.calendar { padding: 40px; }
+/* fullcalendar padding and label colors */
+/* .calendar { padding: 40px; } */
 .calendar-timeline-1 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #0fb9b1;}
 .calendar-timeline-2 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #4b7bec;}
 .calendar-timeline-3 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #7d5fff;}
 .calendar-timeline-4 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #10ac84;}
+
