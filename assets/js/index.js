@@ -338,6 +338,10 @@ class Table {
 		const rowLabelID = `table-${this.tableID}-row-${this.rowCount}-label`;
 		const rowEditID  = `table-${this.tableID}-row-${this.rowCount}-edit`;
 
+
+		const datePickerID = `table-${this.tableID}-row-${this.rowCount}-datepicker`;
+		const datePickedID = `table-${this.tableID}-row-${this.rowCount}-datepicked`;
+
 		const rowContent = `
 		<tr draggable="true" id="${tableRowID}">
 			<!-- LABEL -->
@@ -364,15 +368,13 @@ class Table {
 			<!-- TIMELINE -->
 			<td>
 				<div>
-					<div id="datepicker" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:140px"> &nbsp;
+					<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:140px"> &nbsp;
 						<i class="fa fa-calendar">
-							<span id="date"></span>
+							<span id="${datePickedID}"></span>
 							<i class="fa fa-caret-down"></i>
 						</i>
 					</div>
 				</div>
-
-
 			</td>
 			<!-- OWNER -->
 			<td>
@@ -507,6 +509,15 @@ class Table {
 				// document.querySelectorAll("div.show").forEach(e => e.classList.remove("show")); bootstrap does it automatically
 			});
 		}
+
+		// timeline date-range-picker functionality
+		$(`#${datePickerID}`).daterangepicker({
+			autoApply: false,
+		}, function(start, end) {
+			$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
+			var start_date = start.toISOString();
+			var end_date = end.toISOString();
+		});
 	}
 }
 
@@ -557,12 +568,3 @@ createTableButton.addEventListener('click', () => {
 
 // prevent all dropdowns from closing when clicking inside
 // $(document).on('click', 'div.dropdown-menu', function (e) { e.stopPropagation(); });
-
-// timeline date-range-picker functionality
-$('#datepicker').daterangepicker({
-	autoApply: false,
-}, function(start, end) {
-	$('#date').html(start.format('MMM DD')+' - '+end.format('MMM DD'));
-	var start_date = start.toISOString();
-	var end_date = end.toISOString();
-});
