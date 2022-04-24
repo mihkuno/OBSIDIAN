@@ -640,9 +640,10 @@ class Table {
 
 		// add daterange picker component to timeline 
 		$(`#${datePickerID}`).daterangepicker({
-			"autoApply": false,
-			"linkedCalendars": false,
-			"alwaysShowCalendars": true,
+			"autoApply": true,
+			"autoUpdateInput": false,
+			"linkedCalendars": true,
+			"alwaysShowCalendars": false,
 			"opens": "center"
 		}, function(start, end, label) {
 			// only show end milestone if both (start & end) date is the same
