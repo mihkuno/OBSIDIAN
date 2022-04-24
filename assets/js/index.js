@@ -153,8 +153,8 @@ class Table {
 			<div class="card-body">
 
 				<!-- TABLE CONTENT -->
-				<div class="table-responsive" style="overflow: visible">
-					<table id="add-row" class="display table" >
+				<div class="table-responsive">
+					<table id="add-row" class="display table">
 						<!-- TABLE HEADER -->
 						<thead>
 							<tr>
@@ -377,6 +377,8 @@ class Table {
 		const datePickerID = `table-${this.tableID}-row-${this.rowCount}-datepicker`;
 		const datePickedID = `table-${this.tableID}-row-${this.rowCount}-datepicked`;
 
+		const ownerSelectID = `table-${this.tableID}-row-${this.rowCount}-owner`;
+
 		const rowContent = `
 		<tr draggable="true" id="${tableRowID}">
 			<!-- LABEL -->
@@ -414,9 +416,14 @@ class Table {
 			<!-- OWNER -->
 			<td>
 				<div class="avatar-group">
-					<div class="avatar"><span class="avatar-title rounded-circle border border-dark">CF</span></div>
-					<div class="avatar"><img src="assets/img/jm_denis.jpg" alt="..." class="avatar-img rounded-circle border border-dark"></div>
-					<select class="selectpicker w-auto avatar show-menu-arrow" name="selValue" data-dropup-auto="false" data-size="5" data-live-search="true" data-bs-auto-close="outside" multiple>
+					<div class="avatar">
+						<span class="avatar-title rounded-circle border border-dark">CF</span>
+					</div>
+					<div class="avatar">
+						<img src="assets/img/jm_denis.jpg" alt="..." class="avatar-img rounded-circle border border-dark">
+					</div>
+					
+					<select id="${ownerSelectID}" class="selectpicker w-auto avatar show-menu-arrow data-dropup-auto="false" data-size="5" data-live-search="true" data-bs-auto-close="outside" data-container=".card-body" multiple>
 						<option value="" style="display: none;" data-icon="fa fa-plus" disabled selected></option>
 						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
 						<option data-tokens="mustard">micahellareal@gmail.com</option>
@@ -723,6 +730,13 @@ class Table {
 			
 		});	
 
+		// add owner select button functionality
+		$(`select.selectpicker#${ownerSelectID}`).selectpicker({
+			style: "btn btn-secondary btn-border btn-round owner-select",
+		}, function() {
+			console.log();
+		});
+
 	}
 }
 
@@ -769,9 +783,4 @@ createTableButton.addEventListener('click', () => {
 		'</div>' 
 	});
 
-});
-
-// To style all selects
-$('select').selectpicker({
-	style: "btn btn-secondary btn-border btn-round owner-select",
 });
