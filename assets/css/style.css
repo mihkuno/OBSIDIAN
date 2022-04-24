@@ -27,9 +27,11 @@ input.row-label:focus, input.table-label:focus {
 .calendar-timeline-3 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #7d5fff;}
 .calendar-timeline-4 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #10ac84;}
 
+/* always front all select and dropdown */
+.dropdown-menu, .bootstrap-select { z-index: 9999; }
+
 /* adjust add owner button */
 .owner-select { margin-top: 2px; padding-left: 14px; padding-right: 14px; max-width: 45px;}
-.owner-select.dropdown-toggle::after { display: none; } /* hide add owner caret */
 
 /* adjust owner 'no result' font size */
 .no-results { font-size: 14px !important;}

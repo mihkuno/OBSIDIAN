@@ -423,7 +423,9 @@ class Table {
 						<img src="assets/img/jm_denis.jpg" alt="..." class="avatar-img rounded-circle border border-dark">
 					</div>
 					
-					<select id="${ownerSelectID}" class="selectpicker w-auto avatar show-menu-arrow data-dropup-auto="false" data-size="5" data-live-search="true" data-bs-auto-close="outside" data-container=".card-body" multiple>
+					<!-- data-container specifies its parent to prevent it from overflow on the table-responsive container -->
+					<select id="${ownerSelectID}" class="selectpicker w-auto avatar show-menu-arrow hidden-caret" data-dropup-auto="false" data-size="5" data-live-search="true" data-bs-auto-close="outside" data-container=".card-body" multiple>
+
 						<option value="" style="display: none;" data-icon="fa fa-plus" disabled selected></option>
 						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
 						<option data-tokens="mustard">micahellareal@gmail.com</option>
