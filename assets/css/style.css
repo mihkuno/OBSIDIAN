@@ -28,7 +28,8 @@ input.row-label:focus, input.table-label:focus {
 .calendar-timeline-4 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #10ac84;}
 
 /* always front all select and dropdown */
-.dropdown-menu, .bootstrap-select { z-index: 9999; }
+.bootstrap-select { z-index: 1; min-width: 250px;}
+.dropdown-status { z-index: 2;}
 
 /* adjust add owner button */
 .owner-select { margin-top: 2px; padding-left: 14px; padding-right: 14px; max-width: 45px;}
