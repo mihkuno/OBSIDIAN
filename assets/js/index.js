@@ -137,7 +137,7 @@ class Table {
 						<i class="fas fa-grip-horizontal"></i>
 					</button>
 					<!-- HEADER TITLE -->
-					<input type="text" class="form-control input-border-bottom ml-2 table-label" style='border: 0; font-size: 17px;' placeholder="table-${this.tableID}" value="${this.headerTitle}"> 
+					<input type="text" class="form-control input-border-bottom ml-2 table-label" style='border: 0; font-size: 17px;' placeholder="table-${this.tableID}" id='table-${this.tableID}-label' value="${this.headerTitle}"> 
 					<!-- REMOVE ROW BUTTON -->
 					<button class="btn btn-danger btn-round ml-auto mr-2" id='table-${this.tableID}-removetable'>
 						<i class="fa fa-trash-alt"></i>
@@ -210,6 +210,42 @@ class Table {
 			'table-selected', 
 			() => document.querySelectorAll('button.row-listener').forEach(handle => handle.classList.remove('row-handle')), 
 			() => document.querySelectorAll('button.row-listener').forEach(handle => handle.classList.add('row-handle')));
+
+		// add notification on table-label change
+		document.getElementById(`table-${this.tableID}-label`).addEventListener('change', () => {
+			// notification
+			$.notify({
+				// options
+				icon: 'fa fa-pencil-alt',
+				title: 'Renamed Table',
+				message: ''
+			},{
+				// settings
+				element: 'body',
+				type: "info",
+				allow_dismiss: true,
+				newest_on_top: false,
+				showProgressbar: false,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 700,
+				timer: 850,
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				icon_type: 'class',
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<span data-notify="icon"></span> ' +
+					'<span data-notify="title">{1}</span> ' +
+				'</div>' 
+			});
+		});
 
 		// addrow click listener
 		const addRowButton = document.querySelector(`button#table-${this.tableID}-addrow`);
@@ -383,12 +419,6 @@ class Table {
 						<img src="assets/img/jm_denis.jpg" alt="..." class="avatar-img rounded-circle border border-dark">
 					</div>
 					<div class="avatar">
-						<img src="assets/img/chadengle.jpg" alt="..." class="avatar-img rounded-circle border border-dark">
-					</div>
-					<div class="avatar">
-						<img src="assets/img/mlane.jpg" alt="..." class="avatar-img rounded-circle border border-dark">
-					</div>
-					<div class="avatar">
 						<span class="avatar-title rounded-circle border border-dark">CF</span>
 					</div>
 				</div>
@@ -476,6 +506,42 @@ class Table {
 			});
 		});
 
+		// add notification on row-label change
+		document.querySelector(`input#${rowLabelID}`).addEventListener('change', () => {
+			// notification
+			$.notify({
+				// options
+				icon: 'fa fa-pencil-alt',
+				title: 'Renamed Row Label',
+				message: ''
+			},{
+				// settings
+				element: 'body',
+				type: "info",
+				allow_dismiss: true,
+				newest_on_top: false,
+				showProgressbar: false,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 700,
+				timer: 850,
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				icon_type: 'class',
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<span data-notify="icon"></span> ' +
+					'<span data-notify="title">{1}</span> ' +
+				'</div>' 
+			});
+		});
+
 		// status change listener
 		// loop through each dropdown item
 		for (let i = 1; i < itemCount; i++) {
@@ -503,6 +569,41 @@ class Table {
 						cc = 'btn-secondary';
 						ii = 'icon-direction';
 				}
+
+				// notification
+				$.notify({
+					// options
+					icon: 'fa fa-tasks',
+					title: `Status Changed to ${state}`,
+					message: ''
+				},{
+					// settings
+					element: 'body',
+					type: cc.substring(4),
+					allow_dismiss: true,
+					newest_on_top: false,
+					showProgressbar: false,
+					placement: {
+						from: "top",
+						align: "right"
+					},
+					offset: 20,
+					spacing: 10,
+					z_index: 1031,
+					delay: 700,
+					timer: 850,
+					animate: {
+						enter: 'animated fadeInDown',
+						exit: 'animated fadeOutUp'
+					},
+					icon_type: 'class',
+					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+						'<span data-notify="icon"></span> ' +
+						'<span data-notify="title">{1}</span> ' +
+					'</div>' 
+				});
+
+
 				dropBtn.innerHTML = "";
 				dropBtn.setAttribute('class', `btn dropdown-toggle ${cc}`)
 				dropBtn.insertAdjacentHTML('beforeend',`<span class="btn-label"><i class="fa ${ii}"></i></span> ${state} `); // add space
@@ -514,9 +615,81 @@ class Table {
 		$(`#${datePickerID}`).daterangepicker({
 			autoApply: false,
 		}, function(start, end) {
-			$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
+			// only show end milestone if both (start & end) date is the same
+			if (start.format('MMM DD') == end.format('MMM DD')) {
+				$(`#${datePickedID}`).html(start.format('MMM DD'));
+				// notification
+				$.notify({
+					// options
+					icon: 'fa fa-calendar-check',
+					title: 'Marked Milestone',
+					message: ''
+				},{
+					// settings
+					element: 'body',
+					type: "info",
+					allow_dismiss: true,
+					newest_on_top: false,
+					showProgressbar: false,
+					placement: {
+						from: "top",
+						align: "right"
+					},
+					offset: 20,
+					spacing: 10,
+					z_index: 1031,
+					delay: 700,
+					timer: 850,
+					animate: {
+						enter: 'animated fadeInDown',
+						exit: 'animated fadeOutUp'
+					},
+					icon_type: 'class',
+					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+						'<span data-notify="icon"></span> ' +
+						'<span data-notify="title">{1}</span> ' +
+					'</div>' 
+				});
+			} else {
+				$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
+				// notification
+				$.notify({
+					// options
+					icon: 'fa fa-calendar-plus',
+					title: 'Timeline Updated',
+					message: ''
+				},{
+					// settings
+					element: 'body',
+					type: "info",
+					allow_dismiss: true,
+					newest_on_top: false,
+					showProgressbar: false,
+					placement: {
+						from: "top",
+						align: "right"
+					},
+					offset: 20,
+					spacing: 10,
+					z_index: 1031,
+					delay: 700,
+					timer: 850,
+					animate: {
+						enter: 'animated fadeInDown',
+						exit: 'animated fadeOutUp'
+					},
+					icon_type: 'class',
+					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+						'<span data-notify="icon"></span> ' +
+						'<span data-notify="title">{1}</span> ' +
+					'</div>' 
+				});
+			}
+			
 			var start_date = start.toISOString();
 			var end_date = end.toISOString();
+
+			
 		});
 	}
 }
