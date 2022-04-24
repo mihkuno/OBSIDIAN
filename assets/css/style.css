@@ -30,3 +30,11 @@ input.row-label:focus, input.table-label:focus {
 /* adjust add owner button */
 .owner-select { margin-top: 2px; padding-left: 14px; padding-right: 14px; max-width: 45px;}
 .owner-select.dropdown-toggle::after { display: none; } /* hide add owner caret */
+
+/* adjust owner 'no result' font size */
+.no-results { font-size: 14px !important;}
+/* adjust owner search padding */
+div.bs-searchbox > input { padding: 5px !important; }
+
+/*  disables ugly bootstrap focus highlight (on select owner button) */
+.bootstrap-select .dropdown-toggle:focus { outline: none !important; box-shadow: none !important; }

@@ -416,7 +416,7 @@ class Table {
 				<div class="avatar-group">
 					<div class="avatar"><span class="avatar-title rounded-circle border border-dark">CF</span></div>
 					<div class="avatar"><img src="assets/img/jm_denis.jpg" alt="..." class="avatar-img rounded-circle border border-dark"></div>
-					<select class="selectpicker w-auto avatar show-menu-arrow" name="selValue" data-dropup-auto="false" data-live-search="true" multiple>
+					<select class="selectpicker w-auto avatar show-menu-arrow" name="selValue" data-dropup-auto="false" data-size="5" data-live-search="true" data-bs-auto-close="outside" multiple>
 						<option value="" style="display: none;" data-icon="fa fa-plus" disabled selected></option>
 						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
 						<option data-tokens="mustard">micahellareal@gmail.com</option>
@@ -638,10 +638,13 @@ class Table {
 			});
 		}
 
-		// timeline date-range-picker functionality
+		// add daterange picker component to timeline 
 		$(`#${datePickerID}`).daterangepicker({
-			autoApply: false,
-		}, function(start, end) {
+			"autoApply": false,
+			"linkedCalendars": false,
+			"alwaysShowCalendars": true,
+			"opens": "center"
+		}, function(start, end, label) {
 			// only show end milestone if both (start & end) date is the same
 			if (start.format('MMM DD') == end.format('MMM DD')) {
 				$(`#${datePickedID}`).html(start.format('MMM DD'));
@@ -717,7 +720,8 @@ class Table {
 			var end_date = end.toISOString();
 
 			
-		});
+		});	
+
 	}
 }
 
@@ -765,9 +769,6 @@ createTableButton.addEventListener('click', () => {
 	});
 
 });
-
-// prevent all dropdowns from closing when clicking inside
-// $(document).on('click', 'div.dropdown-menu', function (e) { e.stopPropagation(); });
 
 // To style all selects
 $('select').selectpicker({
