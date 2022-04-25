@@ -61,8 +61,8 @@ class StatusButton {
 			itemCount++; 
 			// add the row ID attribute
 			this.attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
-			this.contextClass = 'dropdown-item';
-				
+			this.contextClass = 'dropdown-item';		
+
 		}
 		else if (contextClass=='drop') {
 			// given unique ID to dropdown button accociated to its row count
@@ -93,7 +93,7 @@ class StatusButton {
 	}
 	select () {
 		const btn = `
-		<button class="btn ${this.contextClass} ${this.colorClass}" style="color: white; width: 8.3rem;" ${this.attributes}>
+		<button class="btn ${this.contextClass} ${this.colorClass} " style="color: white;" ${this.attributes}>
 			<!-- SELECTED STATUS IS <${this.state.toUpperCase()}> -->
 			<!-- make button text white, set fixed width -->
 			<span class="btn-label">
@@ -153,7 +153,7 @@ class Table {
 			<div class="card-body">
 
 				<!-- TABLE CONTENT -->
-				<div class="table-responsive">
+				<div class="table-responsive" style="min-height: 100px">
 					<table id="add-row" class="display table">
 						<!-- TABLE HEADER -->
 						<thead>
@@ -389,73 +389,52 @@ class Table {
 			</td>
 			<!-- STATUS -->
 			<td>
-				<div class="btn-group bg-dark2">
+				<div class="btn-group">
 					<!-- OUTPUT STATUS BUTTON -->
 					${statusBtn}
-
+					
 					<!-- DROPDOWN BUTTONS-->
-					<div class="dropdown-status dropdown-menu bg-dark p-2">
-						${soonBtn}
-						${stuckBtn}
-						${developBtn}
-						${completeBtn}
+					<div class="dropdown-status dropdown-menu dropdown">
+						${soonBtn} ${stuckBtn} ${developBtn} ${completeBtn}
 					</div>
 				</div>
 			</td>
 			<!-- TIMELINE -->
 			<td>
-				<div>
-					<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:140px"> &nbsp;
-						<i class="fa fa-calendar">
-							<span id="${datePickedID}"></span>
-							<i class="fa fa-caret-down"></i>
-						</i>
-					</div>
+				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:140px"> &nbsp;
+					<i class="fa fa-calendar">
+						<span id="${datePickedID}"></span>
+						<i class="fa fa-caret-down"></i>
+					</i>
 				</div>
 			</td>
 			<!-- OWNER -->
 			<td>
 				<div class="avatar-group">
 					<div class="avatar">
-						<span class="avatar-title rounded-circle border border-dark">CF</span>
-					</div>
+						<span class="avatar-title rounded-circle border border-dark">CF</span></div>
 					<div class="avatar">
-						<img src="assets/img/jm_denis.jpg" alt="..." class="avatar-img rounded-circle border border-dark">
-					</div>
+						<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle border border-dark"></div>
 					
-					<!-- data-container specifies its parent to prevent it from overflow on the table-responsive container -->
-					<select id="${ownerSelectID}" class="selectpicker w-auto avatar show-menu-arrow hidden-caret" data-dropup-auto="false" data-size="5" data-live-search="true" data-bs-auto-close="outside" data-container=".card-body" multiple>
-
-						<option value="" style="display: none;" data-icon="fa fa-plus" disabled selected></option>
-						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option data-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option data-tokens="mustard">micahellareal@gmail.com</option>
-						<option data-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
+					<select 
+						class="selectpicker w-auto avatar show-menu-arrow" 
+						id="${ownerSelectID}" 
+						name="selValue"  
+						data-size="5" 
+						data-live-search="true"
+						multiple>
+						
+						<option class="ownerEmail" value="" style="display: none;" data-icon="fa fa-plus" disabled selected></option>
+						<option class="ownerEmail" date-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
+						<option class="ownerEmail" date-tokens="mustard">micahellareal@gmail.com</option>
+						<option class="ownerEmail" date-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
+						<option class="ownerEmail" date-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
+						<option class="ownerEmail" date-tokens="mustard">micahellareal@gmail.com</option>
+						<option class="ownerEmail" date-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
+						<option class="ownerEmail" date-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
+						<option class="ownerEmail" date-tokens="mustard">micahellareal@gmail.com</option>
+						<option class="ownerEmail" date-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
+						<option class="ownerEmail" date-tokens="mustard">micahellareal@gmail.com</option>
 					</select>			
 				</div>
 			</td>
@@ -650,10 +629,11 @@ class Table {
 		// add daterange picker component to timeline 
 		$(`#${datePickerID}`).daterangepicker({
 			"autoApply": true,
+			"drops": "auto",
 			"autoUpdateInput": false,
 			"linkedCalendars": true,
 			"alwaysShowCalendars": false,
-			"opens": "center"
+			"opens": "center",
 		}, function(start, end, label) {
 			// only show end milestone if both (start & end) date is the same
 			if (start.format('MMM DD') == end.format('MMM DD')) {
@@ -735,8 +715,15 @@ class Table {
 		// add owner select button functionality
 		$(`select.selectpicker#${ownerSelectID}`).selectpicker({
 			style: "btn btn-secondary btn-border btn-round owner-select",
+			dropupAuto: false,
 		}, function() {
 			console.log();
+		});
+
+		// make all dropdowns visible overflow off its container
+		document.querySelectorAll('button.dropdown-toggle').forEach( (e) => {
+			e.setAttribute('data-boundary', 'window');
+			e.setAttribute('data-container', '.page-content');
 		});
 
 	}

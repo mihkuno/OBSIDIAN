@@ -1,43 +1,61 @@
-/* OVERRIDE DROPDOWN OPTIONS*/
-
-/* hide the drag n' drop ghost*/
-.sort-wrapper .sortable-drag {
-  opacity: 0;
-}
-
-/* make dropdown horizontal*/
-.dropdown-status.dropdown-menu.show {
-  display: flex !important;
-  transform: none !important;
-}
-
-/* highlight table and row label when editing */
-input.row-label:focus, input.table-label:focus {
-  color: #7d5fff !important;
-}
-
-/* sortablejs table and row selected*/
-.table-selected { border: 2px dashed #f7f1e3; }
-.row-selected { background-color: #f7f1e3 !important;}
-
-/* fullcalendar padding and label colors */
+/* -- FULL CALENDAR -- */
 /* .calendar { padding: 40px; } */
 .calendar-timeline-1 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #0fb9b1;}
 .calendar-timeline-2 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #4b7bec;}
 .calendar-timeline-3 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #7d5fff;}
 .calendar-timeline-4 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #10ac84;}
 
-/* always front all select and dropdown */
-.bootstrap-select { z-index: 1; min-width: 250px;}
-.dropdown-status { z-index: 2;}
+/* -- SORTING -- */
+/* hide the drag n' drop ghost*/
+.sort-wrapper .sortable-drag { opacity: 0; }
+/* table and row selected*/
+.table-selected { border: 2px dashed #f7f1e3; }
+.row-selected { background-color: #f7f1e3 !important;}
 
-/* adjust add owner button */
+/* -- LABEL -- */
+/* highlight label of table and row when editing */
+input.row-label:focus, input.table-label:focus { color: #7d5fff !important; }
+
+/* -- STATUS -- */
+/* make horizontal, change background color and spacing */
+.dropdown-status.show { display: flex; background-color: #303b55; padding: 5px 2px;}
+.dropdown-status > button {margin: 0px 4px}
+
+/* -- OWNER -- */
 .owner-select { margin-top: 2px; padding-left: 14px; padding-right: 14px; max-width: 45px;}
-
+/*  disables ugly bootstrap button focus highlight */
+.bootstrap-select .dropdown-toggle:focus { outline: none !important; box-shadow: none !important; }
+/* owner dropdown menu */
 /* adjust owner 'no result' font size */
 .no-results { font-size: 14px !important;}
+/* change width */
+.bootstrap-select .dropdown-menu { min-width: 200px !important; background-color: #303b55;}
 /* adjust owner search padding */
 div.bs-searchbox > input { padding: 5px !important; }
+/* change hover and focus backgorund color */
+.dropdown-item:focus, .dropdown-item:hover {background-color: #1f283e;}
+/* change option text color */
+option.ownerEmail {color: white !important; }
 
-/*  disables ugly bootstrap focus highlight (on select owner button) */
-.bootstrap-select .dropdown-toggle:focus { outline: none !important; box-shadow: none !important; }
+/* -- DROPDOWN MENU ARROW -- */
+.dropdown-menu:before {
+  position: absolute;
+  top: -7px;
+  left: 9px; /* Example: right:10px; */
+  display: inline-block;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #fff;
+  border-left: 7px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+  content: '';
+}
+.dropdown-menu:after {
+  position: absolute;
+  top: -6px;
+  left: 10px; /* Example: right:10px; */
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #fff;
+  border-left: 6px solid transparent;
+  content: '';
+}
