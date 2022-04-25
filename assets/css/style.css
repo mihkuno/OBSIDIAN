@@ -22,20 +22,20 @@ input.row-label:focus, input.table-label:focus { color: #7d5fff !important; }
 .dropdown-status > button {margin: 0px 4px}
 
 /* -- OWNER -- */
-.owner-select { margin-top: 2px; padding-left: 14px; padding-right: 14px; max-width: 45px;}
+.owner-select { margin-top: 2px; padding-left: 14px; padding-right: 14px; max-width: 45px; max-height: 45px;}
 /*  disables ugly bootstrap button focus highlight */
 .bootstrap-select .dropdown-toggle:focus { outline: none !important; box-shadow: none !important; }
 /* owner dropdown menu */
 /* adjust owner 'no result' font size */
-.no-results { font-size: 14px !important;}
+.bootstrap-select .no-results { font-size: 14px !important; margin-left: 10px; background-color: #303b55; color: grey}
 /* change width */
-.bootstrap-select .dropdown-menu { min-width: 200px !important; background-color: #303b55;}
+.bootstrap-select .dropdown-menu { min-width: 260px !important; background-color: #303b55;}
 /* adjust owner search padding */
 div.bs-searchbox > input { padding: 5px !important; }
 /* change hover and focus backgorund color */
 .dropdown-item:focus, .dropdown-item:hover {background-color: #1f283e;}
 /* change option text color */
-option.ownerEmail {color: white !important; }
+.ownerEmail {color: whitesmoke !important; overflow: hidden;}
 
 /* -- DROPDOWN MENU ARROW -- */
 .dropdown-menu:before {

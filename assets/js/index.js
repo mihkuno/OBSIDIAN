@@ -417,24 +417,51 @@ class Table {
 						<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle border border-dark"></div>
 					
 					<select 
-						class="selectpicker w-auto avatar show-menu-arrow" 
+						class="selectpicker w-auto avatar show-menu-arrow hidden-caret" 
 						id="${ownerSelectID}" 
 						name="selValue"  
 						data-size="5" 
 						data-live-search="true"
 						multiple>
 						
-						<option class="ownerEmail" value="" style="display: none;" data-icon="fa fa-plus" disabled selected></option>
-						<option class="ownerEmail" date-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option class="ownerEmail" date-tokens="mustard">micahellareal@gmail.com</option>
-						<option class="ownerEmail" date-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option class="ownerEmail" date-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option class="ownerEmail" date-tokens="mustard">micahellareal@gmail.com</option>
-						<option class="ownerEmail" date-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option class="ownerEmail" date-tokens="ketchup mustard">caindayjoeninyo@gmail.com</option>
-						<option class="ownerEmail" date-tokens="mustard">micahellareal@gmail.com</option>
-						<option class="ownerEmail" date-tokens="frosting">kenrian.boleche@ici.edu.ph</option>
-						<option class="ownerEmail" date-tokens="mustard">micahellareal@gmail.com</option>
+						<!-- OPTION BUTTON TITLE -->
+						<option 
+							class="ownerEmail" 
+							value="" 
+							style="display: none;" 
+							data-icon="fa fa-plus" disabled selected>
+						</option>
+
+						<!-- OWNER MENU EMAILS -->
+						<option class="ownerEmail" data-content='
+							<div class="avatar avatar-xs">
+								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
+								&nbsp; caindayjoeninyo@gmail.com
+							</div>'>
+						</option>
+
+						<option class="ownerEmail" data-content='
+							<div class="avatar avatar-xs">
+								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
+								&nbsp; micahellareal@gmail.com
+							</div>'>
+						</option>
+
+						<option class="ownerEmail" data-content='
+							<div class="avatar avatar-xs">
+								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
+								&nbsp; kenrian.boleche@ici.edu.ph
+							</div>'>
+						</option>
+
+						<option class="ownerEmail" data-content='
+						<div class="avatar avatar-xs">
+							<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
+							&nbsp; aaaaaaaaaaaaaaaaaaaaaaaaa
+						</div>'>
+					</option>
+
+
 					</select>			
 				</div>
 			</td>
