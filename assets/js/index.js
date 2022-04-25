@@ -417,20 +417,14 @@ class Table {
 						<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle border border-dark"></div>
 					
 					<select 
-						class="selectpicker w-auto avatar show-menu-arrow hidden-caret" 
+						class="selectpicker w-auto avatar show-menu-arrow hidden-caret"
 						id="${ownerSelectID}" 
 						name="selValue"  
 						data-size="5" 
 						data-live-search="true"
+						data-selected-text-format="static"
 						multiple>
-						
-						<!-- OPTION BUTTON TITLE -->
-						<option 
-							class="ownerEmail" 
-							value="" 
-							style="display: none;" 
-							data-icon="fa fa-plus" disabled selected>
-						</option>
+				
 
 						<!-- OWNER MENU EMAILS -->
 						<option class="ownerEmail" data-content='
@@ -438,6 +432,7 @@ class Table {
 								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
 								&nbsp; caindayjoeninyo@gmail.com
 							</div>'>
+							value="caindayjoeninyo@gmail.com"
 						</option>
 
 						<option class="ownerEmail" data-content='
@@ -445,6 +440,7 @@ class Table {
 								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
 								&nbsp; micahellareal@gmail.com
 							</div>'>
+							value="micahellareal@gmail.com"
 						</option>
 
 						<option class="ownerEmail" data-content='
@@ -452,6 +448,7 @@ class Table {
 								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
 								&nbsp; kenrian.boleche@ici.edu.ph
 							</div>'>
+							value="kenrian.boleche@ici.edu.ph"
 						</option>
 
 						<option class="ownerEmail" data-content='
@@ -459,10 +456,12 @@ class Table {
 							<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
 							&nbsp; aaaaaaaaaaaaaaaaaaaaaaaaa
 						</div>'>
+						value="aaaaaaaaaaaaaaaaaaaaaaaaa"
 					</option>
 
 
 					</select>			
+
 				</div>
 			</td>
 			<!-- LAST UPDATED -->
@@ -739,12 +738,22 @@ class Table {
 			
 		});	
 
-		// add owner select button functionality
+		// add owner select button componennt
 		$(`select.selectpicker#${ownerSelectID}`).selectpicker({
 			style: "btn btn-secondary btn-border btn-round owner-select",
 			dropupAuto: false,
-		}, function() {
-			console.log();
+		});
+
+		// add a static icon to the owner button 
+		document.querySelector('div.filter-option-inner-inner').innerHTML = `<i class='fa fa-plus'><i>`;
+
+		// owner select onchange listener
+		$(`select.selectpicker#${ownerSelectID}`).change( function() {
+			console.log('you selected:', $(this).val());
+			// return the static icon to the owner button 
+			document.querySelectorAll('div.filter-option-inner-inner').forEach((e) => {
+				e.innerHTML = `<i class='fa fa-plus'><i>`;
+			});
 		});
 
 		// make all dropdowns visible overflow off its container
@@ -752,6 +761,8 @@ class Table {
 			e.setAttribute('data-boundary', 'window');
 			e.setAttribute('data-container', '.page-content');
 		});
+
+
 
 	}
 }

@@ -22,7 +22,7 @@ input.row-label:focus, input.table-label:focus { color: #7d5fff !important; }
 .dropdown-status > button {margin: 0px 4px}
 
 /* -- OWNER -- */
-.owner-select { margin-top: 3px; padding-left: 14px; padding-right: 14px; max-width: 3rem; max-height: 3rem;}
+.owner-select { margin-top: 3px; padding-left: 15px; padding-right: 15px; max-width: 3rem; max-height: 3rem;}
 /*  disables ugly bootstrap button focus highlight */
 .bootstrap-select .dropdown-toggle:focus { outline: none !important; box-shadow: none !important; }
 /* owner dropdown menu */
