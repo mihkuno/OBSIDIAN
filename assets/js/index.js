@@ -1,6 +1,6 @@
 // PREEFINED USERS ... TO CONFIG IN PHP
 // all owner information content
-const user = [
+const USERS = [
 	{
 		image: "assets/img/jm_denis.jpg",
 		email: "caindayjoeninyo@gmail.com"
@@ -18,7 +18,6 @@ const user = [
 		email: "kenrian.boleche@gmail.com"
 	}
 ];
-
 
 // CLASS CHANGE EVENT LISTENER
 // new ClassWatcher(targetNode, 'trigger', workOnClassAdd, workOnClassRemoval);
@@ -126,6 +125,115 @@ class StatusButton {
 		`;
 		return btn;
 	}
+}
+
+
+		// add owner select container
+		// const addOwnerMenu = `select.selectpicker#${ownerSelectID}`;
+		// const addOwnerButton = 'div.filter-option-inner-inner';
+		// const avatarGroup = document.getElementById(ownerAvatarContainerID);
+		// const ownerSelectID = `table-${this.tableID}-row-${this.rowCount}-owner`;
+		// const ownerAvatarContainerID = `table-${this.tableID}-row-${this.rowCount}-avatar-group`;
+
+
+// OWNER COMPONENT 
+class OwnerGroup {
+	constructor(componentID, parentID) {
+		const OWNERBUTTON = `div.filter-option-inner-inner`;
+		this.componentID = componentID;
+		this.parentID = parentID;
+
+		this.extractPrev = []; // check select added and removed
+		this.extract = []; // array of all email selected
+
+		// insert the select element to the parent
+		document.getElementById(this.parentID).insertAdjacentHTML('beforeend', 
+		`<select 
+			class="selectpicker w-auto avatar show-menu-arrow hidden-caret"
+			id="${this.componentID}" 
+			name="selValue"  
+			data-size="5" 
+			data-live-search="true"
+			data-selected-text-format="static"
+			multiple>
+			<!-- OWNER MENU APPENED BEFORE -->
+		</select>`);
+
+		// configure select button
+		$(`select.selectpicker#${this.componentID}`).selectpicker({
+			style: "btn btn-secondary btn-border btn-round owner-select",
+			dropupAuto: false,
+		});
+
+		// append users to the menu
+		for (let info of USERS) { // global list of all users
+			const selectOption = `
+			<option class="ownerEmail" data-content='
+				<div class="avatar avatar-xs">
+					<img src="${info['image']}" class="avatar-img rounded-circle">
+					&nbsp; ${info['email']}
+				</div>'>
+				value="${info['email']} ${info['image']}"
+			</option>
+			`;
+			$(`select.selectpicker#${this.componentID}`).append(selectOption).selectpicker('refresh');
+		}
+
+		// selection change listener
+		$(`select.selectpicker#${this.componentID}`).change((e) => { 
+			// WARNING 'this' buggy scope!
+			// refers to the event rather than the object
+			const data = $(e.target).val();	// email and image value of selected options
+
+			// remove existing avatar children
+			const menuChildID = `div.avatar-group#${this.parentID}`;
+			$(menuChildID) 
+				.children() 		 // Select all the children of the parent
+				.not(':first-child') // Unselect the first child
+				.remove();           // Remove
+
+			// replace old with new selections
+			this.extract = [];
+			for (let details of data) {				
+				// removes value="" string for each data
+				details = details.slice(7, -1).split(" "); ;
+
+				// avatar profile html blueprint
+				const avatar = `
+				<div class="avatar">
+					<img src="${details[1]}" class="avatar-img rounded-circle border border-dark">
+				</div>`;
+				// append the new selection;
+				document.getElementById(this.parentID).insertAdjacentHTML('beforeend',avatar);
+
+				this.extract.push(details[0]); // update the selected values
+			}
+
+			// get email, check if added or removed
+			if (this.extract.length > this.extractPrev.length) {
+				console.log('added: ', this.extract.length, this.extractPrev.length);
+				let diff = $(this.extract).not(this.extractPrev).get();
+				console.log('added: ', diff);
+				this.extractPrev = this.extract;
+			}
+			else {
+				console.log('removed: ', this.extract.length, this.extractPrev.length);
+				let diff = $(this.extractPrev).not(this.extract).get();
+				console.log('removed: ', diff);
+				this.extractPrev = this.extract;
+			}
+
+			// refresh static icon to owner button 
+			document.querySelectorAll(OWNERBUTTON).forEach((rf) => {
+				rf.innerHTML = `<i class='fa fa-plus'><i>`;
+			});
+		});
+
+		// add static icon to owner button 
+		document.querySelectorAll(OWNERBUTTON).forEach((e) => {
+			e.innerHTML = `<i class='fa fa-plus'><i>`;
+		});
+	};
 }
 
 // TABLE COMPONENT
@@ -399,8 +507,7 @@ class Table {
 		const datePickerID = `table-${this.tableID}-row-${this.rowCount}-datepicker`;
 		const datePickedID = `table-${this.tableID}-row-${this.rowCount}-datepicked`;
 
-		const ownerSelectID = `table-${this.tableID}-row-${this.rowCount}-owner`;
-		const ownerAvatarContainerID = `table-${this.tableID}-row-${this.rowCount}-avatar-group`;
+		const ownerGroupID = `table-${this.tableID}-row-${this.rowCount}-avatar-group`
 
 		const rowContent = `
 		<tr draggable="true" id="${tableRowID}">
@@ -424,7 +531,7 @@ class Table {
 			</td>
 			<!-- TIMELINE -->
 			<td>
-				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:140px"> &nbsp;
+				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:0px"> &nbsp;
 					<i class="fa fa-calendar">
 						<span id="${datePickedID}"></span>
 						<i class="fa fa-caret-down"></i>
@@ -433,7 +540,7 @@ class Table {
 			</td>
 			<!-- OWNER -->
 			<td>
-				<div class="avatar-group" id="${ownerAvatarContainerID}">
+				<div class="avatar-group" id="${ownerGroupID}">
 
 					<!-- OWNER AVATAR APPEND HERE -->
 								
@@ -457,6 +564,10 @@ class Table {
 
 		// insert the row to table body
 		this.tableRow.insertAdjacentHTML('beforeend', rowContent);
+
+		// create an id for row ownergroup
+		const ownerSelectID = `table-${this.tableID}-row-${this.rowCount}-owner`;
+		new OwnerGroup(ownerSelectID, ownerGroupID); 
 
 		// delete row button listener
 		const deleteRowButton = document.querySelector(`button#${rowEditID}`); 
@@ -560,7 +671,6 @@ class Table {
 		});
 
 		// status change listener
-		// loop through each dropdown item
 		for (let i = 1; i < itemCount; i++) {
 			const dropItem = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${i}`);
 			const dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
@@ -714,103 +824,11 @@ class Table {
 			
 		});	
 
-
-		// add owner select container
-		const ownerSelectContainer = `
-		<select 
-			class="selectpicker w-auto avatar show-menu-arrow hidden-caret"
-			id="${ownerSelectID}" 
-			name="selValue"  
-			data-size="5" 
-			data-live-search="true"
-			data-selected-text-format="static"
-			multiple>
-	
-			<!-- OWNER MENU APPENED BEFORE -->
-		</select>`;
-
-		const avatarGroup = document.getElementById(ownerAvatarContainerID);
-		avatarGroup.insertAdjacentHTML('beforeend', ownerSelectContainer);
-
-		// add owner selectpicker button componennt
-		$(`select.selectpicker#${ownerSelectID}`).selectpicker({
-			style: "btn btn-secondary btn-border btn-round owner-select",
-			dropupAuto: false,
-		});
-		
-		// owner menu option html blueprint
-		const addOwnerMenu = `select.selectpicker#${ownerSelectID}`;
-		const addOwnerButton = 'div.filter-option-inner-inner';
-
-
-		// append user option blueprint to the menu
-		for (let info of user) { // global list of all users
-			let ownerMenuContent = `
-			<option class="ownerEmail" data-content='
-				<div class="avatar avatar-xs">
-					<img src="${info['image']}" class="avatar-img rounded-circle">
-					&nbsp; ${info['email']}
-				</div>'>
-				value="${info['email']} ${info['image']}"
-			</option>
-			`;
-			$(addOwnerMenu).append(ownerMenuContent).selectpicker('refresh');
-		}
-
-
-		// owner select onchange listener
-		$(`select.selectpicker#${ownerSelectID}`).change( function() {
-			console.log('--- CHANGED --- ');
-			// remove existing avatar children
-
-			//Select the object
-			$(`div.avatar-group#${ownerAvatarContainerID}`) 
-				.children() 		 // Select all the children of the parent
-				.not(':first-child') // Unselect the first child
-				.remove();           // Remove
-
-
-			// replace with new selections
-			let raw, extract, avatar;
-			const data = $(this).val();	// get email and image value of selected options
-			for (raw of data) {
-				// removes value="" string for each data 
-				extract = raw.slice(7, -1).split(" ");
-				// avatar profile html blueprint
-				avatar = `
-				<div class="avatar">
-					<img src="${extract[1]}" class="avatar-img rounded-circle border border-dark">
-				</div>`;
-				// append the new selection
-				avatarGroup.insertAdjacentHTML('beforeend',avatar);
-			}
-
-
-			// return the static icon to owner button 
-			document.querySelectorAll(addOwnerButton).forEach((e) => {
-				e.innerHTML = `<i class='fa fa-plus'><i>`;
-			});
-		});
-
-
-
-
-
-
-
-		// add static icon to owner button 
-		document.querySelectorAll(addOwnerButton).forEach((e) => {
-			e.innerHTML = `<i class='fa fa-plus'><i>`;
-		});
-
 		// make all dropdowns visible overflow off its container
 		document.querySelectorAll('button.dropdown-toggle').forEach( (e) => {
 			e.setAttribute('data-boundary', 'window');
 			e.setAttribute('data-container', '.page-content');
 		});
-
-
-
 	}
 }
 
