@@ -68,74 +68,154 @@ class ClassWatcher {
 
 // STATUS COMPONENT
 class StatusButton {
-	constructor(tableID, rowCount, itemCount, state, contextClass) {
-		this.tableID = tableID;
-		this.rowCount = rowCount;
-		this.itemCount = itemCount;
-		this.state = state;
-		this.contextClass = contextClass;
-		this.colorClass; this.icon; this.attributes;
+	constructor(componentID, parentID, menuID, status) {
+		this.componentID = componentID;
+		this.parentID = parentID;
+		this.menuID = menuID;
+		this.status = status;
+		this.color; 
+		this.icon;
 
-		// is it a button or an dropdown item?
-		// these attributes are part of bootstrap dropdown
-		if(contextClass=='item') {
-			// attributes="onclick=>console.log(dropdown button clicked)";
-			itemCount++; 
-			// add the row ID attribute
-			this.attributes = `id=table-${this.tableID}-row-${this.rowCount}-item-${this.itemCount}`;
-			this.contextClass = 'dropdown-item';		
-
-		}
-		else if (contextClass=='drop') {
-			// given unique ID to dropdown button accociated to its row count
-			this.attributes=`data-toggle="dropdown" 
-				aria-haspopup="true" 
-				aria-expanded="false" 
-				id="table-${this.tableID}-row-${this.rowCount}-status"`;
-			this.contextClass = 'dropdown-toggle';
-		}
 		// change the text, icon, color
-		switch(this.state) {
+		switch(this.status) {
 			case 'Complete':
-				this.colorClass = 'btn-success';
+				this.color = 'btn-success';
 				this.icon = 'icon-check';
 				break;
 			case 'Develop':
-				this.colorClass = 'btn-warning';
+				this.color = 'btn-warning';
 				this.icon = 'icon-information';
 				break;
 			case 'Stuck':
-				this.colorClass = 'btn-danger';
+				this.color = 'btn-danger';
 				this.icon = 'icon-close';
 				break;
 			default:
-				this.colorClass = 'btn-secondary';
+				this.color = 'btn-secondary';
 				this.icon = 'icon-direction';
 		}
-	}
-	select () {
-		const btn = `
-		<button class="btn ${this.contextClass} ${this.colorClass} " style="color: white;" ${this.attributes}>
-			<!-- SELECTED STATUS IS <${this.state.toUpperCase()}> -->
-			<!-- make button text white, set fixed width -->
+
+		// add status button to row
+		document.getElementById(this.parentID).insertAdjacentHTML('beforeend',
+		`<button 
+			class="btn dropdown-toggle ${this.color}" 
+			style="color: white;" 
+			data-toggle="dropdown" 
+			aria-haspopup="true" 
+			aria-expanded="false" 
+			id="${this.componentID}">
+
 			<span class="btn-label">
-				<i class="fa ${this.icon}"></i>
-			</span>
-			${this.state}
-		</button>
-		`;
-		return btn;
+				<i class="fa ${this.icon}"></i></span>
+			${this.status}
+		 </button>`);
+		 
+		 // add status button dropdown menu
+		 const states = ['Soon','Stuck','Develop','Complete'];
+		 for (let i=0; i < states.length; i++) {
+			let color, icon;
+			switch(states[i]) {
+				case 'Complete':
+					color = 'btn-success';
+					icon = 'icon-check';
+					break;
+				case 'Develop':
+					color = 'btn-warning';
+					icon = 'icon-information';
+					break;
+				case 'Stuck':
+					color = 'btn-danger';
+					icon = 'icon-close';
+					break;
+				default:
+					color = 'btn-secondary';
+					icon = 'icon-direction';
+			}
+			document.getElementById(this.menuID).insertAdjacentHTML('beforeend',
+			`<button 
+				class="btn dropdown-item ${color}" 
+				style="color: white;" 
+				id="${this.menuID}-item-${i+1}">
+				<span class="btn-label">
+					<i class="fa ${icon}"></i>
+				</span>
+				${states[i]}
+			 </button>`);
+		 }
+
+		 console.log(document.getElementById(`${this.menuID}-item-1`));
+		 console.log(document.getElementById(`${this.componentID}`));
+
+
+		// status change listener
+		for (let i = 0; i < states.length; i++) {
+			const dropItem = document.getElementById(`${this.menuID}-item-${i+1}`);
+			const dropBtn = document.getElementById(`${this.componentID}`);
+
+			// change text, icon, color when dropdown item is clicked
+			dropItem.addEventListener('click', ()=> {
+				const st = dropItem.textContent.trim(); 
+
+				let cc, ii;
+				switch(st) {
+					case 'Complete':
+						cc = 'btn-success';
+						ii = 'icon-check';
+						break;
+					case 'Develop':
+						cc = 'btn-warning';
+						ii = 'icon-information';
+						break;
+					case 'Stuck':
+						cc = 'btn-danger';
+						ii = 'icon-close';
+						break;
+					default:
+						cc = 'btn-secondary';
+						ii = 'icon-direction';
+				}
+
+				dropBtn.innerHTML = "";
+				dropBtn.setAttribute('class', `btn dropdown-toggle ${cc}`)
+				dropBtn.insertAdjacentHTML('beforeend',
+					`<span class="btn-label"><i class="fa ${ii}"></i></span> ${st}`);
+
+				// notification
+				$.notify({
+					// options
+					icon: 'fa fa-tasks',
+					title: `Status Changed to ${st}`,
+					message: ''
+				},{
+					// settings
+					element: 'body',
+					type: cc.substring(4),
+					allow_dismiss: true,
+					newest_on_top: false,
+					showProgressbar: false,
+					placement: {
+						from: "top",
+						align: "right"
+					},
+					offset: 20,
+					spacing: 10,
+					z_index: 1031,
+					delay: 700,
+					timer: 850,
+					animate: {
+						enter: 'animated fadeInDown',
+						exit: 'animated fadeOutUp'
+					},
+					icon_type: 'class',
+					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+						'<span data-notify="icon"></span> ' +
+						'<span data-notify="title">{1}</span> ' +
+					'</div>' 
+				});				
+			});
+		}
 	}
 }
-
-
-		// add owner select container
-		// const addOwnerMenu = `select.selectpicker#${ownerSelectID}`;
-		// const addOwnerButton = 'div.filter-option-inner-inner';
-		// const avatarGroup = document.getElementById(ownerAvatarContainerID);
-		// const ownerSelectID = `table-${this.tableID}-row-${this.rowCount}-owner`;
-		// const ownerAvatarContainerID = `table-${this.tableID}-row-${this.rowCount}-avatar-group`;
-
 
 // OWNER COMPONENT 
 class OwnerGroup {
@@ -283,6 +363,287 @@ class OwnerGroup {
 	};
 }
 
+// ROW COMPONENT
+class Row {
+	constructor(componentID, parentID, label, status) {
+		this.componentID = componentID;
+		this.parentID = parentID;
+		this.label = label;
+		this.status = status;
+		this.datepicked, this.owner;
+
+		const labelID       = `${this.componentID}-label`;
+		const statusID      = `${this.componentID}-status`;
+		const statusContID  = `${this.componentID}-statusContainer`;
+		const statusMenuID  = `${this.componentID}-statusMenu`;
+		const datePickerID  = `${this.componentID}-datepicker`;
+		const datePickedID  = `${this.componentID}-datepicked`;
+		const ownerGroupID  = `${this.componentID}-avatar-group`
+		const ownerSelectID = `${this.componentID}-owner`;
+		const removeID      = `${this.componentID}-remove`;
+
+		const rowContent = `
+		<tr draggable="true" id="${this.componentID}">
+			<!-- LABEL -->
+			<td>
+				<div class="form-group">
+					<input 
+						type="text" 
+						class="form-control input-border-bottom row-label" id="${labelID}" 
+						style='border: 0; color: #828282;' 
+						placeholder="row-${this.componentID}" 
+					value="${label}">
+				</div>
+			</td>
+			<!-- STATUS -->
+			<td>
+				<div class="btn-group" id="${statusContID}">
+					<!-- STATUS BUTTON -->
+					<div class="dropdown-status dropdown-menu dropdown" id="${statusMenuID}">
+						<!-- DROPDOWN STATUS BUTTONS-->
+					</div>
+				</div>
+			</td>
+			<!-- TIMELINE -->
+			<td>
+				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:120px"> &nbsp;
+					<i class="fa fa-calendar">
+						<span id="${datePickedID}"></span>
+						<i class="fa fa-caret-down"></i>
+					</i>
+				</div>
+			</td>
+			<!-- OWNER -->
+			<td>
+				<div class="avatar-group" id="${ownerGroupID}">
+
+					<!-- OWNER AVATAR APPEND HERE -->
+								
+
+				</div>
+			</td>
+			<!-- LAST UPDATED -->
+			<td>13 minutes ago</td>
+			<!-- FORM ACTION AND SORTABLE -->
+			<td>
+				<div class="form-button-action">
+					<button id='${removeID}' data-toggle="tooltip" class="btn btn-link btn-primary btn-lg">
+						<i class="fas fa-times text-danger"></i>
+					</button>
+					<button class="btn btn-link btn-secondary row-handle row-listener">
+						<i class="fas fa-ellipsis-h"></i>
+					</button>
+				</div>
+			</td>
+		</tr>`;
+
+		// insert the row to table body
+		document.getElementById(this.parentID).insertAdjacentHTML('beforeend', rowContent);
+
+		new StatusButton(statusID, statusContID, statusMenuID, status);
+
+		// create an id for row ownergroup
+		new OwnerGroup(ownerSelectID, ownerGroupID); 
+
+		// // delete row button listener
+		// const deleteRowButton = document.querySelector(`button#${rowEditID}`); 
+		// deleteRowButton.addEventListener('click', () => {
+		// 	// MODAL CONFIRMATION
+		// 	swal({
+		// 		title: 'Are you sure?',
+		// 		text: "You won't be able to revert this!",
+		// 		icon: 'warning',
+		// 		buttons:{
+		// 			cancel: {
+		// 				visible: true,
+		// 				className: 'btn btn-danger'
+		// 			},
+		// 			confirm: {
+		// 				text : 'Yes, delete it!',
+		// 				className : 'btn btn-success',
+		// 			}
+		// 		}
+		// 	}).then((Delete) => {
+		// 		if (Delete) {
+		// 			document.querySelector(`tr#${tableRowID}`).remove(); // deletes the row based on ID
+		// 			// notification
+		// 			$.notify({
+		// 				// options
+		// 				icon: 'flaticon-exclamation',
+		// 				title: 'Removed Row',
+		// 				message: ''
+		// 			},{
+		// 				// settings
+		// 				element: 'body',
+		// 				type: "warning",
+		// 				allow_dismiss: true,
+		// 				newest_on_top: false,
+		// 				showProgressbar: false,
+		// 				placement: {
+		// 					from: "top",
+		// 					align: "right"
+		// 				},
+		// 				offset: 20,
+		// 				spacing: 10,
+		// 				z_index: 1031,
+		// 				delay: 700,
+		// 				timer: 850,
+		// 				animate: {
+		// 					enter: 'animated fadeInDown',
+		// 					exit: 'animated fadeOutUp'
+		// 				},
+		// 				icon_type: 'class',
+		// 				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+		// 					'<span data-notify="icon"></span> ' +
+		// 					'<span data-notify="title">{1}</span> ' +
+		// 				'</div>' 
+		// 			});
+		// 			swal({
+		// 				title: 'Removed!',
+		// 				text: '',
+		// 				icon: 'success',
+		// 				timer: 650
+		// 			});
+		// 		} else {
+		// 			swal.close();
+		// 		}
+		// 	});
+		// });
+
+		// // add notification on row-label change
+		// document.querySelector(`input#${rowLabelID}`).addEventListener('change', () => {
+
+		// 	let row = [this.label, this.status, $(`#${datePickerID}`).textContent];
+		// 	console.log(row);
+		// 	// notification
+		// 	$.notify({
+		// 		// options
+		// 		icon: 'fa fa-pencil-alt',
+		// 		title: 'Renamed Row Label',
+		// 		message: ''
+		// 	},{
+		// 		// settings
+		// 		element: 'body',
+		// 		type: "info",
+		// 		allow_dismiss: true,
+		// 		newest_on_top: false,
+		// 		showProgressbar: false,
+		// 		placement: {
+		// 			from: "top",
+		// 			align: "right"
+		// 		},
+		// 		offset: 20,
+		// 		spacing: 10,
+		// 		z_index: 1031,
+		// 		delay: 700,
+		// 		timer: 850,
+		// 		animate: {
+		// 			enter: 'animated fadeInDown',
+		// 			exit: 'animated fadeOutUp'
+		// 		},
+		// 		icon_type: 'class',
+		// 		template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+		// 			'<span data-notify="icon"></span> ' +
+		// 			'<span data-notify="title">{1}</span> ' +
+		// 		'</div>' 
+		// 	});
+		// });
+
+		// // add daterange picker component to timeline 
+		// $(`#${datePickerID}`).daterangepicker({
+		// 	"autoApply": true,
+		// 	"drops": "auto",
+		// 	"autoUpdateInput": false,
+		// 	"linkedCalendars": true,
+		// 	"alwaysShowCalendars": false,
+		// 	"opens": "center",
+		// }, function(start, end, label) {
+		// 	// only show end milestone if both (start & end) date is the same
+		// 	if (start.format('MMM DD') == end.format('MMM DD')) {
+		// 		$(`#${datePickedID}`).html(start.format('MMM DD'));
+		// 		// notification
+		// 		$.notify({
+		// 			// options
+		// 			icon: 'fa fa-calendar-check',
+		// 			title: 'Marked Milestone',
+		// 			message: ''
+		// 		},{
+		// 			// settings
+		// 			element: 'body',
+		// 			type: "info",
+		// 			allow_dismiss: true,
+		// 			newest_on_top: false,
+		// 			showProgressbar: false,
+		// 			placement: {
+		// 				from: "top",
+		// 				align: "right"
+		// 			},
+		// 			offset: 20,
+		// 			spacing: 10,
+		// 			z_index: 1031,
+		// 			delay: 700,
+		// 			timer: 850,
+		// 			animate: {
+		// 				enter: 'animated fadeInDown',
+		// 				exit: 'animated fadeOutUp'
+		// 			},
+		// 			icon_type: 'class',
+		// 			template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+		// 				'<span data-notify="icon"></span> ' +
+		// 				'<span data-notify="title">{1}</span> ' +
+		// 			'</div>' 
+		// 		});
+		// 	} else {
+		// 		$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
+		// 		// notification
+		// 		$.notify({
+		// 			// options
+		// 			icon: 'fa fa-calendar-plus',
+		// 			title: 'Timeline Updated',
+		// 			message: ''
+		// 		},{
+		// 			// settings
+		// 			element: 'body',
+		// 			type: "info",
+		// 			allow_dismiss: true,
+		// 			newest_on_top: false,
+		// 			showProgressbar: false,
+		// 			placement: {
+		// 				from: "top",
+		// 				align: "right"
+		// 			},
+		// 			offset: 20,
+		// 			spacing: 10,
+		// 			z_index: 1031,
+		// 			delay: 700,
+		// 			timer: 850,
+		// 			animate: {
+		// 				enter: 'animated fadeInDown',
+		// 				exit: 'animated fadeOutUp'
+		// 			},
+		// 			icon_type: 'class',
+		// 			template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+		// 				'<span data-notify="icon"></span> ' +
+		// 				'<span data-notify="title">{1}</span> ' +
+		// 			'</div>' 
+		// 		});
+		// 	}
+			
+		// 	var start_date = start.toISOString();
+		// 	var end_date = end.toISOString();
+
+			
+		// });	
+
+		// make all dropdowns visible overflow off its container
+		
+		document.querySelectorAll('button.dropdown-toggle').forEach( (e) => {
+			e.setAttribute('data-boundary', 'window');
+			e.setAttribute('data-container', '.page-content');
+		});
+	}
+}
+
 // TABLE COMPONENT
 var tableCount = 0; // static to count the number of tables created
 class Table {
@@ -302,6 +663,8 @@ class Table {
 		// append card parent to root container
 		this.tableCardRoot = document.querySelector("div.page-category#index-content");
 		this.tableCardRoot.appendChild(this.tableCard);
+
+		this.label, this.status;
 
 		// table content
 		this.content = `
@@ -535,345 +898,24 @@ class Table {
 
 	// add a row method
 	addRow(label, status) {
-		this.rowCount++; console.log('num of rows', this.rowCount);
-		var itemCount = 0; // set number of dropdown item 
-		// returns a html content NOT an object
-		// the first three parameters creates a unique ID 
-		let statusBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, status,'drop').select();
-		let soonBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, 'Soon','item').select();
-		let stuckBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, 'Stuck','item').select();
-		let developBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, 'Develop','item').select();
-		let completeBtn = new StatusButton(this.tableID,this.rowCount, itemCount++, 'Complete','item').select();
+		this.rowCount++; 
+		console.log('num of rows', this.rowCount);
 
-		const tableRowID = `table${this.tableID}-row-${this.rowCount}`;
-		const rowLabelID = `table-${this.tableID}-row-${this.rowCount}-label`;
-		const rowEditID  = `table-${this.tableID}-row-${this.rowCount}-edit`;
+		const componentID = `table-${this.tableID}-row-${this.rowCount}`;
+		const parentID = `table-${this.tableID}`;  
+		new Row(componentID, parentID, label, status);
 
-		const datePickerID = `table-${this.tableID}-row-${this.rowCount}-datepicker`;
-		const datePickedID = `table-${this.tableID}-row-${this.rowCount}-datepicked`;
+	}
 
-		const ownerGroupID = `table-${this.tableID}-row-${this.rowCount}-avatar-group`
+	// get a 2D array of all the row information
+	getInformation() {
+		// label
 
-		const rowContent = `
-		<tr draggable="true" id="${tableRowID}">
-			<!-- LABEL -->
-			<td>
-				<div class="form-group">
-					<input type="text" class="form-control input-border-bottom row-label" id="${rowLabelID}" style='border: 0; color: #828282;' placeholder="row-${this.rowCount}" value="${label}">
-				</div>
-			</td>
-			<!-- STATUS -->
-			<td>
-				<div class="btn-group">
-					<!-- OUTPUT STATUS BUTTON -->
-					${statusBtn}
-					
-					<!-- DROPDOWN BUTTONS-->
-					<div class="dropdown-status dropdown-menu dropdown">
-						${soonBtn} ${stuckBtn} ${developBtn} ${completeBtn}
-					</div>
-				</div>
-			</td>
-			<!-- TIMELINE -->
-			<td>
-				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:120px"> &nbsp;
-					<i class="fa fa-calendar">
-						<span id="${datePickedID}"></span>
-						<i class="fa fa-caret-down"></i>
-					</i>
-				</div>
-			</td>
-			<!-- OWNER -->
-			<td>
-				<div class="avatar-group" id="${ownerGroupID}">
+		// status
 
-					<!-- OWNER AVATAR APPEND HERE -->
-								
+		// timeline
 
-				</div>
-			</td>
-			<!-- LAST UPDATED -->
-			<td>13 minutes ago</td>
-			<!-- FORM ACTION AND SORTABLE -->
-			<td>
-				<div class="form-button-action">
-					<button id='${rowEditID}' type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-						<i class="fas fa-times text-danger"></i>
-					</button>
-					<button type="button" class="btn btn-link btn-secondary row-handle row-listener">
-						<i class="fas fa-ellipsis-h"></i>
-					</button>
-				</div>
-			</td>
-		</tr>`;
-
-		// insert the row to table body
-		this.tableRow.insertAdjacentHTML('beforeend', rowContent);
-
-		// create an id for row ownergroup
-		const ownerSelectID = `table-${this.tableID}-row-${this.rowCount}-owner`;
-		new OwnerGroup(ownerSelectID, ownerGroupID); 
-
-		// delete row button listener
-		const deleteRowButton = document.querySelector(`button#${rowEditID}`); 
-		deleteRowButton.addEventListener('click', () => {
-			// MODAL CONFIRMATION
-			swal({
-				title: 'Are you sure?',
-				text: "You won't be able to revert this!",
-				icon: 'warning',
-				buttons:{
-					cancel: {
-						visible: true,
-						className: 'btn btn-danger'
-					},
-					confirm: {
-						text : 'Yes, delete it!',
-						className : 'btn btn-success',
-					}
-				}
-			}).then((Delete) => {
-				if (Delete) {
-					document.querySelector(`tr#${tableRowID}`).remove(); // deletes the row based on ID
-					// notification
-					$.notify({
-						// options
-						icon: 'flaticon-exclamation',
-						title: 'Removed Row',
-						message: ''
-					},{
-						// settings
-						element: 'body',
-						type: "warning",
-						allow_dismiss: true,
-						newest_on_top: false,
-						showProgressbar: false,
-						placement: {
-							from: "top",
-							align: "right"
-						},
-						offset: 20,
-						spacing: 10,
-						z_index: 1031,
-						delay: 700,
-						timer: 850,
-						animate: {
-							enter: 'animated fadeInDown',
-							exit: 'animated fadeOutUp'
-						},
-						icon_type: 'class',
-						template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-							'<span data-notify="icon"></span> ' +
-							'<span data-notify="title">{1}</span> ' +
-						'</div>' 
-					});
-					swal({
-						title: 'Removed!',
-						text: '',
-						icon: 'success',
-						timer: 650
-					});
-				} else {
-					swal.close();
-				}
-			});
-		});
-
-		// add notification on row-label change
-		document.querySelector(`input#${rowLabelID}`).addEventListener('change', () => {
-			// notification
-			$.notify({
-				// options
-				icon: 'fa fa-pencil-alt',
-				title: 'Renamed Row Label',
-				message: ''
-			},{
-				// settings
-				element: 'body',
-				type: "info",
-				allow_dismiss: true,
-				newest_on_top: false,
-				showProgressbar: false,
-				placement: {
-					from: "top",
-					align: "right"
-				},
-				offset: 20,
-				spacing: 10,
-				z_index: 1031,
-				delay: 700,
-				timer: 850,
-				animate: {
-					enter: 'animated fadeInDown',
-					exit: 'animated fadeOutUp'
-				},
-				icon_type: 'class',
-				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-					'<span data-notify="icon"></span> ' +
-					'<span data-notify="title">{1}</span> ' +
-				'</div>' 
-			});
-		});
-
-		// status change listener
-		for (let i = 1; i < itemCount; i++) {
-			const dropItem = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-item-${i}`);
-			const dropBtn = document.querySelector(`button#table-${this.tableID}-row-${this.rowCount}-status`);
-			// change the text, icon, color when dropdown item is clicked
-			dropItem.addEventListener('click', ()=> {
-				const state = dropItem.textContent.trim(); 
-				
-				let cc, ii;
-				switch(state) {
-					case 'Complete':
-						cc = 'btn-success';
-						ii = 'icon-check';
-						break;
-					case 'Develop':
-						cc = 'btn-warning';
-						ii = 'icon-information';
-						break;
-					case 'Stuck':
-						cc = 'btn-danger';
-						ii = 'icon-close';
-						break;
-					default:
-						cc = 'btn-secondary';
-						ii = 'icon-direction';
-				}
-
-				// notification
-				$.notify({
-					// options
-					icon: 'fa fa-tasks',
-					title: `Status Changed to ${state}`,
-					message: ''
-				},{
-					// settings
-					element: 'body',
-					type: cc.substring(4),
-					allow_dismiss: true,
-					newest_on_top: false,
-					showProgressbar: false,
-					placement: {
-						from: "top",
-						align: "right"
-					},
-					offset: 20,
-					spacing: 10,
-					z_index: 1031,
-					delay: 700,
-					timer: 850,
-					animate: {
-						enter: 'animated fadeInDown',
-						exit: 'animated fadeOutUp'
-					},
-					icon_type: 'class',
-					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-						'<span data-notify="icon"></span> ' +
-						'<span data-notify="title">{1}</span> ' +
-					'</div>' 
-				});
-
-
-				dropBtn.innerHTML = "";
-				dropBtn.setAttribute('class', `btn dropdown-toggle ${cc}`)
-				dropBtn.insertAdjacentHTML('beforeend',`<span class="btn-label"><i class="fa ${ii}"></i></span> ${state} `); // add space
-				// document.querySelectorAll("div.show").forEach(e => e.classList.remove("show")); bootstrap does it automatically
-			});
-		}
-
-		// add daterange picker component to timeline 
-		$(`#${datePickerID}`).daterangepicker({
-			"autoApply": true,
-			"drops": "auto",
-			"autoUpdateInput": false,
-			"linkedCalendars": true,
-			"alwaysShowCalendars": false,
-			"opens": "center",
-		}, function(start, end, label) {
-			// only show end milestone if both (start & end) date is the same
-			if (start.format('MMM DD') == end.format('MMM DD')) {
-				$(`#${datePickedID}`).html(start.format('MMM DD'));
-				// notification
-				$.notify({
-					// options
-					icon: 'fa fa-calendar-check',
-					title: 'Marked Milestone',
-					message: ''
-				},{
-					// settings
-					element: 'body',
-					type: "info",
-					allow_dismiss: true,
-					newest_on_top: false,
-					showProgressbar: false,
-					placement: {
-						from: "top",
-						align: "right"
-					},
-					offset: 20,
-					spacing: 10,
-					z_index: 1031,
-					delay: 700,
-					timer: 850,
-					animate: {
-						enter: 'animated fadeInDown',
-						exit: 'animated fadeOutUp'
-					},
-					icon_type: 'class',
-					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-						'<span data-notify="icon"></span> ' +
-						'<span data-notify="title">{1}</span> ' +
-					'</div>' 
-				});
-			} else {
-				$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
-				// notification
-				$.notify({
-					// options
-					icon: 'fa fa-calendar-plus',
-					title: 'Timeline Updated',
-					message: ''
-				},{
-					// settings
-					element: 'body',
-					type: "info",
-					allow_dismiss: true,
-					newest_on_top: false,
-					showProgressbar: false,
-					placement: {
-						from: "top",
-						align: "right"
-					},
-					offset: 20,
-					spacing: 10,
-					z_index: 1031,
-					delay: 700,
-					timer: 850,
-					animate: {
-						enter: 'animated fadeInDown',
-						exit: 'animated fadeOutUp'
-					},
-					icon_type: 'class',
-					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-						'<span data-notify="icon"></span> ' +
-						'<span data-notify="title">{1}</span> ' +
-					'</div>' 
-				});
-			}
-			
-			var start_date = start.toISOString();
-			var end_date = end.toISOString();
-
-			
-		});	
-
-		// make all dropdowns visible overflow off its container
-		document.querySelectorAll('button.dropdown-toggle').forEach( (e) => {
-			e.setAttribute('data-boundary', 'window');
-			e.setAttribute('data-container', '.page-content');
-		});
+		// owner
 	}
 }
 
