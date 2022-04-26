@@ -762,11 +762,12 @@ class Table {
 		$(`select.selectpicker#${ownerSelectID}`).change( function() {
 			console.log('--- CHANGED --- ');
 			// remove existing avatar children
-			$('div.avatar')             //Select the object
-				.parent()               //Select the parent of the object
-				.children()             //Select all the children of the parent
-				.not(':first-child')    //Unselect the last child
-				.remove();              //Remove
+
+			//Select the object
+			$(`div.avatar-group#${ownerAvatarContainerID}`) 
+				.children() 		 // Select all the children of the parent
+				.not(':first-child') // Unselect the first child
+				.remove();           // Remove
 
 
 			// replace with new selections
