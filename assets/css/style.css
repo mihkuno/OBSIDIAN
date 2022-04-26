@@ -35,7 +35,7 @@ div.bs-searchbox > input { padding: 5px !important; }
 /* change hover and focus backgorund color */
 .dropdown-item:focus, .dropdown-item:hover {background-color: #1f283e;}
 /* change option text color */
-.ownerEmail {color: whitesmoke !important; overflow: hidden;}
+.ownerEmail {color: whitesmoke !important;}
 
 /* -- DROPDOWN MENU ARROW -- */
 .dropdown-menu:before {

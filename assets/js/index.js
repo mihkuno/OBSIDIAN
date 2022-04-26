@@ -1,3 +1,25 @@
+// PREEFINED USERS ... TO CONFIG IN PHP
+// all owner information content
+const user = [
+	{
+		image: "assets/img/jm_denis.jpg",
+		email: "caindayjoeninyo@gmail.com"
+	},
+	{
+		image: "assets/img/jm_denis.jpg",
+		email: "micahellareal@gmail.com"
+	},
+	{
+		image: "assets/img/jm_denis.jpg",
+		email: "ljisaac@gmail.com"
+	},
+	{
+		image: "assets/img/jm_denis.jpg",
+		email: "kenrian.boleche@gmail.com"
+	}
+];
+
+
 // CLASS CHANGE EVENT LISTENER
 // new ClassWatcher(targetNode, 'trigger', workOnClassAdd, workOnClassRemoval);
 class ClassWatcher {
@@ -378,6 +400,7 @@ class Table {
 		const datePickedID = `table-${this.tableID}-row-${this.rowCount}-datepicked`;
 
 		const ownerSelectID = `table-${this.tableID}-row-${this.rowCount}-owner`;
+		const ownerAvatarContainerID = `table-${this.tableID}-row-${this.rowCount}-avatar-group`;
 
 		const rowContent = `
 		<tr draggable="true" id="${tableRowID}">
@@ -410,57 +433,10 @@ class Table {
 			</td>
 			<!-- OWNER -->
 			<td>
-				<div class="avatar-group">
-					<div class="avatar">
-						<span class="avatar-title rounded-circle border border-dark">CF</span></div>
-					<div class="avatar">
-						<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle border border-dark"></div>
-					
-					<select 
-						class="selectpicker w-auto avatar show-menu-arrow hidden-caret"
-						id="${ownerSelectID}" 
-						name="selValue"  
-						data-size="5" 
-						data-live-search="true"
-						data-selected-text-format="static"
-						multiple>
-				
+				<div class="avatar-group" id="${ownerAvatarContainerID}">
 
-						<!-- OWNER MENU EMAILS -->
-						<option class="ownerEmail" data-content='
-							<div class="avatar avatar-xs">
-								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
-								&nbsp; caindayjoeninyo@gmail.com
-							</div>'>
-							value="caindayjoeninyo@gmail.com"
-						</option>
-
-						<option class="ownerEmail" data-content='
-							<div class="avatar avatar-xs">
-								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
-								&nbsp; micahellareal@gmail.com
-							</div>'>
-							value="micahellareal@gmail.com"
-						</option>
-
-						<option class="ownerEmail" data-content='
-							<div class="avatar avatar-xs">
-								<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
-								&nbsp; kenrian.boleche@ici.edu.ph
-							</div>'>
-							value="kenrian.boleche@ici.edu.ph"
-						</option>
-
-						<option class="ownerEmail" data-content='
-						<div class="avatar avatar-xs">
-							<img src="assets/img/jm_denis.jpg" class="avatar-img rounded-circle">
-							&nbsp; aaaaaaaaaaaaaaaaaaaaaaaaa
-						</div>'>
-						value="aaaaaaaaaaaaaaaaaaaaaaaaa"
-					</option>
-
-
-					</select>			
+					<!-- OWNER AVATAR APPEND HERE -->
+								
 
 				</div>
 			</td>
@@ -738,22 +714,92 @@ class Table {
 			
 		});	
 
-		// add owner select button componennt
+
+		// add owner select container
+		const ownerSelectContainer = `
+		<select 
+			class="selectpicker w-auto avatar show-menu-arrow hidden-caret"
+			id="${ownerSelectID}" 
+			name="selValue"  
+			data-size="5" 
+			data-live-search="true"
+			data-selected-text-format="static"
+			multiple>
+	
+			<!-- OWNER MENU APPENED BEFORE -->
+		</select>`;
+
+		const avatarGroup = document.getElementById(ownerAvatarContainerID);
+		avatarGroup.insertAdjacentHTML('beforeend', ownerSelectContainer);
+
+		// add owner selectpicker button componennt
 		$(`select.selectpicker#${ownerSelectID}`).selectpicker({
 			style: "btn btn-secondary btn-border btn-round owner-select",
 			dropupAuto: false,
 		});
+		
+		// owner menu option html blueprint
+		const addOwnerMenu = `select.selectpicker#${ownerSelectID}`;
+		const addOwnerButton = 'div.filter-option-inner-inner';
 
-		// add a static icon to the owner button 
-		document.querySelector('div.filter-option-inner-inner').innerHTML = `<i class='fa fa-plus'><i>`;
+
+		// append user option blueprint to the menu
+		for (let info of user) { // global list of all users
+			let ownerMenuContent = `
+			<option class="ownerEmail" data-content='
+				<div class="avatar avatar-xs">
+					<img src="${info['image']}" class="avatar-img rounded-circle">
+					&nbsp; ${info['email']}
+				</div>'>
+				value="${info['email']} ${info['image']}"
+			</option>
+			`;
+			$(addOwnerMenu).append(ownerMenuContent).selectpicker('refresh');
+		}
+
 
 		// owner select onchange listener
 		$(`select.selectpicker#${ownerSelectID}`).change( function() {
-			console.log('you selected:', $(this).val());
-			// return the static icon to the owner button 
-			document.querySelectorAll('div.filter-option-inner-inner').forEach((e) => {
+			console.log('--- CHANGED --- ');
+			// remove existing avatar children
+			$('div.avatar')             //Select the object
+				.parent()               //Select the parent of the object
+				.children()             //Select all the children of the parent
+				.not(':first-child')    //Unselect the last child
+				.remove();              //Remove
+
+
+			// replace with new selections
+			let raw, extract, avatar;
+			const data = $(this).val();	// get email and image value of selected options
+			for (raw of data) {
+				// removes value="" string for each data 
+				extract = raw.slice(7, -1).split(" ");
+				// avatar profile html blueprint
+				avatar = `
+				<div class="avatar">
+					<img src="${extract[1]}" class="avatar-img rounded-circle border border-dark">
+				</div>`;
+				// append the new selection
+				avatarGroup.insertAdjacentHTML('beforeend',avatar);
+			}
+
+
+			// return the static icon to owner button 
+			document.querySelectorAll(addOwnerButton).forEach((e) => {
 				e.innerHTML = `<i class='fa fa-plus'><i>`;
 			});
+		});
+
+
+
+
+
+
+
+		// add static icon to owner button 
+		document.querySelectorAll(addOwnerButton).forEach((e) => {
+			e.innerHTML = `<i class='fa fa-plus'><i>`;
 		});
 
 		// make all dropdowns visible overflow off its container
