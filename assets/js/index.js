@@ -19,6 +19,7 @@ const USERS = [
 	}
 ];
 
+
 // CLASS CHANGE EVENT LISTENER
 // new ClassWatcher(targetNode, 'trigger', workOnClassAdd, workOnClassRemoval);
 class ClassWatcher {
@@ -145,6 +146,8 @@ class OwnerGroup {
 
 		this.extractPrev = []; // check select added and removed
 		this.extract = []; // array of all email selected
+		this.diff; // added or removed value
+		this.added; // is added or removed?
 
 		// insert the select element to the parent
 		document.getElementById(this.parentID).insertAdjacentHTML('beforeend', 
@@ -211,17 +214,61 @@ class OwnerGroup {
 
 			// get email, check if added or removed
 			if (this.extract.length > this.extractPrev.length) {
-				console.log('added: ', this.extract.length, this.extractPrev.length);
-				let diff = $(this.extract).not(this.extractPrev).get();
-				console.log('added: ', diff);
+				// console.log('added: ', this.extract.length, this.extractPrev.length);
+				this.diff = $(this.extract).not(this.extractPrev).get();
+				// console.log('added: ', this.diff);
 				this.extractPrev = this.extract;
+				this.added = true;
 			}
 			else {
-				console.log('removed: ', this.extract.length, this.extractPrev.length);
-				let diff = $(this.extractPrev).not(this.extract).get();
-				console.log('removed: ', diff);
+				// console.log('removed: ', this.extract.length, this.extractPrev.length);
+				this.diff = $(this.extractPrev).not(this.extract).get();
+				// console.log('removed: ', this.diff);
 				this.extractPrev = this.extract;
+				this.added = false;
 			}
+
+			const title = (this.added)? 'Owner Added' : 'Owner Removed';
+			const icon = (this.added)? 'fas fa-user-plus' : 'fas fa-user-minus';
+			const color = (this.added)? 'info' : 'default';
+
+			// notification
+			$.notify({
+				// options
+				"icon": icon,
+				"title": title,
+				"message": `The user '${this.diff}' has been notified`
+			},{
+				// settings
+				element: 'body',
+				type: "info",
+				allow_dismiss: true,
+				newest_on_top: false,
+				showProgressbar: true,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 1200,
+				timer: 850,
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				type: color,
+				icon_type: 'class',
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<span data-notify="icon"></span> ' +
+					'<span data-notify="title">{1}</span> ' +
+					'<span data-notify="message">{2}</span> ' +
+					 '<div class="progress" data-notify="progressbar">' +
+					'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+					'</div>' +
+				'</div>' 
+			});
 
 			// refresh static icon to owner button 
 			document.querySelectorAll(OWNERBUTTON).forEach((rf) => {
@@ -423,8 +470,6 @@ class Table {
 		removeTableButton.addEventListener('click', () => {
 			console.log(`-- removed deleted table --`);
 
-
-
 			// MODAL CONFIRMATION
 			swal({
 				title: 'Are you sure?',
@@ -531,7 +576,7 @@ class Table {
 			</td>
 			<!-- TIMELINE -->
 			<td>
-				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:0px"> &nbsp;
+				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:120px"> &nbsp;
 					<i class="fa fa-calendar">
 						<span id="${datePickedID}"></span>
 						<i class="fa fa-caret-down"></i>
