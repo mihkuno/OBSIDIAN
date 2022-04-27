@@ -1,5 +1,4 @@
 // PREEFINED USERS ... TO CONFIG IN PHP
-// all owner information content
 const USERS = [
 	{
 		image: "assets/img/jm_denis.jpg",
@@ -19,11 +18,9 @@ const USERS = [
 	}
 ];
 
-
 // CLASS CHANGE EVENT LISTENER
-// new ClassWatcher(targetNode, 'trigger', workOnClassAdd, workOnClassRemoval);
 class ClassWatcher {
-
+	// new ClassWatcher(targetNode, 'trigger', workOnClassAdd, workOnClassRemoval);
     constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
         this.targetNode = targetNode
         this.classToWatch = classToWatch
@@ -66,6 +63,64 @@ class ClassWatcher {
     }
 }
 
+// INPUT COMPONENT
+class LabelInput {
+	constructor(componentID, parentID, label) {
+		this.componentID = componentID;
+		this.parentID = parentID;
+		this.label = label;
+
+		this.input = document.createElement('input');
+		this.input.setAttribute('type', 'text');
+		this.input.setAttribute('id', this.componentID);
+		this.input.setAttribute('class', 'form-control input-border-bottom', 'row-label');
+		this.input.setAttribute('style', 'border: 0; color: #828282;');
+		this.input.setAttribute('placeholder', `${this.componentID}`);
+		this.input.setAttribute('value', `${this.componentID}`);
+
+		document.getElementById(this.parentID).appendChild(this.input);
+
+		// add onclick event
+		this.input.addEventListener('change', (e) => {
+			const value = e.target.value.trim()
+			this.label = value;
+			// notification
+			$.notify({
+				// options
+				icon: 'fa fa-pencil-alt',
+				title: 'Renamed Row Label',
+				message: ''
+			},{
+				// settings
+				element: 'body',
+				type: "info",
+				allow_dismiss: true,
+				newest_on_top: false,
+				showProgressbar: false,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 700,
+				timer: 850,
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				icon_type: 'class',
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<span data-notify="icon"></span> ' +
+					'<span data-notify="title">{1}</span> ' +
+				'</div>' 
+			});
+		});
+	
+	}
+}
+
 // STATUS COMPONENT
 class StatusButton {
 	constructor(componentID, parentID, menuID, status) {
@@ -76,114 +131,71 @@ class StatusButton {
 		this.color; 
 		this.icon;
 
-		// change the text, icon, color
-		switch(this.status) {
-			case 'Complete':
-				this.color = 'btn-success';
-				this.icon = 'icon-check';
-				break;
-			case 'Develop':
-				this.color = 'btn-warning';
-				this.icon = 'icon-information';
-				break;
-			case 'Stuck':
-				this.color = 'btn-danger';
-				this.icon = 'icon-close';
-				break;
-			default:
-				this.color = 'btn-secondary';
-				this.icon = 'icon-direction';
-		}
+		this.buttonItem = [];
 
-		// add status button to row
-		document.getElementById(this.parentID).insertAdjacentHTML('beforeend',
-		`<button 
-			class="btn dropdown-toggle ${this.color}" 
-			style="color: white;" 
-			data-toggle="dropdown" 
-			aria-haspopup="true" 
-			aria-expanded="false" 
-			id="${this.componentID}">
+		// change text, icon, color
+		const states = {
+			Soon: ['btn-secondary', 'icon-direction'],
+			Stuck: ['btn-danger', 'icon-information'],
+			Develop: ['btn-warning', 'icon-puzzle'],
+			Complete: ['btn-success', 'icon-check'],
+		};
 
-			<span class="btn-label">
-				<i class="fa ${this.icon}"></i></span>
-			${this.status}
-		 </button>`);
+		this.color = states[this.status][0];
+		this.icon = states[this.status][1];
+		
+		// create button object
+		this.buttonDrop = document.createElement('button');
+		this.buttonDrop.setAttribute('id', `${this.componentID}`);
+		this.buttonDrop.setAttribute('class', `btn dropdown-toggle ${this.color}`);
+		this.buttonDrop.setAttribute('style', 'color: white');
+		this.buttonDrop.setAttribute('data-toggle', 'dropdown');
+		this.buttonDrop.setAttribute('aria-haspopup', 'true');
+		this.buttonDrop.setAttribute('aria-expanded', 'false');
+
+		// set icon and text
+		this.buttonDrop.insertAdjacentHTML('beforeend',
+			`<span class="btn-label"><i class="fa ${this.icon}"></i></span> ${this.status}`);
+
+		// set parent
+		document.getElementById(this.parentID).appendChild(this.buttonDrop);
 		 
-		 // add status button dropdown menu
-		 const states = ['Soon','Stuck','Develop','Complete'];
-		 for (let i=0; i < states.length; i++) {
-			let color, icon;
-			switch(states[i]) {
-				case 'Complete':
-					color = 'btn-success';
-					icon = 'icon-check';
-					break;
-				case 'Develop':
-					color = 'btn-warning';
-					icon = 'icon-information';
-					break;
-				case 'Stuck':
-					color = 'btn-danger';
-					icon = 'icon-close';
-					break;
-				default:
-					color = 'btn-secondary';
-					icon = 'icon-direction';
-			}
-			document.getElementById(this.menuID).insertAdjacentHTML('beforeend',
-			`<button 
-				class="btn dropdown-item ${color}" 
-				style="color: white;" 
-				id="${this.menuID}-item-${i+1}">
-				<span class="btn-label">
-					<i class="fa ${icon}"></i>
-				</span>
-				${states[i]}
-			 </button>`);
-		 }
+		 // add dropdown items 
+		let count = 0;
+		 for(let key in states) {
+			const color = states[key][0];
+			const icon = states[key][1];
 
-		 console.log(document.getElementById(`${this.menuID}-item-1`));
-		 console.log(document.getElementById(`${this.componentID}`));
+			// create button object
+			this.buttonItem[count] = document.createElement('button');
+			this.buttonItem[count].setAttribute('id', `${this.menuID}-item-${count}`);
+			this.buttonItem[count].setAttribute('class', `btn dropdown-item ${color}`);
+			this.buttonItem[count].setAttribute('style', 'color: white');
+		
+			// set icon and text
+			this.buttonItem[count].insertAdjacentHTML('beforeend',
+			`<span class="btn-label"><i class="fa ${icon}"></i></span> ${key}`);
 
+			// add the item 
+			document.getElementById(this.menuID).appendChild(this.buttonItem[count]);
 
-		// status change listener
-		for (let i = 0; i < states.length; i++) {
-			const dropItem = document.getElementById(`${this.menuID}-item-${i+1}`);
-			const dropBtn = document.getElementById(`${this.componentID}`);
+			// add onclick event
+			this.buttonItem[count].addEventListener('click', (e)=> {
+				// change text, icon, color when dropdown item is clicked
+				const st = e.target.innerText.trim(); 
+				const cc = states[st][0];
+				const ii = states[st][1];
 
-			// change text, icon, color when dropdown item is clicked
-			dropItem.addEventListener('click', ()=> {
-				const st = dropItem.textContent.trim(); 
-
-				let cc, ii;
-				switch(st) {
-					case 'Complete':
-						cc = 'btn-success';
-						ii = 'icon-check';
-						break;
-					case 'Develop':
-						cc = 'btn-warning';
-						ii = 'icon-information';
-						break;
-					case 'Stuck':
-						cc = 'btn-danger';
-						ii = 'icon-close';
-						break;
-					default:
-						cc = 'btn-secondary';
-						ii = 'icon-direction';
-				}
-
-				dropBtn.innerHTML = "";
-				dropBtn.setAttribute('class', `btn dropdown-toggle ${cc}`)
-				dropBtn.insertAdjacentHTML('beforeend',
+				this.status = st;
+				this.buttonDrop.innerHTML = "";
+				this.buttonDrop.setAttribute('class', `btn dropdown-toggle ${cc}`)
+				this.buttonDrop.insertAdjacentHTML('beforeend',
 					`<span class="btn-label"><i class="fa ${ii}"></i></span> ${st}`);
 
 				// notification
 				$.notify({
 					// options
-					icon: 'fa fa-tasks',
+					icon: `${ii}`,
 					title: `Status Changed to ${st}`,
 					message: ''
 				},{
@@ -213,16 +225,18 @@ class StatusButton {
 					'</div>' 
 				});				
 			});
+			count++;
 		}
 	}
 }
 
 // OWNER COMPONENT 
 class OwnerGroup {
-	constructor(componentID, parentID) {
+	constructor(componentID, parentID, email) {
 		const OWNERBUTTON = `div.filter-option-inner-inner`;
 		this.componentID = componentID;
 		this.parentID = parentID;
+		this.email = email;
 
 		this.extractPrev = []; // check select added and removed
 		this.extract = []; // array of all email selected
@@ -363,36 +377,135 @@ class OwnerGroup {
 	};
 }
 
+// DATEPICKER COMPONENT
+class DatePicker {
+	constructor() {
+		
+		
+		
+	}
+}
+
+// REMOVE ROW COMPONENT
+class RemoveRow {
+	constructor(componentID, parentID) {
+		this.componentID = componentID;
+		this.parentID = parentID;
+
+		this.remove = document.createElement('button');
+		this.remove.setAttribute('id', this.componentID);
+		this.remove.setAttribute('data-toggle', 'tooltip');
+		this.remove.setAttribute('class', 'btn btn-link btn-primary btn-lg');
+
+		// set button icon
+		this.remove.insertAdjacentHTML('beforeend','<i class="fas fa-times text-danger"></i>');
+
+		// set parent 
+		document.getElementById(this.parentID)
+			.insertBefore( // before sort handle
+				this.remove, document.getElementById(this.parentID).firstChild); 
+
+		// add onclick event
+		this.remove.addEventListener('click', () => {
+			// MODAL CONFIRMATION
+			swal({
+				title: 'Are you sure?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						className: 'btn btn-danger'
+					},
+					confirm: {
+						text : 'Yes, delete it!',
+						className : 'btn btn-success',
+					}
+				}
+			}).then((Delete) => {
+				if (Delete) {
+					// deletes entire row
+					document.getElementById(this.parentID).parentElement.parentElement.remove(); 
+				
+					// notification
+					$.notify({
+						// options
+						icon: 'flaticon-exclamation',
+						title: 'Removed Row',
+						message: ''
+					},{
+						// settings
+						element: 'body',
+						type: "warning",
+						allow_dismiss: true,
+						newest_on_top: false,
+						showProgressbar: false,
+						placement: {
+							from: "top",
+							align: "right"
+						},
+						offset: 20,
+						spacing: 10,
+						z_index: 1031,
+						delay: 700,
+						timer: 850,
+						animate: {
+							enter: 'animated fadeInDown',
+							exit: 'animated fadeOutUp'
+						},
+						icon_type: 'class',
+						template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+							'<span data-notify="icon"></span> ' +
+							'<span data-notify="title">{1}</span> ' +
+						'</div>' 
+					});
+					swal({
+						title: 'Removed!',
+						text: '',
+						icon: 'success',
+						timer: 650
+					});
+				} else {
+					swal.close();
+				}
+			});
+		});
+
+	}
+}
+
 // ROW COMPONENT
 class Row {
-	constructor(componentID, parentID, label, status) {
+	constructor(componentID, parentID, label, status, timeline, owner) {
 		this.componentID = componentID;
 		this.parentID = parentID;
 		this.label = label;
 		this.status = status;
-		this.datepicked, this.owner;
+		this.timeline = timeline, 
+		this.owner = owner;
 
 		const labelID       = `${this.componentID}-label`;
+		const labelContID   = `${this.componentID}-labelCont`;
+	
 		const statusID      = `${this.componentID}-status`;
-		const statusContID  = `${this.componentID}-statusContainer`;
+		const statusContID  = `${this.componentID}-statusCont`;
 		const statusMenuID  = `${this.componentID}-statusMenu`;
+	
 		const datePickerID  = `${this.componentID}-datepicker`;
 		const datePickedID  = `${this.componentID}-datepicked`;
+	
 		const ownerGroupID  = `${this.componentID}-avatar-group`
 		const ownerSelectID = `${this.componentID}-owner`;
+	
 		const removeID      = `${this.componentID}-remove`;
+		const removeContID  = `${this.componentID}-removeCont`;
 
 		const rowContent = `
 		<tr draggable="true" id="${this.componentID}">
 			<!-- LABEL -->
 			<td>
-				<div class="form-group">
-					<input 
-						type="text" 
-						class="form-control input-border-bottom row-label" id="${labelID}" 
-						style='border: 0; color: #828282;' 
-						placeholder="row-${this.componentID}" 
-					value="${label}">
+				<div class="form-group" id='${labelContID}'>
+					<!-- LABEL INPUT -->
 				</div>
 			</td>
 			<!-- STATUS -->
@@ -416,20 +529,16 @@ class Row {
 			<!-- OWNER -->
 			<td>
 				<div class="avatar-group" id="${ownerGroupID}">
-
-					<!-- OWNER AVATAR APPEND HERE -->
-								
-
+					<!-- OWNER AVATAR APPEND -->
 				</div>
 			</td>
 			<!-- LAST UPDATED -->
 			<td>13 minutes ago</td>
-			<!-- FORM ACTION AND SORTABLE -->
+			<!-- REMOVE | SORTABLE -->
 			<td>
-				<div class="form-button-action">
-					<button id='${removeID}' data-toggle="tooltip" class="btn btn-link btn-primary btn-lg">
-						<i class="fas fa-times text-danger"></i>
-					</button>
+				<div class="form-button-action" id="${removeContID}">
+					<!-- REMOVE ROW -->
+					
 					<button class="btn btn-link btn-secondary row-handle row-listener">
 						<i class="fas fa-ellipsis-h"></i>
 					</button>
@@ -440,203 +549,101 @@ class Row {
 		// insert the row to table body
 		document.getElementById(this.parentID).insertAdjacentHTML('beforeend', rowContent);
 
-		new StatusButton(statusID, statusContID, statusMenuID, status);
 
-		// create an id for row ownergroup
-		new OwnerGroup(ownerSelectID, ownerGroupID); 
-
-		// // delete row button listener
-		// const deleteRowButton = document.querySelector(`button#${rowEditID}`); 
-		// deleteRowButton.addEventListener('click', () => {
-		// 	// MODAL CONFIRMATION
-		// 	swal({
-		// 		title: 'Are you sure?',
-		// 		text: "You won't be able to revert this!",
-		// 		icon: 'warning',
-		// 		buttons:{
-		// 			cancel: {
-		// 				visible: true,
-		// 				className: 'btn btn-danger'
-		// 			},
-		// 			confirm: {
-		// 				text : 'Yes, delete it!',
-		// 				className : 'btn btn-success',
-		// 			}
-		// 		}
-		// 	}).then((Delete) => {
-		// 		if (Delete) {
-		// 			document.querySelector(`tr#${tableRowID}`).remove(); // deletes the row based on ID
-		// 			// notification
-		// 			$.notify({
-		// 				// options
-		// 				icon: 'flaticon-exclamation',
-		// 				title: 'Removed Row',
-		// 				message: ''
-		// 			},{
-		// 				// settings
-		// 				element: 'body',
-		// 				type: "warning",
-		// 				allow_dismiss: true,
-		// 				newest_on_top: false,
-		// 				showProgressbar: false,
-		// 				placement: {
-		// 					from: "top",
-		// 					align: "right"
-		// 				},
-		// 				offset: 20,
-		// 				spacing: 10,
-		// 				z_index: 1031,
-		// 				delay: 700,
-		// 				timer: 850,
-		// 				animate: {
-		// 					enter: 'animated fadeInDown',
-		// 					exit: 'animated fadeOutUp'
-		// 				},
-		// 				icon_type: 'class',
-		// 				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-		// 					'<span data-notify="icon"></span> ' +
-		// 					'<span data-notify="title">{1}</span> ' +
-		// 				'</div>' 
-		// 			});
-		// 			swal({
-		// 				title: 'Removed!',
-		// 				text: '',
-		// 				icon: 'success',
-		// 				timer: 650
-		// 			});
-		// 		} else {
-		// 			swal.close();
-		// 		}
-		// 	});
-		// });
-
-		// // add notification on row-label change
-		// document.querySelector(`input#${rowLabelID}`).addEventListener('change', () => {
-
-		// 	let row = [this.label, this.status, $(`#${datePickerID}`).textContent];
-		// 	console.log(row);
-		// 	// notification
-		// 	$.notify({
-		// 		// options
-		// 		icon: 'fa fa-pencil-alt',
-		// 		title: 'Renamed Row Label',
-		// 		message: ''
-		// 	},{
-		// 		// settings
-		// 		element: 'body',
-		// 		type: "info",
-		// 		allow_dismiss: true,
-		// 		newest_on_top: false,
-		// 		showProgressbar: false,
-		// 		placement: {
-		// 			from: "top",
-		// 			align: "right"
-		// 		},
-		// 		offset: 20,
-		// 		spacing: 10,
-		// 		z_index: 1031,
-		// 		delay: 700,
-		// 		timer: 850,
-		// 		animate: {
-		// 			enter: 'animated fadeInDown',
-		// 			exit: 'animated fadeOutUp'
-		// 		},
-		// 		icon_type: 'class',
-		// 		template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-		// 			'<span data-notify="icon"></span> ' +
-		// 			'<span data-notify="title">{1}</span> ' +
-		// 		'</div>' 
-		// 	});
-		// });
-
-		// // add daterange picker component to timeline 
-		// $(`#${datePickerID}`).daterangepicker({
-		// 	"autoApply": true,
-		// 	"drops": "auto",
-		// 	"autoUpdateInput": false,
-		// 	"linkedCalendars": true,
-		// 	"alwaysShowCalendars": false,
-		// 	"opens": "center",
-		// }, function(start, end, label) {
-		// 	// only show end milestone if both (start & end) date is the same
-		// 	if (start.format('MMM DD') == end.format('MMM DD')) {
-		// 		$(`#${datePickedID}`).html(start.format('MMM DD'));
-		// 		// notification
-		// 		$.notify({
-		// 			// options
-		// 			icon: 'fa fa-calendar-check',
-		// 			title: 'Marked Milestone',
-		// 			message: ''
-		// 		},{
-		// 			// settings
-		// 			element: 'body',
-		// 			type: "info",
-		// 			allow_dismiss: true,
-		// 			newest_on_top: false,
-		// 			showProgressbar: false,
-		// 			placement: {
-		// 				from: "top",
-		// 				align: "right"
-		// 			},
-		// 			offset: 20,
-		// 			spacing: 10,
-		// 			z_index: 1031,
-		// 			delay: 700,
-		// 			timer: 850,
-		// 			animate: {
-		// 				enter: 'animated fadeInDown',
-		// 				exit: 'animated fadeOutUp'
-		// 			},
-		// 			icon_type: 'class',
-		// 			template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-		// 				'<span data-notify="icon"></span> ' +
-		// 				'<span data-notify="title">{1}</span> ' +
-		// 			'</div>' 
-		// 		});
-		// 	} else {
-		// 		$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
-		// 		// notification
-		// 		$.notify({
-		// 			// options
-		// 			icon: 'fa fa-calendar-plus',
-		// 			title: 'Timeline Updated',
-		// 			message: ''
-		// 		},{
-		// 			// settings
-		// 			element: 'body',
-		// 			type: "info",
-		// 			allow_dismiss: true,
-		// 			newest_on_top: false,
-		// 			showProgressbar: false,
-		// 			placement: {
-		// 				from: "top",
-		// 				align: "right"
-		// 			},
-		// 			offset: 20,
-		// 			spacing: 10,
-		// 			z_index: 1031,
-		// 			delay: 700,
-		// 			timer: 850,
-		// 			animate: {
-		// 				enter: 'animated fadeInDown',
-		// 				exit: 'animated fadeOutUp'
-		// 			},
-		// 			icon_type: 'class',
-		// 			template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-		// 				'<span data-notify="icon"></span> ' +
-		// 				'<span data-notify="title">{1}</span> ' +
-		// 			'</div>' 
-		// 		});
-		// 	}
-			
-		// 	var start_date = start.toISOString();
-		// 	var end_date = end.toISOString();
-
-			
-		// });	
-
-		// make all dropdowns visible overflow off its container
+		new LabelInput(labelID, labelContID, this.label);
 		
+		new StatusButton(statusID, statusContID, statusMenuID, this.status);
+		
+		// add daterange picker component 
+		$(`#${datePickerID}`).daterangepicker({
+			"autoApply": true,
+			"drops": "auto",
+			"autoUpdateInput": false,
+			"linkedCalendars": true,
+			"alwaysShowCalendars": false,
+			"opens": "center",
+		}, function(start, end, label) {
+			// only show end milestone if both (start & end) date is the same
+			if (start.format('MMM DD') == end.format('MMM DD')) {
+				$(`#${datePickedID}`).html(start.format('MMM DD'));
+				// notification
+				$.notify({
+					// options
+					icon: 'fa fa-calendar-check',
+					title: 'Marked Milestone',
+					message: ''
+				},{
+					// settings
+					element: 'body',
+					type: "info",
+					allow_dismiss: true,
+					newest_on_top: false,
+					showProgressbar: false,
+					placement: {
+						from: "top",
+						align: "right"
+					},
+					offset: 20,
+					spacing: 10,
+					z_index: 1031,
+					delay: 700,
+					timer: 850,
+					animate: {
+						enter: 'animated fadeInDown',
+						exit: 'animated fadeOutUp'
+					},
+					icon_type: 'class',
+					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+						'<span data-notify="icon"></span> ' +
+						'<span data-notify="title">{1}</span> ' +
+					'</div>' 
+				});
+			} else {
+				$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
+				// notification
+				$.notify({
+					// options
+					icon: 'fa fa-calendar-plus',
+					title: 'Timeline Updated',
+					message: ''
+				},{
+					// settings
+					element: 'body',
+					type: "info",
+					allow_dismiss: true,
+					newest_on_top: false,
+					showProgressbar: false,
+					placement: {
+						from: "top",
+						align: "right"
+					},
+					offset: 20,
+					spacing: 10,
+					z_index: 1031,
+					delay: 700,
+					timer: 850,
+					animate: {
+						enter: 'animated fadeInDown',
+						exit: 'animated fadeOutUp'
+					},
+					icon_type: 'class',
+					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+						'<span data-notify="icon"></span> ' +
+						'<span data-notify="title">{1}</span> ' +
+					'</div>' 
+				});
+			}
+			
+			let start_date = start.toISOString();
+			let end_date = end.toISOString();
+
+		});
+
+		new OwnerGroup(ownerSelectID, ownerGroupID, this.owner); // needs a fix
+
+		new RemoveRow(removeID, removeContID);
+		
+		// make all dropdowns visible overflow off its container		
 		document.querySelectorAll('button.dropdown-toggle').forEach( (e) => {
 			e.setAttribute('data-boundary', 'window');
 			e.setAttribute('data-container', '.page-content');
@@ -897,31 +904,20 @@ class Table {
 	}
 
 	// add a row method
-	addRow(label, status) {
+	addRow(label, status, timeline, owner) {
 		this.rowCount++; 
 		console.log('num of rows', this.rowCount);
 
 		const componentID = `table-${this.tableID}-row-${this.rowCount}`;
 		const parentID = `table-${this.tableID}`;  
-		new Row(componentID, parentID, label, status);
-
-	}
-
-	// get a 2D array of all the row information
-	getInformation() {
-		// label
-
-		// status
-
-		// timeline
-
-		// owner
+		new Row(componentID, parentID, label, status, timeline, owner);
 	}
 }
 
 // create a table template
 let mytable = new Table('FEATURES');
-mytable.addRow('sdfasdfsadf', 'Complete');
+mytable.addRow('sdfasdfsadf', 'Complete', 'Apr 07 - May 02', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
+
 
 // create table button functionality
 const createTableID = 'table-create';
