@@ -908,7 +908,7 @@ class TableCard {
 					}
 				}).then((Delete) => {
 					if (Delete) {
-						this.componentID.remove(); // delete table
+						$(`#${this.componentID}`).remove(); // delete table
 						// notification
 						$.notify({
 							// options
