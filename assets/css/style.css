@@ -7,7 +7,7 @@
 
 /* -- SORTING -- */
 /* hide the drag n' drop ghost*/
-.sort-wrapper .sortable-drag { opacity: 0; }
+.sortable-drag { opacity: 0; } /* invert >> .sortable-ghost { opacity: 0; } */
 /* table and row selected*/
 .table-selected { border: 2px dashed #f7f1e3; }
 .row-selected { background-color: #f7f1e3 !important;}

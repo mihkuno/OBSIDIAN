@@ -76,7 +76,7 @@ class LabelInput {
 		this.input.setAttribute('class', 'form-control input-border-bottom', 'row-label');
 		this.input.setAttribute('style', 'border: 0; color: #828282;');
 		this.input.setAttribute('placeholder', `${this.componentID}`);
-		this.input.setAttribute('value', `${this.componentID}`);
+		this.input.setAttribute('value', `${this.label}`);
 
 		document.getElementById(this.parentID).appendChild(this.input);
 
@@ -88,8 +88,8 @@ class LabelInput {
 			$.notify({
 				// options
 				icon: 'fa fa-pencil-alt',
-				title: 'Renamed Row Label',
-				message: ''
+				title: 'Label Renamed',
+				message: this.label
 			},{
 				// settings
 				element: 'body',
@@ -114,10 +114,10 @@ class LabelInput {
 				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
 					'<span data-notify="icon"></span> ' +
 					'<span data-notify="title">{1}</span> ' +
+					'<span data-notify="message">{2}</span> ' +
 				'</div>' 
 			});
 		});
-	
 	}
 }
 
@@ -804,7 +804,7 @@ class TableCard {
 			}
 		);
 
-		// locks row handle when select-sorting   
+		// locks row handle when select-sorting table
 		new ClassWatcher(
 			document.getElementById(this.componentID), 'table-selected', 
 			() => document.querySelectorAll('button.row-listener')
@@ -813,46 +813,50 @@ class TableCard {
 				.forEach(handle => handle.classList.add('row-handle'))
 		);
 
-		// notification on table-label change
-		$(this.labelID).click( () => {
-			// notification
-			$.notify({
-				// options
-				icon: 'fa fa-pencil-alt',
-				title: 'Renamed Table',
-				message: ''
-			},{
-				// settings
-				element: 'body',
-				type: "info",
-				allow_dismiss: true,
-				newest_on_top: false,
-				showProgressbar: false,
-				placement: {
-					from: "top",
-					align: "right"
-				},
-				offset: 20,
-				spacing: 10,
-				z_index: 1031,
-				delay: 700,
-				timer: 850,
-				animate: {
-					enter: 'animated fadeInDown',
-					exit: 'animated fadeOutUp'
-				},
-				icon_type: 'class',
-				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-					'<span data-notify="icon"></span> ' +
-					'<span data-notify="title">{1}</span> ' +
-				'</div>' 
+		// table-label change notification
+		document.getElementById(this.labelID)
+			.addEventListener('change', () => 
+			{
+				this.cardLabel = document.getElementById(this.labelID).value;
+				// notification
+				$.notify({
+					// options
+					icon: 'fa fa-pencil-alt',
+					title: 'Table Renamed',
+					message: this.cardLabel
+				},{
+					// settings
+					element: 'body',
+					type: "info",
+					allow_dismiss: true,
+					newest_on_top: false,
+					showProgressbar: false,
+					placement: {
+						from: "top",
+						align: "right"
+					},
+					offset: 20,
+					spacing: 10,
+					z_index: 1031,
+					delay: 700,
+					timer: 850,
+					animate: {
+						enter: 'animated fadeInDown',
+						exit: 'animated fadeOutUp'
+					},
+					icon_type: 'class',
+					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+						'<span data-notify="icon"></span> ' +
+						'<span data-notify="title">{1}</span> ' +
+						'<span data-notify="message">{2}</span> ' +
+					'</div>' 
 			});
 		});
 
 		// add-row button listener
 		document.getElementById(this.addRowID)
 			.addEventListener('click', () => {
-				this.addRow('Something', 'Soon');
+				this.addRow('', 'Soon');
 				
 				// notification
 				$.notify({
@@ -965,12 +969,6 @@ class TableCard {
 		new Row(rowID, this.tbodyID, label, status);
 	}
 }
-
-
-
-
-
-
 
 // create a table template
 let mytable = new TableCard('Grocery List');
