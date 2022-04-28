@@ -581,14 +581,14 @@ class Row {
 		const statusContID  = `${this.componentID}-statusCont`;
 		const statusMenuID  = `${this.componentID}-statusMenu`;
 	
-		const datePickerID  = `${this.componentID}-datepicker`;
-		const datePickedID  = `${this.componentID}-datepicked`;
+		const datePickerID  = `${this.componentID}-datePicker`;
+		const datePickedID  = `${this.componentID}-datePicked`;
 	
-		const ownerGroupID  = `${this.componentID}-avatar-group`
+		const ownerGroupID  = `${this.componentID}-avatarGroup`
 		const ownerSelectID = `${this.componentID}-owner`;
 	
 		const removeID      = `${this.componentID}-remove`;
-		const removeContID  = `${this.componentID}-removeCont`;
+		const actionContID  = `${this.componentID}-actionCont`;
 
 		const rowContent = `
 		<tr draggable="true" id="${this.componentID}">
@@ -627,7 +627,7 @@ class Row {
 			<td>13 minutes ago</td>
 			<!-- REMOVE | SORTABLE -->
 			<td>
-				<div class="form-button-action" id="${removeContID}">
+				<div class="form-button-action" id="${actionContID}">
 					<!-- REMOVE ROW -->
 					
 					<button class="btn btn-link btn-secondary row-handle row-listener">
@@ -662,27 +662,17 @@ class Row {
 			ownerGroupID); 	// owner container
 
 		new RemoveRow(
-			this.removeID,		// remove button 
-			removeContID);	// remove container
+			this.removeID,	// remove button 
+			actionContID);	// remove container
 		
 		// make all dropdowns visible overflow off its container		
-		document.querySelectorAll('button.dropdown-toggle').forEach( (e) => {
-			e.setAttribute('data-boundary', 'window');
-			e.setAttribute('data-container', '.page-content');
-		});
-
-		// sortable rows
-		new Sortable(
-			document.getElementById(this.parentID), 
-			{ 
-				selectedClass: 'row-selected', // color of multidrag
-				handle: '.row-handle', //  a component to drag on
-				forceFallback: false, // hides ghost, different mouse cursor
-				group: 'shared-row', // make rows movable to different tables
-				multiDrag: true, // enable selection of multiple rows
-				animation: 200, // animation speed
-			}
-		);
+		document.querySelectorAll('button.dropdown-toggle')
+			.forEach( 
+				(e) => {
+					e.setAttribute('data-boundary', 'window');
+					e.setAttribute('data-container', '.page-content');
+				}
+			);
 	}
 }
 
@@ -787,6 +777,19 @@ class TableCard {
 		document.getElementById(this.parentID)
 			.insertAdjacentHTML('beforeend', this.content);
 
+		// sortable rows
+		new Sortable(
+			document.getElementById(this.tbodyID), 
+			{ 
+				selectedClass: 'row-selected', // color of multidrag
+				handle: '.row-handle', //  a component to drag on
+				forceFallback: false, // hides ghost, different mouse cursor
+				group: 'shared-row', // make rows movable to different tables
+				multiDrag: true, // enable selection of multiple rows
+				animation: 200, // animation speed
+			}
+		);
+
 		// sortable table
 		new Sortable(
 			document.getElementById(this.parentID), 
@@ -846,7 +849,7 @@ class TableCard {
 			});
 		});
 
-		// addrow click listener
+		// add-row button listener
 		document.getElementById(this.addRowID)
 			.addEventListener('click', () => {
 				this.addRow('Something', 'Soon');
@@ -885,7 +888,7 @@ class TableCard {
 			});
 		});
 
-		// remove table click listener
+		// del-table button listener
 		document.getElementById(this.removeID)
 			.addEventListener('click', () => {
 				// MODAL CONFIRMATION
@@ -949,6 +952,7 @@ class TableCard {
 					}
 				});
 			});
+
 		// increment static table count
 		tableCardCount++;
 	}
@@ -969,10 +973,10 @@ class TableCard {
 
 
 // create a table template
-let mytable = new TableCard('FEATURES');
+let mytable = new TableCard('Grocery List');
 // mytable.addRow('sdfasdfsadf', 'Complete', 'Apr 07 - May 02', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
 
-mytable.addRow('sdfasdfsadf', 'Complete');
+mytable.addRow('Buy some eggs', 'Complete');
 
 
 // create table button functionality
