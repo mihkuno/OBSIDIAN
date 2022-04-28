@@ -22,12 +22,12 @@ const USERS = [
 class ClassWatcher {
 	// new ClassWatcher(targetNode, 'trigger', workOnClassAdd, workOnClassRemoval);
     constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
-        this.targetNode = targetNode
-        this.classToWatch = classToWatch
-        this.classAddedCallback = classAddedCallback
-        this.classRemovedCallback = classRemovedCallback
-        this.observer = null
-        this.lastClassState = targetNode.classList.contains(this.classToWatch)
+        this.targetNode			  = targetNode;
+        this.classToWatch 		  = classToWatch;
+        this.classAddedCallback   = classAddedCallback;
+        this.classRemovedCallback = classRemovedCallback;
+        this.observer 			  = null;
+        this.lastClassState 	  = targetNode.classList.contains(this.classToWatch);
 
         this.init()
     }
@@ -67,8 +67,8 @@ class ClassWatcher {
 class LabelInput {
 	constructor(componentID, parentID, label) {
 		this.componentID = componentID;
-		this.parentID = parentID;
-		this.label = label;
+		this.parentID    = parentID;
+		this.label       = label;
 
 		this.input = document.createElement('input');
 		this.input.setAttribute('type', 'text');
@@ -125,9 +125,9 @@ class LabelInput {
 class StatusButton {
 	constructor(componentID, parentID, menuID, status) {
 		this.componentID = componentID;
-		this.parentID = parentID;
-		this.menuID = menuID;
-		this.status = status;
+		this.parentID    = parentID;
+		this.menuID      = menuID;
+		this.status      = status;
 		this.color; 
 		this.icon;
 
@@ -174,15 +174,15 @@ class StatusButton {
 		
 			// set icon and text
 			this.buttonItem[count].insertAdjacentHTML('beforeend',
-			`<span class="btn-label"><i class="fa ${icon}"></i></span> ${key}`);
+				`<span class="btn-label"><i class="fa ${icon}"></i></span> ${key}`);
 
 			// add the item 
 			document.getElementById(this.menuID).appendChild(this.buttonItem[count]);
 
 			// add onclick event
-			this.buttonItem[count].addEventListener('click', (e)=> {
+			$(this.buttonItem[count]).click((e)=> {
 				// change text, icon, color when dropdown item is clicked
-				const st = e.target.innerText.trim(); 
+				const st = e.currentTarget.outerText.trim(); 
 				const cc = states[st][0];
 				const ii = states[st][1];
 
@@ -479,7 +479,7 @@ class DatePicker {
 class RemoveRow {
 	constructor(componentID, parentID) {
 		this.componentID = componentID;
-		this.parentID = parentID;
+		this.parentID    = parentID;
 
 		this.remove = document.createElement('button');
 		this.remove.setAttribute('id', this.componentID);
@@ -568,11 +568,11 @@ class RemoveRow {
 class Row {
 	constructor(componentID, parentID, label, status, timeline, owner) {
 		this.componentID = componentID;
-		this.parentID = parentID;
-		this.label = label;
-		this.status = status;
-		this.timeline = timeline, 
-		this.owner = owner;
+		this.parentID 	 = parentID;
+		this.label 		 = label;
+		this.status 	 = status;
+		this.timeline 	 = timeline, 
+		this.owner 		 = owner;
 
 		const labelID       = `${this.componentID}-label`;
 		const labelContID   = `${this.componentID}-labelCont`;
@@ -609,7 +609,8 @@ class Row {
 			</td>
 			<!-- TIMELINE -->
 			<td>
-				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:120px"> &nbsp;
+				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:120px"> 
+				&nbsp;
 					<i class="fa fa-calendar">
 						<span id="${datePickedID}"></span>
 						<i class="fa fa-caret-down"></i>
@@ -661,7 +662,7 @@ class Row {
 			ownerGroupID); 	// owner container
 
 		new RemoveRow(
-			removeID,		// remove button 
+			this.removeID,		// remove button 
 			removeContID);	// remove container
 		
 		// make all dropdowns visible overflow off its container		
@@ -669,118 +670,148 @@ class Row {
 			e.setAttribute('data-boundary', 'window');
 			e.setAttribute('data-container', '.page-content');
 		});
+
+		// sortable rows
+		new Sortable(
+			document.getElementById(this.parentID), 
+			{ 
+				selectedClass: 'row-selected', // color of multidrag
+				handle: '.row-handle', //  a component to drag on
+				forceFallback: false, // hides ghost, different mouse cursor
+				group: 'shared-row', // make rows movable to different tables
+				multiDrag: true, // enable selection of multiple rows
+				animation: 200, // animation speed
+			}
+		);
 	}
 }
 
 // TABLE COMPONENT
-var tableCount = 0; // static to count the number of tables created
-class Table {
-	constructor(headerTitle) {
-		// increment the static variable
-		tableCount++; console.log('tables created:', tableCount);
-		this.rowCount = 0; // set number of rows
-
-		this.tableID = tableCount; // add counter as ID
-		this.headerTitle = headerTitle; // set table header
+var tableCardCount = 0; // static to count the number of tables created
+class TableCard {
+	constructor(cardLabel) {
 		
-		// CREATE TABLE CARD PARENT
-		this.tableCardID = `table-${this.tableID}-card`; // add ID to the parent
-		this.tableCard = document.createElement('div') 
-		this.tableCard.setAttribute('class', `table-card card `);
-		this.tableCard.setAttribute('id', `${this.tableCardID}`);
-		// append card parent to root container
-		this.tableCardRoot = document.querySelector("div.page-category#index-content");
-		this.tableCardRoot.appendChild(this.tableCard);
-
-		this.label, this.status;
+		this.componentID = `tablecard-${tableCardCount}`;
+		this.parentID 	 = "index-content";
+		this.cardLabel   = cardLabel; // set table header
+		this.rowCount    = 0; // set number of rows
+ 
+		this.headerID    = `${this.componentID}-header`; // head 
+		this.labelID 	 = `${this.componentID}-label`;  // input  
+		this.removeID    = `${this.componentID}-remove`; // button
+		this.addRowID    = `${this.componentID}-addrow`; // button
+		this.tbodyID  	 = `${this.componentID}-tbody`;  // rows
 
 		// table content
 		this.content = `
-		<!-- TABLE CARD -->
-		<div class="table-striped" draggable="true">
-			<div class="card-header">
-				<div class="d-flex align-items-center">
-					<!-- TABLE SORT HANDLER -->
-					<button type="button" data-toggle="tooltip" class="btn btn-link btn-secondary table-handle" id="table-${this.tableID}-handle">
-						<i class="fas fa-grip-horizontal"></i>
-					</button>
-					<!-- HEADER TITLE -->
-					<input type="text" class="form-control input-border-bottom ml-2 table-label" style='border: 0; font-size: 17px;' placeholder="table-${this.tableID}" id='table-${this.tableID}-label' value="${this.headerTitle}"> 
-					<!-- REMOVE ROW BUTTON -->
-					<button class="btn btn-danger btn-round ml-auto mr-2" id='table-${this.tableID}-removetable'>
-						<i class="fa fa-trash-alt"></i>
-						Remove
-					</button>
-					<!-- ADD ROW BUTTON -->
-					<button class="btn btn-primary btn-round ml-auto mr-2" id='table-${this.tableID}-addrow'>
-						<i class="fa fa-plus"></i>
-						Add Row
-					</button>
-				</div>
-			</div>
-			<div class="card-body">
-
-				<!-- TABLE CONTENT -->
-				<div class="table-responsive" style="min-height: 100px">
-					<table id="add-row" class="display table">
-						<!-- TABLE HEADER -->
-						<thead>
-							<tr>
-								<th>Label</th>
-								<th>Status</th>
-								<th>Timeline</th>
-								<th>Owner</th>
-								<th>Last Updated</th>
-								<th style="width: 10%; text-align:center" colspan=2>Action</th>
-							</tr>
-						</thead>
+		<!-- TABLECARD -->
+		<div id="${this.componentID}" class="card col-md-12">
+			<div class="table-striped" draggable="true">
+				<!-- TABLECARD HEADER -->
+				<div class="card-header" id="${this.headerID}">
+					<div class="d-flex align-items-center">
 						
-						<!-- TABLE BODY -->
-						<tbody class="sort-wrapper" id=table-${this.tableID}>
-							<!-- TABLE ROWS -->
-							<!-- ADD TABLE ROWS>	
-						<!-- END TABLE BODY -->
-						</tbody>
-					</table>
+						<!-- SORT HANDLER -->
+						<button 
+							type="button" 
+							data-toggle="tooltip" 
+							class="btn btn-link btn-secondary table-handle">
+
+							<i class="fas fa-grip-horizontal"></i>
+						</button>
+
+
+						<!-- HEADER TITLE -->
+						<input 
+							type="text" 
+							class="form-control input-border-bottom ml-2 table-label" 
+							style='border: 0; font-size: 17px;' 
+							placeholder="${this.labelID}" 
+							id='${this.labelID}' 
+							value="${this.cardLabel}"
+						/> 
+
+						
+						<!-- REMOVE TABLE -->
+						<button 
+							class="btn btn-danger btn-round ml-auto mr-2" 
+							id='${this.removeID}'>
+							<i class="fa fa-trash-alt"></i>
+							Remove
+						</button>
+
+
+						<!-- ADD ROW -->
+						<button 
+							class="btn btn-primary btn-round ml-auto mr-2" 
+							id='${this.addRowID}'>
+							<i class="fa fa-plus"></i>
+							Add Row
+						</button>
+
+					</div>
 				</div>
+
+
+				<!-- TABLECARD BODY -->
+				<div class="card-body">
+					<!-- TABLE CONTENT -->
+					<div class="table-responsive" style="min-height: 100px">
+						<table id="add-row" class="display table">
+							<!-- TABLE HEADER -->
+							<thead>
+								<tr>
+									<th>Label</th>
+									<th>Status</th>
+									<th>Timeline</th>
+									<th>Owner</th>
+									<th>Last Updated</th>
+									<th style="width: 10%; text-align:center" colspan=2>Action</th>
+								</tr>
+							</thead>
+							
+							<!-- TABLE BODY -->
+							<tbody class="sort-wrapper" id="${this.tbodyID}">
+								<!-- TABLE ROWS -->
+								<!-- ADD TABLE ROWS>	
+							<!-- END TABLE BODY -->
+							</tbody>
+						</table>
+					</div>
+				</div>
+
 			</div>
 		</div>`;
-		// insert string contents to created container  
-		this.tableCard.insertAdjacentHTML('beforeend', this.content);
+		
+		// insert content to parent  
+		document.getElementById(this.parentID)
+			.insertAdjacentHTML('beforeend', this.content);
 
-		// select the created table body container after appending to target container
-		this.tableRow = document.querySelector(`tbody#table-${this.tableID}`);
-
-		// make sortable the rows
-		this.rowSortable = new Sortable(this.tableRow, { // SORTABLE JS LIBRARY 
-			selectedClass: 'row-selected', // color of multidrag
-			handle: '.row-handle', //  a component to drag on
-			forceFallback: false, // hides ghost, different mouse cursor
-			group: 'shared-row', // make rows movable to different tables
-			multiDrag: true, // enable selection of multiple rows
-			animation: 200, // animation speed
-		});
-
-		// make sortable the tablecard parent
-		this.cardSortable = new Sortable(this.tableCardRoot, { // SORTABLE JS LIBRARY 
-			selectedClass: 'table-selected',
-			handle: '.table-handle', //  a component to drag on
-			forceFallback: false,
-			multiDrag: true,
-			swapThreshold: 0.95,
-   			invertSwap: true,
-			animation: 400,
-		});
+		// sortable table
+		new Sortable(
+			document.getElementById(this.parentID), 
+			{
+				selectedClass: 'table-selected',
+				handle: '.table-handle', //  a component to drag on
+				forceFallback: false,
+				multiDrag: true,
+				swapThreshold: 0.95,
+				invertSwap: true,
+				animation: 400,
+			}
+		);
 
 		// locks row handle when select-sorting   
-		const classWatcher = new ClassWatcher(
-			this.tableCard, 
-			'table-selected', 
-			() => document.querySelectorAll('button.row-listener').forEach(handle => handle.classList.remove('row-handle')), 
-			() => document.querySelectorAll('button.row-listener').forEach(handle => handle.classList.add('row-handle')));
+		new ClassWatcher(
+			document.getElementById(this.componentID), 'table-selected', 
+			() => document.querySelectorAll('button.row-listener')
+				.forEach(handle => handle.classList.remove('row-handle')), 
+			() => document.querySelectorAll('button.row-listener')
+				.forEach(handle => handle.classList.add('row-handle'))
+		);
 
-		// add notification on table-label change
-		document.getElementById(`table-${this.tableID}-label`).addEventListener('change', () => {
+		// notification on table-label change
+		$(this.labelID).click( () => {
 			// notification
 			$.notify({
 				// options
@@ -816,167 +847,172 @@ class Table {
 		});
 
 		// addrow click listener
-		const addRowButton = document.querySelector(`button#table-${this.tableID}-addrow`);
-		addRowButton.addEventListener('click', () => {
-			this.addRow('Something', 'Soon');
-			console.log(`-- created new row --`);
-			
-			// notification
-			$.notify({
-				// options
-				icon: 'fa fa-plus',
-				title: 'Added Row',
-				message: ''
-			},{
-				// settings
-				element: 'body',
-				type: "info",
-				allow_dismiss: true,
-				newest_on_top: false,
-				showProgressbar: false,
-				placement: {
-					from: "top",
-					align: "right"
-				},
-				offset: 20,
-				spacing: 10,
-				z_index: 1031,
-				delay: 700,
-				timer: 850,
-				animate: {
-					enter: 'animated fadeInDown',
-					exit: 'animated fadeOutUp'
-				},
-				icon_type: 'class',
-				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-					'<span data-notify="icon"></span> ' +
-					'<span data-notify="title">{1}</span> ' +
-				'</div>' 
+		document.getElementById(this.addRowID)
+			.addEventListener('click', () => {
+				this.addRow('Something', 'Soon');
+				
+				// notification
+				$.notify({
+					// options
+					icon: 'fa fa-plus',
+					title: 'Added Row',
+					message: ''
+				},{
+					// settings
+					element: 'body',
+					type: "info",
+					allow_dismiss: true,
+					newest_on_top: false,
+					showProgressbar: false,
+					placement: {
+						from: "top",
+						align: "right"
+					},
+					offset: 20,
+					spacing: 10,
+					z_index: 1031,
+					delay: 700,
+					timer: 850,
+					animate: {
+						enter: 'animated fadeInDown',
+						exit: 'animated fadeOutUp'
+					},
+					icon_type: 'class',
+					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+						'<span data-notify="icon"></span> ' +
+						'<span data-notify="title">{1}</span> ' +
+					'</div>' 
 			});
-
 		});
 
 		// remove table click listener
-		const removeTableButton = document.querySelector(`button#table-${this.tableID}-removetable`);
-		removeTableButton.addEventListener('click', () => {
-			console.log(`-- removed deleted table --`);
-
-			// MODAL CONFIRMATION
-			swal({
-				title: 'Are you sure?',
-				text: "You won't be able to revert this!",
-				icon: 'warning',
-				buttons:{
-					cancel: {
-						visible: true,
-						className: 'btn btn-danger'
-					},
-					confirm: {
-						text : 'Yes, delete it!',
-						className : 'btn btn-success',
+		document.getElementById(this.removeID)
+			.addEventListener('click', () => {
+				// MODAL CONFIRMATION
+				swal({
+					title: 'Are you sure?',
+					text: "You won't be able to revert this!",
+					icon: 'warning',
+					buttons:{
+						cancel: {
+							visible: true,
+							className: 'btn btn-danger'
+						},
+						confirm: {
+							text : 'Yes, delete it!',
+							className : 'btn btn-success',
+						}
 					}
-				}
-			}).then((Delete) => {
-				if (Delete) {
-					this.tableCard.remove(); // deletes the row based on ID
-					// notification
-					$.notify({
-						// options
-						icon: 'fa fa-trash-alt',
-						title: 'Deleted Table',
-						message: ''
-					},{
-						// settings
-						element: 'body',
-						type: "default",
-						allow_dismiss: true,
-						newest_on_top: false,
-						showProgressbar: false,
-						placement: {
-							from: "top",
-							align: "right"
-						},
-						offset: 20,
-						spacing: 10,
-						z_index: 1031,
-						delay: 700,
-						timer: 850,
-						animate: {
-							enter: 'animated fadeInDown',
-							exit: 'animated fadeOutUp'
-						},
-						icon_type: 'class',
-						template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-							'<span data-notify="icon"></span> ' +
-							'<span data-notify="title">{1}</span> ' +
-						'</div>' 
-					});
-					swal({
-						title: 'Removed!',
-						text: '',
-						icon: 'success',
-						timer: 650
-					});
-				} else {
-					swal.close();
-				}
+				}).then((Delete) => {
+					if (Delete) {
+						this.componentID.remove(); // delete table
+						// notification
+						$.notify({
+							// options
+							icon: 'fa fa-trash-alt',
+							title: 'Deleted Table',
+							message: ''
+						},{
+							// settings
+							element: 'body',
+							type: "default",
+							allow_dismiss: true,
+							newest_on_top: false,
+							showProgressbar: false,
+							placement: {
+								from: "top",
+								align: "right"
+							},
+							offset: 20,
+							spacing: 10,
+							z_index: 1031,
+							delay: 700,
+							timer: 850,
+							animate: {
+								enter: 'animated fadeInDown',
+								exit: 'animated fadeOutUp'
+							},
+							icon_type: 'class',
+							template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+								'<span data-notify="icon"></span> ' +
+								'<span data-notify="title">{1}</span> ' +
+							'</div>' 
+						});
+						swal({
+							title: 'Removed!',
+							text: '',
+							icon: 'success',
+							timer: 650
+						});
+					} else {
+						swal.close();
+					}
+				});
 			});
-		});
+		// increment static table count
+		tableCardCount++;
 	}
 
 	// add a row method
-	addRow(label, status, timeline, owner) {
+	addRow(label, status) {
 		this.rowCount++; 
-		console.log('num of rows', this.rowCount);
 
-		const componentID = `table-${this.tableID}-row-${this.rowCount}`;
-		const parentID = `table-${this.tableID}`;  
-		new Row(componentID, parentID, label, status, timeline, owner);
+		const rowID = `${this.tbodyID}-${this.rowCount}`;  
+		new Row(rowID, this.tbodyID, label, status);
 	}
 }
 
+
+
+
+
+
+
 // create a table template
-let mytable = new Table('FEATURES');
-mytable.addRow('sdfasdfsadf', 'Complete', 'Apr 07 - May 02', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
+let mytable = new TableCard('FEATURES');
+// mytable.addRow('sdfasdfsadf', 'Complete', 'Apr 07 - May 02', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
+
+mytable.addRow('sdfasdfsadf', 'Complete');
 
 
 // create table button functionality
 const createTableID = 'table-create';
-const createTableButton = document.querySelector(`button#${createTableID}`);
-createTableButton.addEventListener('click', () => {
-	const table = new Table('');
-	
-	// notification
-	$.notify({
-		// options
-		icon: 'fa fa-table',
-		title: 'Created Table',
-		message: ''
-	},{
-		// settings
-		element: 'body',
-		type: "info",
-		allow_dismiss: true,
-		newest_on_top: false,
-		showProgressbar: false,
-		placement: {
-			from: "top",
-			align: "right"
-		},
-		offset: 20,
-		spacing: 10,
-		z_index: 1031,
-		delay: 700,
-		timer: 850,
-		animate: {
-			enter: 'animated fadeInDown',
-			exit: 'animated fadeOutUp'
-		},
-		icon_type: 'class',
-		template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-			'<span data-notify="icon"></span> ' +
-			'<span data-notify="title">{1}</span> ' +
-		'</div>' 
-	});
-
-});
+document.getElementById(createTableID)
+	.addEventListener('click', () => 
+	{
+		const table = new TableCard('');
+		
+		// notification
+		$.notify({
+			// options
+			icon: 'fa fa-table',
+			title: 'Created Table',
+			message: ''
+		},{
+			// settings
+			element: 'body',
+			type: "info",
+			allow_dismiss: true,
+			newest_on_top: false,
+			showProgressbar: false,
+			placement: {
+				from: "top",
+				align: "right"
+			},
+			offset: 20,
+			spacing: 10,
+			z_index: 1031,
+			delay: 700,
+			timer: 850,
+			animate: {
+				enter: 'animated fadeInDown',
+				exit: 'animated fadeOutUp'
+			},
+			icon_type: 'class',
+			template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+				'<span data-notify="icon"></span> ' +
+				'<span data-notify="title">{1}</span> ' +
+			'</div>' 
+		});
+	}
+);
