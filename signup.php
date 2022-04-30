@@ -15,10 +15,6 @@ input[type="file"] {
 }
 </style>
 <body class="bg-dark d-flex align-items-center">
-
-
-                
-
 <div class="container">
 <div class="row justify-content-center">
     
@@ -73,38 +69,51 @@ input[type="file"] {
                             $user = test_input($_GET["user"]);
                             $email = test_input($_GET["email"]);
                             $passw = test_input($_GET["passw"]);
-                            
         
                             // connect and select the database
                             require 'dbconnect.php';
 
-                            // check for existing user;
-                            // // check database for existing user
-                            // if ($user == 'root' && $passw == 'asas') {        
-                            //     // <!-- Success Message -->
-                            //     echo '<h5 class="text-success text-center">Login Successful</h5>';
-                            // }
-                            // else {
-                            //     // <!-- Failed Message -->
-                            //     echo '<h5 class="text-danger text-center">Account not registered!</h5>';
-                            // }
+                            // sql queries to check for existing account
+                            $checkBoth  = "SELECT user, email FROM `CREDENTIALS` WHERE user='$user' AND email='email'";
+                            $checkUser  = "SELECT user        FROM `CREDENTIALS` WHERE user='$user'";
+                            $checkEmail = "SELECT email       FROM `CREDENTIALS` WHERE email='$email'";
 
-
-                            // query insert the values
-                            $sql = "
-                            INSERT INTO CREDENTIALS (user, email, passw, profile)   
-                            VALUES ('$user', '$email', '$passw', profile) ";
-
-                            // send the query to database
-                            if ($conn -> query($sql) === TRUE) {
-                                echo "<h5 class='text-success text-center'>
-                                    account created successfully</h5>";
-                            }   
-                            else { // if the account was not inserted
+                            // <!-- check if user account exists -->
+                            if ($conn->query($checkBoth)->num_rows > 0) {
                                 echo "<h5 class='text-danger text-center'>
-                                    an error occured, account was not created</h5>";
+                                    this user account already exists, forgot password?</h5>";
                             }
-                           
+                            // <!-- check if username exists -->
+                            else if ($conn->query($checkUser)->num_rows > 0) {
+                                echo "<h5 class='text-danger text-center'>
+                                    this username already exists</h5>";
+                            }
+                            // <!-- check if email exists -->
+                            else if ($conn->query($checkEmail)->num_rows > 0) {
+                                echo "<h5 class='text-danger text-center'>
+                                    this email already exists</h5>";
+                            }
+                            // <!-- account doesn't exist, create the account -->
+                            else {
+                                // query insert the values
+                                $sql = "
+                                INSERT INTO CREDENTIALS (user, email, passw, profile)   
+                                VALUES ('$user', '$email', '$passw', profile) ";
+
+                                // send the query to database
+                                if ($conn -> query($sql) === TRUE) {
+                                    echo "<h5 class='text-success text-center'>
+                                        account created successfully</h5>";
+                                }   
+                                else { // if the account was not inserted
+                                    echo "<h5 class='text-danger text-center'>
+                                        an error occured, account was not created</h5>";
+                                }
+                            }
+                            // redirect to the dashboard
+                            // ...
+
+                            
                             // close mysql connection
                             $conn->close(); // imported from dbconnect
                         }
@@ -142,7 +151,7 @@ input[type="file"] {
                             <img 
                                 id="profile"
                                 style="min-width: 130px; min-height: 130px"
-                                src="assets/img/placeholder.jpg" 
+                                src="assets/img/placeholder.png" 
                                 class="avatar-img rounded-circle">
                         </label>
                     </div>
@@ -182,12 +191,10 @@ input[type="file"] {
                         <button 
                             type="submit" 
                             name="submit" 
-                            class="btn btn-block btn-secondary">    
+                            class="btn btn-block btn-secondary"> 
                             Register
                         </button>
                     </div> <!-- form-group //-->
-
-                
                 </form>
             </article>
         </div>

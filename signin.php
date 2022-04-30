@@ -49,18 +49,35 @@
                             require 'dbconnect.php';
 
                             // check for existing user
+                            $sql = "
+                            SELECT user, email FROM `CREDENTIALS` 
+                            WHERE user='$user' OR email='$user';
+                            ";
 
-                            if ($user == 'root' && $passw == 'asas') {        
-                                // <!-- Success Message -->
-                                echo '<h5 class="text-success text-center">login successful</h5>';
+                            // <!-- check if user account exists -->
+                            if ($conn->query($sql)->num_rows > 0) {
+                                // check if user and password is same
+                                $sql = "
+                                SELECT user, email FROM `CREDENTIALS` 
+                                WHERE (user='$user' OR email='$user') AND passw='$passw'
+                                ";
+
+                                // user and password matches
+                                if ($conn->query($sql)->num_rows > 0) { 
+                                    echo "<h5 class='text-success text-center'>login successful</h5>";
+                                    // redirect to the dashboard
+                                    // ...
+
+
+                                }
+                                else { // password is wrong
+                                    echo "<h5 class='text-danger text-center'>incorrect password</h5>";
+                                }
                             }
+                            // <!-- account doesn't exist -->
                             else {
-                                // <!-- Failed Message -->
-                                echo '<h5 class="text-danger text-center">account not registered</h5>';
+                                echo "<h5 class='text-danger text-center'>account is not registered</h5>";
                             }
-    
-
-
 
                             // close mysql connection
                             $conn->close(); // imported from dbconnect
