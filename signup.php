@@ -38,40 +38,86 @@ input[type="file"] {
                  <!-- Form Validation -->
                 <?php
                 // validate if a form was sent
-                if (isset($_GET['submit'])) {
-                    // get input values
-                    $user = $email = $passw = '';
+                if (isset($_POST['submit'])) {
+                    // validate the inputs first
+                    if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-                    // define variables and set to empty values
-                    if ($_SERVER["REQUEST_METHOD"] == "GET") {
-                        // check if both input fields are empty
-                        if (empty($_GET["user"]) && empty($_GET["passw"])) {
-                            echo "<h5 class='text-danger text-center'>fill out the form first</h5>";
+                        // connect and select the database
+                        require 'dbconnect.php';
+
+                        // initial profile picture variables
+                        $is_image = $past_limit = false;
+                        $filename = $tmpname = $imgsize = $imgtype = $profile = '';
+
+                        // is an optional profile picture added?
+                        if (isset($_FILES['profile'])) {
+                            // associate image file variables
+                            $filename    = $_FILES['profile']['name'];
+                            $tmpname     = $_FILES['profile']['tmp_name'];
+                            $imgsize     = $_FILES['profile']['size'];
+                            $imgtype     = $_FILES['profile']['type'];
+
+                            // [INSTRCTION: PNG AND JPEG ONLY] 
+                            if ($imgtype == 'image/png' || $imgtype== 'image/jpeg') {
+                                $is_image = true;        // correct image        
+                            } else {$is_image = false; } // not an image
+
+                            // [INSTRUCTION: ONLY 10MB FILE SIZE LIMIT] 
+                            if ($imgsize <= 10000000) { 
+                                 $past_limit = false;     // decent size
+                            } else {$past_limit = true; } // too large
+                        } 
+                        
+                        // there's a picture in cache and its type image
+                        if ($is_image == false && isset($_FILES['profile']) == false) {
+                            echo "<h5 class='text-danger text-center'>
+                            *please select an image*</h5>";
+                        }
+                        // the file image is more than 10mb
+                        else if ($past_limit == true && isset($_FILES['profile']) == false) {
+                            echo "<h5 class='text-danger text-center'>
+                            *file image too large*</h5>";
+                        }
+                        // check if all input fields are empty
+                        else if (
+                                empty($_POST["user"])  && 
+                                empty($_POST["email"]) && 
+                                empty($_POST["passw"])) 
+                        {
+                            echo "<h5 class='text-danger text-center'>
+                            fill out the form first</h5>";
                         } 
                         // check if user is empty
-                        else if (empty($_GET["user"])) {
-                            echo "<h5 class='text-danger text-center'>*user field is empty*</h5>";
+                        else if (empty($_POST["user"])) {
+                            echo "<h5 class='text-danger text-center'>
+                            *user field is empty*</h5>";
                         } 
                         // check if email is empty
-                        else if (empty($_GET["email"])) {
-                            echo "<h5 class='text-danger text-center'>*email field is empty*</h5>";
+                        else if (empty($_POST["email"])) {
+                            echo "<h5 class='text-danger text-center'>
+                            *email field is empty*</h5>";
                         } 
                         // check if email is correct
-                        else if (!filter_var(test_input($_GET["email"]), FILTER_VALIDATE_EMAIL)) {
-                            echo "<h5 class='text-danger text-center'>*invalid email format*</h5>";
+                        else if (
+                            !filter_var(test_input($_POST["email"]), 
+                            FILTER_VALIDATE_EMAIL)) 
+                        {
+                            echo "<h5 class='text-danger text-center'>
+                            *invalid email format*</h5>";
                         }
                         // check if password is empty
-                        else if ((empty($_GET["passw"]))) {
-                            echo "<h5 class='text-danger text-center'>*password field is empty*</h5>";
+                        else if ((empty($_POST["passw"]))) {
+                            echo "<h5 class='text-danger text-center'>
+                            *password field is empty*</h5>";
                         } 
-                        // otherwise, both is filled
-                        else {
-                            $user = test_input($_GET["user"]);
-                            $email = test_input($_GET["email"]);
-                            $passw = test_input($_GET["passw"]);
-        
-                            // connect and select the database
-                            require 'dbconnect.php';
+                        // otherwise, input data is decent
+                        else { // check for existing accounts
+
+                            // capture form input values
+                            $user    = test_input($_POST["user"]);
+                            $email   = test_input($_POST["email"]);
+                            $passw   = test_input($_POST["passw"]);
+                            $profile = ' '; // to be validated
 
                             // sql queries to check for existing account
                             $checkBoth  = "SELECT user, email FROM `CREDENTIALS` WHERE user='$user' AND email='email'";
@@ -81,42 +127,59 @@ input[type="file"] {
                             // <!-- check if user account exists -->
                             if ($conn->query($checkBoth)->num_rows > 0) {
                                 echo "<h5 class='text-danger text-center'>
-                                    this user account already exists, forgot password?</h5>";
+                                this user account already exists, forgot password?</h5>";
                             }
                             // <!-- check if username exists -->
                             else if ($conn->query($checkUser)->num_rows > 0) {
                                 echo "<h5 class='text-danger text-center'>
-                                    this username already exists</h5>";
+                                this username already exists</h5>";
                             }
                             // <!-- check if email exists -->
                             else if ($conn->query($checkEmail)->num_rows > 0) {
                                 echo "<h5 class='text-danger text-center'>
-                                    this email already exists</h5>";
+                                this email already exists</h5>";
                             }
                             // <!-- account doesn't exist, create the account -->
                             else {
-                                // query insert the values
-                                $sql = "
-                                INSERT INTO CREDENTIALS (user, email, passw, profile)   
-                                VALUES ('$user', '$email', '$passw', profile) ";
-
+                                if ($is_image && !$past_limit) { // validated profile image
+                                    // get the extension of the image
+                                    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                                    // rename the image to its username
+                                    $image = $user.'.'.$ext;
+                                    // append the image to its path
+                                    $profile = "images/profiles/".$image;
+                                    // move uploaded temp image to the server storage (overwrites existing files)
+                                    $e = move_uploaded_file($tmpname, $profile); 
+                                    // display alert if image failed to upload
+                                    if (!$e) { echo '<script>alert("failed uploading profile");</script>';}
+                                    // insert query values to mysql with profile
+                                    $sql = "
+                                    INSERT INTO CREDENTIALS (user, email, passw, profile)   
+                                    VALUES ('$user', '$email', '$passw', '$profile') ";
+                                }
+                                else {
+                                    // insert query values to mysql without profile
+                                    $sql = "
+                                    INSERT INTO CREDENTIALS (user, email, passw)   
+                                    VALUES ('$user', '$email', '$passw') ";
+                                }           
                                 // send the query to database
                                 if ($conn -> query($sql) === TRUE) {
                                     echo "<h5 class='text-success text-center'>
-                                        account created successfully</h5>";
+                                    account created successfully</h5>";
+
+                                        // redirect to the dashboard
+                                        // ...
                                 }   
                                 else { // if the account was not inserted
                                     echo "<h5 class='text-danger text-center'>
-                                        an error occured, account was not created</h5>";
+                                    an error occured, account was not created</h5>";
                                 }
                             }
-                            // redirect to the dashboard
-                            // ...
-
-                            
                             // close mysql connection
                             $conn->close(); // imported from dbconnect
                         }
+                    
                     }
                 }
                 // cleans input values
@@ -131,7 +194,8 @@ input[type="file"] {
                 <!-- Form Container -->
                 <form autocomplete="off"
                     action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" 
-                    method="GET">
+                    enctype="multipart/form-data"
+                    method="POST">
 
                     <!-- Profile -->
                     <div 
@@ -143,13 +207,14 @@ input[type="file"] {
                             style="
                                 background: none; 
                                 border: 1px solid transparent; ">
-                            <input 
-                                name="photo"
+                            <input
+                                id="profile" 
+                                name="profile"
                                 type="file"
                                 accept="image/*"
-                                onchange="document.getElementById('profile').src = window.URL.createObjectURL(this.files[0])"/>
+                                onchange="document.getElementById('image').src = window.URL.createObjectURL(this.files[0])"/>
                             <img 
-                                id="profile"
+                                id="image"
                                 style="min-width: 130px; min-height: 130px"
                                 src="assets/img/placeholder.png" 
                                 class="avatar-img rounded-circle">

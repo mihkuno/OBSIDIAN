@@ -95,7 +95,8 @@
 
                 <!-- Form Container -->
                 <form 
-                    action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" 
+                    action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"
+                    enctype="multipart/form-data" 
                     method="GET">
  
                     <!-- User -->
