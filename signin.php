@@ -24,17 +24,50 @@
                 // validate if a form was sent
                 if (isset($_GET['submit'])) {
                     // get input values
-                    $user = test_input($_GET["user"]);
-                    $passw = test_input($_GET["passw"]);
-                
-                    // connect and select the database
-                    require 'dbconnect.php';
+                    $user = $passw = false;
 
-                    // check for existing user
+                    // define variables and set to empty values
+                    if ($_SERVER["REQUEST_METHOD"] == "GET") {
+                        // check if both input fields are empty
+                        if (empty($_GET["user"]) && empty($_GET["passw"])) {
+                            echo "<h5 class='text-danger text-center'>fill out the form first</h5>";
+                        } 
+                        // check if user is empty
+                        else if (empty($_GET["user"])) {
+                            echo "<h5 class='text-danger text-center'>*user field is empty*</h5>";
+                        } 
+                        // check if password is empty
+                        else if ((empty($_GET["passw"]))) {
+                            echo "<h5 class='text-danger text-center'>*password field is empty*</h5>";
+                        } 
+                        // otherwise, both is filled
+                        else {
+                            $user = test_input($_GET["user"]);
+                            $passw = test_input($_GET["passw"]);
+                            
+                            // connect and select the database
+                            require 'dbconnect.php';
+
+                            // check for existing user
+
+                            if ($user == 'root' && $passw == 'asas') {        
+                                // <!-- Success Message -->
+                                echo '<h5 class="text-success text-center">login successful</h5>';
+                            }
+                            else {
+                                // <!-- Failed Message -->
+                                echo '<h5 class="text-danger text-center">account not registered</h5>';
+                            }
+    
 
 
+
+                            // close mysql connection
+                            $conn->close(); // imported from dbconnect
+                        }
+                    }
                 }
-
+                // cleans input values
                 function test_input($data) {
                     $data = trim($data);
                     $data = stripslashes($data);

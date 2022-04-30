@@ -63,7 +63,7 @@
     ?>
     <!-- IMAGE INPUT FORM -->
     <div class="container">
-        <form action="index.php" method="post" enctype="multipart/form-data">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
             <input type="file" name="pic" id="pic">
             <input type="submit" value="UPLOAD" name="submit">
             <!-- [INSTRUCTION: RESET BUTTON] -->

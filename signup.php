@@ -44,43 +44,73 @@ input[type="file"] {
                 // validate if a form was sent
                 if (isset($_GET['submit'])) {
                     // get input values
-                    $user = test_input($_GET["user"]);
-                    $passw = test_input($_GET["passw"]);
-                
-                    // // check database for existing user
-                    // if ($user == 'root' && $passw == '') {        
-                    //     // <!-- Success Message -->
-                    //     echo '<h5 class="text-success text-center">Login Successful</h5>';
-                    // }
-                    // else {
-                    //     // <!-- Failed Message -->
-                    //     echo '<h5 class="text-danger text-center">Account not registered!</h5>';
-                    // }
+                    $user = $email = $passw = '';
 
-                    $sql = "
-                        
-                    ";
+                    // define variables and set to empty values
+                    if ($_SERVER["REQUEST_METHOD"] == "GET") {
+                        // check if both input fields are empty
+                        if (empty($_GET["user"]) && empty($_GET["passw"])) {
+                            echo "<h5 class='text-danger text-center'>fill out the form first</h5>";
+                        } 
+                        // check if user is empty
+                        else if (empty($_GET["user"])) {
+                            echo "<h5 class='text-danger text-center'>*user field is empty*</h5>";
+                        } 
+                        // check if email is empty
+                        else if (empty($_GET["email"])) {
+                            echo "<h5 class='text-danger text-center'>*email field is empty*</h5>";
+                        } 
+                        // check if email is correct
+                        else if (!filter_var(test_input($_GET["email"]), FILTER_VALIDATE_EMAIL)) {
+                            echo "<h5 class='text-danger text-center'>*invalid email format*</h5>";
+                        }
+                        // check if password is empty
+                        else if ((empty($_GET["passw"]))) {
+                            echo "<h5 class='text-danger text-center'>*password field is empty*</h5>";
+                        } 
+                        // otherwise, both is filled
+                        else {
+                            $user = test_input($_GET["user"]);
+                            $email = test_input($_GET["email"]);
+                            $passw = test_input($_GET["passw"]);
+                            
+        
+                            // connect and select the database
+                            require 'dbconnect.php';
+
+                            // check for existing user;
+                            // // check database for existing user
+                            // if ($user == 'root' && $passw == 'asas') {        
+                            //     // <!-- Success Message -->
+                            //     echo '<h5 class="text-success text-center">Login Successful</h5>';
+                            // }
+                            // else {
+                            //     // <!-- Failed Message -->
+                            //     echo '<h5 class="text-danger text-center">Account not registered!</h5>';
+                            // }
 
 
+                            // query insert the values
+                            $sql = "
+                            INSERT INTO CREDENTIALS (user, email, passw, profile)   
+                            VALUES ('$user', '$email', '$passw', profile) ";
 
-
-
-                    // Insert values
-                    // $sql = "
-                    // INSERT INTO CREDENTIALS 
-                    //     (user, email, passw, profile) 
-                    // VALUES 
-                    //     ('msadfoz', 'csadfai@gSADFail.com', 'passw', '/image/hiho')
-                    // ";
-
-                    // if ($conn -> query($sql) === TRUE) {
-                    //     echo "Values to 'CREDENTIALS' inserted successfully<br><br>";
-                    // }   else {
-                    //     echo "Could not insert values to 'CREDENTIALS': " . $conn -> error .'<br><br>';
-                    // }
+                            // send the query to database
+                            if ($conn -> query($sql) === TRUE) {
+                                echo "<h5 class='text-success text-center'>
+                                    account created successfully</h5>";
+                            }   
+                            else { // if the account was not inserted
+                                echo "<h5 class='text-danger text-center'>
+                                    an error occured, account was not created</h5>";
+                            }
                            
+                            // close mysql connection
+                            $conn->close(); // imported from dbconnect
+                        }
+                    }
                 }
-
+                // cleans input values
                 function test_input($data) {
                     $data = trim($data);
                     $data = stripslashes($data);
@@ -134,7 +164,7 @@ input[type="file"] {
                             class="form-control" 
                             placeholder="user@gmail.com" 
                             name="email"
-                            type="email">
+                            type="text">
                     </div> <!-- form-group// -->
 
                     <!-- Password -->

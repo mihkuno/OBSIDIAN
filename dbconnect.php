@@ -3,17 +3,17 @@
 $dbServername = 'localhost';    // server address
 $dbUsername = 'root';           // root username
 $dbPassword = 'password_here';  // root password
+$dbName = 'OBSIDIAN';
 
 // Create connection
-$conn = new mysqli(
-    $dbServername, $dbUsername, $dbPassword);
+$conn = new mysqli($dbServername, $dbUsername, $dbPassword, $dbName);
 
-// Check connection
-if ($conn -> connect_error) {
-    die("Connection failed: " . $conn->connect_error.'<br><br>');
-}
-else { 
-    echo "Host information: " . $conn -> host_info .'<br><br>';
+    // Check connection
+    // if ($conn -> connect_error) {
+    //     die("Connection failed: " . $conn->connect_error.'<br><br>');
+    // }
+    // else { 
+    //     echo "Host information: " . $conn -> host_info .'<br><br>';
 
 
     // // Create database
@@ -26,12 +26,12 @@ else {
     // }
 
 
-    // Select database
-    if($conn -> select_db('OBSIDIAN') === TRUE) {
-        echo "Database 'OBSIDIAN' selected successfully<br><br>";
-    } else {
-        echo "Error selecting 'OBSIDIAN' database: " . $conn->error .'<br><br>';
-    }
+    // // Select database
+    // if($conn -> select_db('OBSIDIAN') === TRUE) {
+    //     echo "Database 'OBSIDIAN' selected successfully<br><br>";
+    // } else {
+    //     echo "Error selecting 'OBSIDIAN' database: " . $conn->error .'<br><br>';
+    // }
 
 
     // // Create table
@@ -68,4 +68,4 @@ else {
 
 
     // $conn -> close();
-}
+?>
