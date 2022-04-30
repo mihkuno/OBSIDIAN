@@ -8,12 +8,15 @@
             <article class="card-body">
                 
                 <!-- Sign Up Button -->
-                <a href="" class="float-right btn btn-outline-secondary btn-round">
+                <a href="signup.php" class="float-right btn btn-outline-secondary btn-round">
                     Sign up</a>
                 
-                <!-- Form Header -->
-                <h2 class="card-title mb-4 mt-1" style="font-size: 22px; color: whitesmoke">
-                    Sign in to Facebook</h2>
+                <!-- Logo Header -->
+                <img src="assets/img/logo.svg" alt="navbar brand" class="navbar-brand">
+                
+                <!-- Header Text -->
+                <h2 class="text-muted text-center mt-4">Sign in to Facebook</h2>
+                <h5 class="text-muted text-center">you can also log in with a local account instead</h5>
                 <hr>
 
                  <!-- Form Validation -->
@@ -24,15 +27,12 @@
                     $user = test_input($_GET["user"]);
                     $passw = test_input($_GET["passw"]);
                 
-                    // check database for existing user
-                    if ($user == 'root' && $passw == '') {        
-                        // <!-- Success Message -->
-                        echo '<h5 class="text-success text-center">Login Successful</h5>';
-                    }
-                    else {
-                        // <!-- Failed Message -->
-                        echo '<h5 class="text-danger text-center">Account not registered!</h5>';
-                    }
+                    // connect and select the database
+                    require 'dbconnect.php';
+
+                    // check for existing user
+
+
                 }
 
                 function test_input($data) {
@@ -48,7 +48,7 @@
                     action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" 
                     method="GET">
  
-                    <!-- Username -->
+                    <!-- User -->
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -58,7 +58,7 @@
                             </div>
                             <input 
                                 class="form-control" 
-                                placeholder="Your Username"       
+                                placeholder="Username or Email"       
                                 name="user"  
                                 type="text">
                         </div> <!-- input-group.// -->
@@ -101,8 +101,9 @@
                         </button>
                     </div> <!-- form-group //-->
 
-                        <!-- Forgot Button -->
-                    <p class="text-center"><a href="#" class="btn">Forgot password?</a></p>
+                    <!-- Forgot Button -->
+                    <p class="text-center">
+                        <a href="#" class="btn">Forgot password?</a></p>
                 
                 </form>
             </article>

@@ -1,11 +1,11 @@
 // PREEFINED USERS ... TO CONFIG IN PHP
 const USERS = [
 	{
-		image: "assets/img/jm_denis.jpg",
+		image: "assets/img/profile.jpg",
 		email: "caindayjoeninyo@gmail.com"
 	},
 	{
-		image: "assets/img/jm_denis.jpg",
+		image: "assets/img/mlane.jpg",
 		email: "micahellareal@gmail.com"
 	},
 	{
@@ -13,7 +13,7 @@ const USERS = [
 		email: "ljisaac@gmail.com"
 	},
 	{
-		image: "assets/img/jm_denis.jpg",
+		image: "assets/img/talha.jpg",
 		email: "kenrian.boleche@gmail.com"
 	}
 ];
