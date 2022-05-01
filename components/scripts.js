@@ -384,7 +384,14 @@ class OwnerGroup {
 
 // DATEPICKER COMPONENT
 class DatePicker {
-	constructor(datePickerID, datePickedID) {
+	constructor(datePickerID, datePickedID, datestart='', dateend='') {
+		this.datePickerID = datePickerID;
+		this.datePickedID = datePickedID;
+		this.startDisplay = 
+		this.endDisplay   = 
+		this.startQuery   = 
+		this.endQuery     = '';
+
 		// add daterange picker component 
 		$(`#${datePickerID}`).daterangepicker({
 			"autoApply": true,
@@ -393,16 +400,24 @@ class DatePicker {
 			"linkedCalendars": true,
 			"alwaysShowCalendars": false,
 			"opens": "center",
-		}, function(start, end, label) {
+		}, function(start, end, label) { // start, end returns a jquery date 
+
+			// format to send in database
+			const queryFormat = { year: 'numeric', month: 'short', day: 'numeric' };
+			this.startQuery = new Date(start).toLocaleDateString(undefined, queryFormat);  
+			this.endQuery = new Date(end).toLocaleDateString(undefined, queryFormat);	
+						
 			// only show end milestone if both (start & end) date is the same
-			if (start.format('MMM DD') == end.format('MMM DD')) {
+			if (start.format('MMM DD YYYY') == end.format('MMM DD YYYY')) {
+				// update the date range label (milestone)
 				$(this.datePickedID).html(start.format('MMM DD'));
+				
 				// notification
 				$.notify({
 					// options
 					icon: 'fa fa-calendar-check',
 					title: 'Marked Milestone',
-					message: ''
+					message: start.format('MMM DD YYYY')
 				},{
 					// settings
 					element: 'body',
@@ -427,16 +442,20 @@ class DatePicker {
 					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
 						'<span data-notify="icon"></span> ' +
 						'<span data-notify="title">{1}</span> ' +
+						'<span data-notify="message">{2}</span> ' +
 					'</div>' 
 				});
-			} else {
+			} 
+			else {
+				// update the date range label (timeline)
 				$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
+				
 				// notification
 				$.notify({
 					// options
 					icon: 'fa fa-calendar-plus',
 					title: 'Timeline Updated',
-					message: ''
+					message: start.format('MMM DD YYYY')+' - '+end.format('MMM DD YYYY')
 				},{
 					// settings
 					element: 'body',
@@ -461,17 +480,27 @@ class DatePicker {
 					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
 						'<span data-notify="icon"></span> ' +
 						'<span data-notify="title">{1}</span> ' +
+						'<span data-notify="message">{2}</span> ' +
 					'</div>' 
 				});
 			}
-			
-			let start_date = start.toISOString();
-			let end_date = end.toISOString();
-
 		});
 
-		this.datePickerID = datePickerID;
-		this.datePickedID = datePickedID;
+		// if the date range was instatiated
+		if (datestart!='' && dateend!='') {
+
+			// change range of menu using the object
+			$(`#${datePickerID}`).data('daterangepicker').setStartDate(new Date(datestart));
+			$(`#${datePickerID}`).data('daterangepicker').setEndDate(new Date(dateend));
+
+			// change label format
+			const displayFormat = { month: 'short', day: 'numeric' };
+			this.startDisplay = new Date(datestart).toLocaleDateString(undefined, displayFormat);   
+			this.endDisplay   = new Date(dateend).toLocaleDateString(undefined, displayFormat);	
+
+			// display the date range 
+			$(`#${this.datePickedID}`).html(`${this.startDisplay} - ${this.endDisplay}`);
+		}
 	}
 }
 
@@ -566,13 +595,14 @@ class RemoveRow {
 
 // ROW COMPONENT
 class Row {
-	constructor(componentID, parentID, label, status, timeline, owner) {
+	constructor(componentID, parentID, label, status, datestart, dateend) {
 		this.componentID = componentID;
 		this.parentID 	 = parentID;
 		this.label 		 = label;
 		this.status 	 = status;
-		this.timeline 	 = timeline, 
-		this.owner 		 = owner;
+		this.datestart 	 = datestart;
+		this.dateend 	 = dateend;
+		// this.owner 		 = owner;
 
 		const labelID       = `${this.componentID}-label`;
 		const labelContID   = `${this.componentID}-labelCont`;
@@ -655,7 +685,9 @@ class Row {
 		
 		new DatePicker(
 			datePickerID, 	// datepicker button
-			datePickedID);	// datepicker text
+			datePickedID,	// datepicker text
+			this.datestart, // start date
+			this.dateend);	// end date
 
 		new OwnerGroup(
 			ownerSelectID,	// owner button 
@@ -962,19 +994,20 @@ class TableCard {
 	}
 
 	// add a row method
-	addRow(label, status) {
+	addRow(label, status, datestart, dateend) {
 		this.rowCount++; 
 
 		const rowID = `${this.tbodyID}-${this.rowCount}`;  
-		new Row(rowID, this.tbodyID, label, status);
+		new Row(rowID, this.tbodyID, label, status, datestart, dateend);
 	}
 }
 
 // create a table template
 let mytable = new TableCard('Grocery List');
-// mytable.addRow('sdfasdfsadf', 'Complete', 'Apr 07 - May 02', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
-
-mytable.addRow('Buy some eggs', 'Complete');
+// mytable.addRow('sdfasdfsadf', 'Complete', '03/01/2022', '03/31/2022', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
+mytable.addRow('Okay rako', 'Complete', 'Mar 01, 2022', 'Mar 05, 2022');
+mytable.addRow('DYNARIMA SHEET', 'Stuck', 'Feb 05, 2022', 'Mar 15, 2022');
+// mytable.addRow('Buy some eggs', 'Complete');
 
 
 // create table button functionality
