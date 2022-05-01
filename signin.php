@@ -4,7 +4,8 @@ define('_DEFVAR', 1);
 
 include 'components/head.php';
 // a user is already logged in
-if(isset($_SESSION['user'])) {
+if(isset($_SESSION['user'], $_COOKIE['user'], $_COOKIE['profile']) 
+){
     // bring them back to the dashboard 
     header("Location: index.php");
     die("Redirecting to: index.php"); 
@@ -96,11 +97,20 @@ if(isset($_SESSION['user'])) {
                                     $profile = ($row['profile'] == NULL)? 
                                         'assets/img/placeholder.png' : $row['profile'];
 
-
                                     // initialize the session and profile
                                     $_SESSION['user']    = $user;
+                                    $_SESSION['passw']   = $passw;
                                     $_SESSION['profile'] = $profile;
-                                    
+
+                                    // if 'remember me' is checked, create a cookie
+                                    if ($_POST['remember'] == true) {
+                                        setcookie('user', $user, time() + (86400*3));
+                                        setcookie('passw', $passw, time() + (86400*3));
+                                        setcookie('profile', $profile, time() + (86400*3));
+                                        // keep the cookie in a jar for 3 days before they expire
+                                        echo '<script>alert("the cookies were added :3");</script>';
+                                    }
+
                                     // redirect to the dashboard
                                     echo "<h5 class='text-success text-center'>login successful</h5>";
                                     // wait 1.0s then redirect to dashboard
@@ -175,7 +185,7 @@ if(isset($_SESSION['user'])) {
                     <div class="form-group"> 
                         <div class="checkbox">
                             <label> 
-                                <input type="checkbox"> 
+                                <input name="remember" type="checkbox"> 
                                     Remember me 
                             </label>
                         </div> <!-- checkbox .// -->

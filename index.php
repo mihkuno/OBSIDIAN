@@ -3,8 +3,20 @@
 define('_DEFVAR', 1);
 
 include 'components/head.php';
+// if a user-profile cookie is active
+if (isset($_COOKIE['user'], $_COOKIE['passw'], $_COOKIE['profile'])
+){
+	// use the cookies as the session
+	$_SESSION['user'] = $_COOKIE['user'];
+	$_SESSION['passw'] = $_COOKIE['passw'];
+	$_SESSION['profile'] = $_COOKIE['profile'];
+	echo "
+	<script>
+	console.log('a cookie session was used')
+	</script>";
+}
 // the user is not logged in
-if (!isset($_SESSION['user']))
+else if (!isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile']))
 { 
 	// clear session data
     session_unset();
@@ -16,6 +28,11 @@ if (!isset($_SESSION['user']))
     header("Location: signin.php");
     die("Redirecting to: signin.php"); 
 } 
+else {
+	echo "
+	<script>
+	console.log('there were no cookies available')
+	</script>";}
 ?>
 
 <body data-background-color="dark">

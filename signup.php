@@ -4,7 +4,8 @@ define('_DEFVAR', 1);
 
 include 'components/head.php';
 // a user is already logged in
-if(isset($_SESSION['user'])) {
+if(isset($_SESSION['user'], $_COOKIE['user'], $_COOKIE['profile']) 
+){
     // bring them back to the dashboard 
     header("Location: index.php");
     die("Redirecting to: index.php"); 
@@ -181,6 +182,7 @@ if(isset($_SESSION['user'])) {
 
                                         // initialize the session and profile
                                         $_SESSION['user']    = $user;
+                                        $_SESSION['passw']   = $passw;
                                         $_SESSION['profile'] = $profile;
                                         
                                         // show account created message
