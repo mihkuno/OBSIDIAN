@@ -55,5 +55,8 @@ defined('_DEFVAR') or header("Location: ../index.php");
 <!-- WEB: Bootstrap Select -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 
+<!-- WEB: Moment JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
+
 <!-- LOCAL: CUSTOM SCRIPTS -->
 <script src="components/scripts.js"></script>

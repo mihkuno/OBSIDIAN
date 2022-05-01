@@ -65,7 +65,9 @@ class ClassWatcher {
 
 // INPUT COMPONENT
 class LabelInput {
-	constructor(componentID, parentID, label) {
+	constructor(row, componentID, parentID, label) {
+		this.row = row;
+
 		this.componentID = componentID;
 		this.parentID    = parentID;
 		this.label       = label;
@@ -82,6 +84,9 @@ class LabelInput {
 
 		// add onclick event
 		this.input.addEventListener('change', (e) => {
+			// update the row timestamp
+			this.row.timestamp = Date.now();
+
 			const value = e.target.value.trim()
 			this.label = value;
 			// notification
@@ -123,7 +128,9 @@ class LabelInput {
 
 // STATUS COMPONENT
 class StatusButton {
-	constructor(componentID, parentID, menuID, status) {
+	constructor(row, componentID, parentID, menuID, status) {
+		this.row = row;
+
 		this.componentID = componentID;
 		this.parentID    = parentID;
 		this.menuID      = menuID;
@@ -180,7 +187,10 @@ class StatusButton {
 			document.getElementById(this.menuID).appendChild(this.buttonItem[count]);
 
 			// add onclick event
-			$(this.buttonItem[count]).click((e)=> {
+			$(this.buttonItem[count]).click((e)=> {		
+				// update the row timestamp
+				this.row.timestamp = Date.now();
+
 				// change text, icon, color when dropdown item is clicked
 				const st = e.currentTarget.outerText.trim(); 
 				const cc = states[st][0];
@@ -232,7 +242,9 @@ class StatusButton {
 
 // OWNER COMPONENT 
 class OwnerGroup {
-	constructor(componentID, parentID) {
+	constructor(row, componentID, parentID) {
+		this.row = row;
+		
 		const OWNERBUTTON = `div.filter-option-inner-inner`;
 		this.componentID = componentID;
 		this.parentID = parentID;
@@ -288,6 +300,9 @@ class OwnerGroup {
 
 		// selection change listener
 		$(this.select).change((e) => { 
+			// update the row timestamp
+			this.row.timestamp = Date.now();
+
 			// refers to the event rather than the object
 			const data = $(e.target).val();	// email and image value of selected options
 
@@ -384,7 +399,9 @@ class OwnerGroup {
 
 // DATEPICKER COMPONENT
 class DatePicker {
-	constructor(datePickerID, datePickedID, datestart='', dateend='') {
+	constructor(row, datePickerID, datePickedID, datestart='', dateend='') {
+		this.row = row;
+
 		this.datePickerID = datePickerID;
 		this.datePickedID = datePickedID;
 		this.startDisplay = 
@@ -400,7 +417,9 @@ class DatePicker {
 			"linkedCalendars": true,
 			"alwaysShowCalendars": false,
 			"opens": "center",
-		}, function(start, end, label) { // start, end returns a jquery date 
+		}, (start, end, label) => { // start, end returns a jquery date 
+			// update the row timestamp
+			this.row.timestamp = Date.now();
 
 			// format to send in database
 			const queryFormat = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -506,7 +525,8 @@ class DatePicker {
 
 // REMOVE ROW COMPONENT
 class RemoveRow {
-	constructor(componentID, parentID) {
+	constructor(row, componentID, parentID) {
+		this.row = row;
 		this.componentID = componentID;
 		this.parentID    = parentID;
 
@@ -542,6 +562,9 @@ class RemoveRow {
 				}
 			}).then((Delete) => {
 				if (Delete) {
+					// stops the 'last updated' interval
+					this.row.stopInterval();
+					
 					// deletes entire row (button -> div) -> td -> tr
 					document.getElementById(this.parentID).parentElement.parentElement.remove(); 
 				
@@ -595,14 +618,15 @@ class RemoveRow {
 
 // ROW COMPONENT
 class Row {
-	constructor(componentID, parentID, label, status, datestart, dateend) {
+	constructor(componentID, parentID, label, status, datestart, dateend, timestamp) {
 		this.componentID = componentID;
 		this.parentID 	 = parentID;
 		this.label 		 = label;
 		this.status 	 = status;
 		this.datestart 	 = datestart;
 		this.dateend 	 = dateend;
-		// this.owner 		 = owner;
+	 // this.owner 		 = owner;
+		this.timestamp 	 = timestamp;
 
 		const labelID       = `${this.componentID}-label`;
 		const labelContID   = `${this.componentID}-labelCont`;
@@ -616,10 +640,12 @@ class Row {
 	
 		const ownerGroupID  = `${this.componentID}-avatarGroup`
 		const ownerSelectID = `${this.componentID}-owner`;
+
+		const timestampID    = `${this.componentID}-modified`;
 	
 		const removeID      = `${this.componentID}-remove`;
 		const actionContID  = `${this.componentID}-actionCont`;
-
+		
 		const rowContent = `
 		<tr draggable="true" id="${this.componentID}">
 			<!-- LABEL -->
@@ -650,11 +676,13 @@ class Row {
 			<!-- OWNER -->
 			<td>
 				<div class="avatar-group" id="${ownerGroupID}">
-					<!-- OWNER AVATAR APPEND -->
+					<!-- OWNER AVATAR -->
 				</div>
 			</td>
 			<!-- LAST UPDATED -->
-			<td>13 minutes ago</td>
+			<td id="${timestampID}">
+				<!-- TIMESTAMP -->
+			</td>
 			<!-- REMOVE | SORTABLE -->
 			<td>
 				<div class="form-button-action" id="${actionContID}">
@@ -673,27 +701,32 @@ class Row {
 
 		// -- row components --
 		new LabelInput(
+			this,		    // pass self (this object)
 			labelID, 		// label input
 			labelContID, 	// label container
 			this.label);	// label text
 		
 		new StatusButton(
+			this,			// pass self (this object)
 			statusID,		// status button 
 			statusContID,	// status container 
 			statusMenuID, 	// status menu
 			this.status);	// status text
 		
 		new DatePicker(
+			this,			// pass self (this object)
 			datePickerID, 	// datepicker button
 			datePickedID,	// datepicker text
 			this.datestart, // start date
 			this.dateend);	// end date
 
 		new OwnerGroup(
+			this,			// pass self (this object)
 			ownerSelectID,	// owner button 
 			ownerGroupID); 	// owner container
 
 		new RemoveRow(
+			this,			// pass self (this object)
 			this.removeID,	// remove button 
 			actionContID);	// remove container
 		
@@ -705,6 +738,16 @@ class Row {
 					e.setAttribute('data-container', '.page-content');
 				}
 			);
+		this.interval = this.setIntervalAndExecute(() => {
+			document.getElementById(timestampID).innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
+		}, 100);
+	}
+	setIntervalAndExecute(fn, t) {
+		fn();
+		return(setInterval(fn, t));
+	}
+	stopInterval() {
+		clearInterval(this.interval);
 	}
 }
 
@@ -888,7 +931,7 @@ class TableCard {
 		// add-row button listener
 		document.getElementById(this.addRowID)
 			.addEventListener('click', () => {
-				this.addRow('', 'Soon');
+				this.addRow('', 'Soon', '','',Date.now());
 				
 				// notification
 				$.notify({
@@ -994,19 +1037,19 @@ class TableCard {
 	}
 
 	// add a row method
-	addRow(label, status, datestart, dateend) {
+	addRow(label, status, datestart, dateend, timestamp) {
 		this.rowCount++; 
 
 		const rowID = `${this.tbodyID}-${this.rowCount}`;  
-		new Row(rowID, this.tbodyID, label, status, datestart, dateend);
+		new Row(rowID, this.tbodyID, label, status, datestart, dateend, timestamp);
 	}
 }
 
 // create a table template
 let mytable = new TableCard('Grocery List');
 // mytable.addRow('sdfasdfsadf', 'Complete', '03/01/2022', '03/31/2022', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
-mytable.addRow('Okay rako', 'Complete', 'Mar 01, 2022', 'Mar 05, 2022');
-mytable.addRow('DYNARIMA SHEET', 'Stuck', 'Feb 05, 2022', 'Mar 15, 2022');
+// mytable.addRow('BUY BROWN EGGS', 'Complete', 'Mar 01, 2022', 'Mar 05, 2022', Date.now());
+mytable.addRow('DYNARIMA SHEET', 'Stuck', 'Feb 05, 2022', 'Mar 15, 2022', 1651420206620);
 // mytable.addRow('Buy some eggs', 'Complete');
 
 
