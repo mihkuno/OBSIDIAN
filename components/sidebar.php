@@ -1,3 +1,8 @@
+<?php 
+// url direct access isn't permitted
+defined('_DEFVAR') or header("Location: ../index.php");
+?>
+
 <!-- Sidebar -->
 <div class="sidebar sidebar-style-2" data-background-color="dark2">
     <div class="sidebar-wrapper scrollbar scrollbar-inner">

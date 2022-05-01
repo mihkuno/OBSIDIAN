@@ -1,3 +1,8 @@
+<?php 
+// url direct access isn't permitted
+defined('_DEFVAR') or header("Location: ../index.php");
+?>
+
 <?php session_start(); ?>
 <!DOCTYPE html>
 <head>
@@ -29,12 +34,6 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
 
-
-	<style>
-		.fa-calendar > span { font-family: 'Ubuntu', sans-serif; font-size: 13px;}
-	</style>
-
-
 	<!-- WEB: Date Range Picker -->
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
@@ -46,7 +45,5 @@
 	<link rel="stylesheet" href="assets/css/atlantis.min.css">
 
 	<!-- CUSTOM STYLES -->
-	<!-- <link rel="stylesheet" href="assets/css/plugin/daterangepicker.css"> -->
-	<link rel="stylesheet" href="components/style.css">
-
+	<link rel="stylesheet" href="components/styles.css">
 </head>

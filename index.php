@@ -1,4 +1,8 @@
-<?php include 'components/head.php';
+<?php 
+// base page (allow url direct access):
+define('_DEFVAR', 1);
+
+include 'components/head.php';
 // the user is not logged in
 if (!isset($_SESSION['user']))
 { 

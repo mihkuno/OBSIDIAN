@@ -1,3 +1,8 @@
+<?php 
+// url direct access isn't permitted
+defined('_DEFVAR') or header("Location: ../index.php");
+?>
+
 <!-- <footer class="footer">
     <div class="container-fluid">
         <nav class="pull-left">

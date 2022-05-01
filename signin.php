@@ -1,4 +1,8 @@
-<?php include 'components/head.php';
+<?php 
+// base page (allow url direct access):
+define('_DEFVAR', 1);
+
+include 'components/head.php';
 // a user is already logged in
 if(isset($_SESSION['user'])) {
     // bring them back to the dashboard 
@@ -99,11 +103,12 @@ if(isset($_SESSION['user'])) {
                                     
                                     // redirect to the dashboard
                                     echo "<h5 class='text-success text-center'>login successful</h5>";
+                                    // wait 1.0s then redirect to dashboard
                                     echo "
                                     <script>
                                         setTimeout(function(){
-                                            window.location.href = 'signin.php';
-                                        }, 500);
+                                            window.location.href = 'index.php';
+                                        }, 1000);
                                     </script>";
                                 }
                                 else { // password is wrong
@@ -114,7 +119,6 @@ if(isset($_SESSION['user'])) {
                             else {
                                 echo "<h5 class='text-danger text-center'>account is not registered</h5>";
                             }
-
                             // close mysql connection
                             $conn->close(); // imported from dbconnect
                         }

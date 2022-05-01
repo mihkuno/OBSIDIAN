@@ -1,3 +1,8 @@
+<?php 
+// url direct access isn't permitted
+defined('_DEFVAR') or header("Location: ../index.php");
+?>
+
 <div class="page-header">
     <!-- PAGE TITLE -->
     <h4 class="page-title">Dashboard</h4>

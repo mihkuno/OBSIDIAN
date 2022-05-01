@@ -1,3 +1,8 @@
+<?php 
+// url direct access isn't permitted
+defined('_DEFVAR') or header("Location: ../index.php");
+?>
+
 <div class="main-header">
     <!-- Logo Header -->
     <div class="logo-header" data-background-color="dark2">

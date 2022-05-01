@@ -3,28 +3,30 @@ input[type="file"] {
   display: none;
 }
 /* PROFILE CONTAINER */
-.placeholder {
+.profile-container {
   border: 1px solid #ccc;
   display: inline-block;
   cursor: pointer;
 }
-.placeholder:hover {
+.profile-container:hover {
   opacity: 0.8;
 }
 /* PROFILE IMAGE */
-#image {
-  min-width: 130px; 
-  min-height: 130px; 
-  max-width: 130px; 
-  max-height: 130px;
+#profile-image {
+  min-width: 130px !important; 
+  min-height: 130px !important; 
+  max-width: 130px !important; 
+  max-height: 130px !important;
 }
 
-/* -- FULL CALENDAR -- */
+/* -- FULL CALENDAR --
 /* .calendar { padding: 40px; } */
 .calendar-timeline-1 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #0fb9b1;}
 .calendar-timeline-2 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #4b7bec;}
 .calendar-timeline-3 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #7d5fff;}
 .calendar-timeline-4 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #10ac84;}
+
+.fa-calendar > span { font-family: 'Ubuntu', sans-serif; font-size: 13px;}
 
 /* -- SORTING -- */
 /* hide the drag n' drop ghost*/

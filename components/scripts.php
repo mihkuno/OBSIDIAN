@@ -1,19 +1,21 @@
-<!-- JAVASCRIPT DEPENDENCIES-->
+<?php 
+// url direct access isn't permitted
+defined('_DEFVAR') or header("Location: ../index.php");
+?>
+
 <!-- JQUERY -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
-<!-- WEB: Popper JS Tooltips -->
+<!-- LOCAL: Popper JS Tooltips -->
 <script src="assets/js/core/popper.min.js"></script> <!-- stable unknown ver -->
 
-<!-- LOCAL: Date Range Picker -->
-<!-- <script type="text/javascript" src="assets/js/plugin/daterangepicker/moment.js"></script>      
-<script type="text/javascript" src="assets/js/plugin/daterangepicker/daterangepicker.js"></script>      -->
+<!-- WEB: Date Range Picker -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
 
-<!-- LOCAL: jQuery UI -->
+<!-- WEB: jQuery UI -->
 <script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery-ui.min.js'></script>
 
 <!-- WEB: BOOTSTRAP v4.3.1 Core JS -->
@@ -54,4 +56,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 
 <!-- LOCAL: CUSTOM SCRIPTS -->
-<script src="components/script.js"></script>
+<script src="components/scripts.js"></script>
