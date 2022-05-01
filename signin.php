@@ -1,6 +1,13 @@
-<?php include 'components/head.php'?>
-<body class="bg-dark d-flex align-items-center">
+<?php include 'components/head.php';
+// a user is already logged in
+if(isset($_SESSION['user'])) {
+    // bring them back to the dashboard 
+    header("Location: index.php");
+    die("Redirecting to: index.php"); 
+}
+?>
 
+<body class="bg-dark d-flex align-items-center">
 <div class="container">
 <div class="row justify-content-center">
     <aside class="col-xl-5">
@@ -22,53 +29,82 @@
                  <!-- Form Validation -->
                 <?php
                 // validate if a form was sent
-                if (isset($_GET['submit'])) {
+                if (isset($_POST['submit'])) {
                     // get input values
                     $user = $passw = false;
 
                     // define variables and set to empty values
-                    if ($_SERVER["REQUEST_METHOD"] == "GET") {
+                    if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // check if both input fields are empty
-                        if (empty($_GET["user"]) && empty($_GET["passw"])) {
+                        if (empty($_POST["user"]) && empty($_POST["passw"])) {
                             echo "<h5 class='text-danger text-center'>fill out the form first</h5>";
                         } 
                         // check if user is empty
-                        else if (empty($_GET["user"])) {
+                        else if (empty($_POST["user"])) {
                             echo "<h5 class='text-danger text-center'>*user field is empty*</h5>";
                         } 
                         // check if password is empty
-                        else if ((empty($_GET["passw"]))) {
+                        else if ((empty($_POST["passw"]))) {
                             echo "<h5 class='text-danger text-center'>*password field is empty*</h5>";
                         } 
                         // otherwise, both is filled
                         else {
-                            $user = test_input($_GET["user"]);
-                            $passw = test_input($_GET["passw"]);
+                            $user = test_input($_POST["user"]);
+                            $passw = test_input($_POST["passw"]);
                             
                             // connect and select the database
-                            require 'dbconnect.php';
+                            require 'components/dbconnect.php';
 
                             // check for existing user
-                            $sql = "
-                            SELECT user, email FROM `CREDENTIALS` 
-                            WHERE user='$user' OR email='$user';
+                            $sql = "SELECT user, email FROM `CREDENTIALS` 
+                                    WHERE user='$user' 
+                                    OR email='$user';
                             ";
 
                             // <!-- check if user account exists -->
                             if ($conn->query($sql)->num_rows > 0) {
                                 // check if user and password is same
-                                $sql = "
-                                SELECT user, email FROM `CREDENTIALS` 
-                                WHERE (user='$user' OR email='$user') AND passw='$passw'
+                                $sql = "SELECT user, email FROM `CREDENTIALS` 
+                                        WHERE (user='$user' OR email='$user') 
+                                        AND passw='$passw'
                                 ";
 
                                 // user and password matches
                                 if ($conn->query($sql)->num_rows > 0) { 
-                                    echo "<h5 class='text-success text-center'>login successful</h5>";
+                                    
+                                    
+                                    // get the username if email was input
+                                    $sql = "SELECT user FROM CREDENTIALS 
+                                            WHERE email='$user' 
+                                            OR user='$user';";
+                                    // get query result as an array
+                                    $row = $conn->query($sql)->fetch_assoc();
+                                    // get the username on the first row 
+                                    $user = $row['user'];
+
+
+                                    // get the profile path of user
+                                    $sql = "SELECT profile FROM CREDENTIALS 
+                                            WHERE user='$user';";
+                                    // get query result as an array
+                                    $row = $conn->query($sql)->fetch_assoc();
+                                    // get the profile path on the first row 
+                                    $profile = ($row['profile'] == NULL)? 
+                                        'assets/img/placeholder.png' : $row['profile'];
+
+
+                                    // initialize the session and profile
+                                    $_SESSION['user']    = $user;
+                                    $_SESSION['profile'] = $profile;
+                                    
                                     // redirect to the dashboard
-                                    // ...
-
-
+                                    echo "<h5 class='text-success text-center'>login successful</h5>";
+                                    echo "
+                                    <script>
+                                        setTimeout(function(){
+                                            window.location.href = 'signin.php';
+                                        }, 500);
+                                    </script>";
                                 }
                                 else { // password is wrong
                                     echo "<h5 class='text-danger text-center'>incorrect password</h5>";
@@ -97,7 +133,7 @@
                 <form 
                     action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"
                     enctype="multipart/form-data" 
-                    method="GET">
+                    method="POST">
  
                     <!-- User -->
                     <div class="form-group">

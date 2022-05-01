@@ -4,12 +4,12 @@
         <div class="sidebar-content">
             <div class="user">
                 <div class="avatar-sm float-left mr-2">
-                    <img src="assets/img/profile.jpg" alt="..." class="avatar-img rounded-circle">
+                    <?php echo '<img src="'.$_SESSION['profile'].'" class="avatar-img rounded-circle">';?>
                 </div>
                 <div class="info">
                     <a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
                         <span>
-                            Mihkuno
+                            <?php echo $_SESSION['user'] ?>
                             <span class="user-level">Administrator</span>
                             <span class="caret"></span>
                         </span>
@@ -18,7 +18,7 @@
                     <div class="collapse in" id="collapseExample">
                         <ul class="nav">
                             <li>
-                                <a href="#profile">
+                                <a href="signin.php">
                                     <span class="link-collapse">My Profile</span>
                                 </a>
                             </li>
@@ -28,7 +28,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#settings">
+                                <a href="components/logout.php">
                                     <span class="link-collapse text-danger">Log out</span>
                                 </a>
                             </li>
@@ -62,7 +62,7 @@
                     <h4 class="text-section">Projects</h4>
                 </li>
                 <li class="mx-4 mt-2">
-                    <a href="http://themekita.com/atlantis-bootstrap-dashboard.html" class="btn btn-primary btn-block">
+                    <a href="" class="btn btn-primary btn-block">
                         <span class="btn-label mr-2"> <i class="fas fa-pen-square"></i></span>
                         Create Task
                     </a> 

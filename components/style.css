@@ -1,3 +1,24 @@
+/* PROFILE INPUT */
+input[type="file"] {
+  display: none;
+}
+/* PROFILE CONTAINER */
+.placeholder {
+  border: 1px solid #ccc;
+  display: inline-block;
+  cursor: pointer;
+}
+.placeholder:hover {
+  opacity: 0.8;
+}
+/* PROFILE IMAGE */
+#image {
+  min-width: 130px; 
+  min-height: 130px; 
+  max-width: 130px; 
+  max-height: 130px;
+}
+
 /* -- FULL CALENDAR -- */
 /* .calendar { padding: 40px; } */
 .calendar-timeline-1 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #0fb9b1;}

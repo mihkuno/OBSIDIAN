@@ -1,5 +1,4 @@
 <?php
-
 $dbServername = 'localhost';    // server address
 $dbUsername = 'root';           // root username
 $dbPassword = 'password_here';  // root password
@@ -8,12 +7,12 @@ $dbName = 'OBSIDIAN';
 // Create connection
 $conn = new mysqli($dbServername, $dbUsername, $dbPassword, $dbName);
 
-    // Check connection
-    // if ($conn -> connect_error) {
-    //     die("Connection failed: " . $conn->connect_error.'<br><br>');
-    // }
-    // else { 
-    //     echo "Host information: " . $conn -> host_info .'<br><br>';
+// Check connection
+if ($conn -> connect_error) {
+    die("Connection failed: " . $conn->connect_error.'<br><br>');
+}
+// else { 
+//     echo "Host information: " . $conn -> host_info .'<br><br>';
 
 
     // // Create database

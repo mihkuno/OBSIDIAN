@@ -1,28 +1,19 @@
-<?php include 'components/head.php'?>
+<?php include 'components/head.php';
+// a user is already logged in
+if(isset($_SESSION['user'])) {
+    // bring them back to the dashboard 
+    header("Location: index.php");
+    die("Redirecting to: index.php"); 
+}
+?>
 
-<style>
-/* PROFILE */
-input[type="file"] {
-    display: none;
-}
-.placeholder {
-    border: 1px solid #ccc;
-    display: inline-block;
-    cursor: pointer;
-}
-.placeholder:hover {
-    opacity: 0.8;
-}
-</style>
 <body class="bg-dark d-flex align-items-center">
 <div class="container">
-<div class="row justify-content-center">
-    
+<div class="row justify-content-center"> 
     <aside class="col-xl-5">
         <div class="card bg-dark2 p-4">  
             <article class="card-body">
                 
-                    
                 <!-- Sign In Button -->
                 <a href="signin.php" class="float-right btn btn-outline-secondary btn-round">
                     Sign In</a>
@@ -43,7 +34,7 @@ input[type="file"] {
                     if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         // connect and select the database
-                        require 'dbconnect.php';
+                        require 'components/dbconnect.php';
 
                         // initial profile picture variables
                         $is_image = $past_limit = false;
@@ -156,20 +147,27 @@ input[type="file"] {
                                     $sql = "
                                     INSERT INTO CREDENTIALS (user, email, passw, profile)   
                                     VALUES ('$user', '$email', '$passw', '$profile') ";
+
+                                    // initialize the session and profile
+                                    $_SESSION['user'] = $user;
+                                    $_SESSION['profile'] = $profile;
                                 }
                                 else {
                                     // insert query values to mysql without profile
                                     $sql = "
                                     INSERT INTO CREDENTIALS (user, email, passw)   
                                     VALUES ('$user', '$email', '$passw') ";
+
+                                    // initialize the session only
+                                    $_SESSION['user'] = $user;
                                 }           
                                 // send the query to database
                                 if ($conn -> query($sql) === TRUE) {
                                     echo "<h5 class='text-success text-center'>
                                     account created successfully</h5>";
 
-                                        // redirect to the dashboard
-                                        // ...
+                                    // redirect to the dashboard
+                                    header("Location: dashboard.php"); // arguments can be added
                                 }   
                                 else { // if the account was not inserted
                                     echo "<h5 class='text-danger text-center'>
@@ -215,7 +213,6 @@ input[type="file"] {
                                 onchange="document.getElementById('image').src = window.URL.createObjectURL(this.files[0])"/>
                             <img 
                                 id="image"
-                                style="min-width: 130px; min-height: 130px"
                                 src="assets/img/placeholder.png" 
                                 class="avatar-img rounded-circle">
                         </label>

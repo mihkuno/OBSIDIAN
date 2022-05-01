@@ -1,3 +1,5 @@
+<?php session_start(); ?>
+<!DOCTYPE html>
 <head>
 	<!-- internet explorer compatibility -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -45,6 +47,6 @@
 
 	<!-- CUSTOM STYLES -->
 	<!-- <link rel="stylesheet" href="assets/css/plugin/daterangepicker.css"> -->
-	<link rel="stylesheet" href="assets/css/style.css">
+	<link rel="stylesheet" href="components/style.css">
 
 </head>

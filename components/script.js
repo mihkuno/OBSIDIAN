@@ -1,7 +1,7 @@
 // PREEFINED USERS ... TO CONFIG IN PHP
 const USERS = [
 	{
-		image: "assets/img/profile.jpg",
+		image: "assets/img/profile2.jpg",
 		email: "caindayjoeninyo@gmail.com"
 	},
 	{
@@ -73,7 +73,7 @@ class LabelInput {
 		this.input = document.createElement('input');
 		this.input.setAttribute('type', 'text');
 		this.input.setAttribute('id', this.componentID);
-		this.input.setAttribute('class', 'form-control input-border-bottom', 'row-label');
+		this.input.setAttribute('class', 'form-control input-border-bottom row-label');
 		this.input.setAttribute('style', 'border: 0; color: #828282;');
 		this.input.setAttribute('placeholder', `${this.componentID}`);
 		this.input.setAttribute('value', `${this.label}`);
