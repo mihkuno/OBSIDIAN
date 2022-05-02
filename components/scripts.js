@@ -562,10 +562,7 @@ class RemoveRow {
 				}
 			}).then((Delete) => {
 				if (Delete) {
-					// stops the 'last updated' interval
-					this.row.stopInterval();
-					
-					// remove entire row
+					// remove all rows and stop timestamp update
 					this.row.remove();
 				
 					// notification
@@ -743,12 +740,16 @@ class Row {
 			document.getElementById(timestampID).innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
 		}, 100);
 	}
-	setIntervalAndExecute(fn, t) {
+	setIntervalAndExecute(fn, t) { // create an interval thread
 		fn();
 		return(setInterval(fn, t));
 	}
-	stopInterval() {
+	stopInterval() { // stops timestamp update
 		clearInterval(this.interval);
+	}
+	remove() { // remove row and stop timestamp update
+		this.stopInterval();
+		document.getElementById(this.componentID).remove();
 	}
 }
 
@@ -991,8 +992,8 @@ class TableCard {
 				}).then((Delete) => {
 					if (Delete) {
 
-						// stop all rows timestamp update
-						this.rows.forEach((e) => {e.stopInterval();});
+						// remove all rows and stop timestamp update
+						this.rows.forEach((e) => {e.remove();});
 
 						// delete table
 						$(`#${this.componentID}`).remove(); 
