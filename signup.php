@@ -106,6 +106,15 @@ if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile'])
                                 echo "<h5 class='text-danger text-center'>
                                 *password field is empty*</h5>";
                             } 
+                            // check if user, email or password is greater than 40
+                            else if (
+                                strlen($_POST['user'])  > 40 ||
+                                strlen($_POST['email']) > 40 ||
+                                strlen($_POST['passw']) > 40
+                            ) {
+                                echo "<h5 class='text-danger text-center'>
+                                *input limit is 40 characters*</h5>"; 
+                            }
                             // otherwise, input data is decent
                             else { // check for existing accounts
 
@@ -137,76 +146,86 @@ if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile'])
                                 }
                                 // <!-- account doesn't exist, create the account -->
                                 else {
-                                    if ($is_image && !$past_limit) { // validated profile image
-                                        // get the extension of the image
-                                        $ext = pathinfo($filename, PATHINFO_EXTENSION);
-                                        // rename the image to its username
-                                        $image = $user.'.'.$ext;
-                                        // append the image to its path
-                                        $profile = "images/profiles/".$image;
-                                        // move uploaded temp image to the server storage (overwrites existing files)
-                                        $e = move_uploaded_file($tmpname, $profile); 
-                                        // display alert if image failed to upload
-                                        if (!$e) { echo '<script>alert("failed uploading profile");</script>';}
-                                        // insert query values to mysql with profile
-                                        $sql = "
-                                        INSERT INTO CREDENTIALS (user, email, passw, profile)   
-                                        VALUES ('$user', '$email', '$passw', '$profile') ";
+                                    // create a connection without database
+                                    $userdb = new mysqli($dbServername, $dbUsername, $dbPassword);
+                                    // create the user's CRUD database
+                                    $sql = "CREATE DATABASE `user_$user`";
+                                    // send the query to create database
+                                    if ($userdb -> query($sql) === TRUE) { // check user's db creation
+                                        if ($is_image && !$past_limit) { // validated profile image
+                                            // get the extension of the image
+                                            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                                            // rename the image to its username
+                                            $image = $user.'.'.$ext;
+                                            // append the image to its path
+                                            $profile = "images/profiles/".$image;
+                                            // move uploaded temp image to the server storage (overwrites existing files)
+                                            $e = move_uploaded_file($tmpname, $profile); 
+                                            // display alert if image failed to upload
+                                            if (!$e) { echo '<script>alert("failed uploading profile");</script>';}
+                                            // insert query values to mysql with profile
+                                            $sql = "
+                                            INSERT INTO CREDENTIALS (user, email, passw, profile)   
+                                            VALUES ('$user', '$email', '$passw', '$profile') ";
+                                        }
+                                        else {
+                                            // insert query values to mysql without profile
+                                            $sql = "
+                                            INSERT INTO CREDENTIALS (user, email, passw)   
+                                            VALUES ('$user', '$email', '$passw') ";
+                                        }           
+                                        // send the query to database
+                                        if ($conn -> query($sql) === TRUE) {
+    
+                                            // get the username if email was input
+                                            $sql = "SELECT user FROM CREDENTIALS 
+                                            WHERE email='$user' 
+                                            OR user='$user';";
+                                            // get query result as an array
+                                            $row = $conn->query($sql)->fetch_assoc();
+                                            // get the username on the first row 
+                                            $user = $row['user'];
+    
+                                            // get the profile path of user
+                                            $sql = "SELECT profile FROM CREDENTIALS 
+                                                    WHERE user='$user';";
+                                            // get query result as an array
+                                            $row = $conn->query($sql)->fetch_assoc();
+                                            // get the profile path on the first row 
+                                            $profile = ($row['profile'] == NULL)? 
+                                                'assets/img/placeholder.png' : $row['profile'];
+    
+                                            // initialize the session and profile
+                                            $_SESSION['user']    = $user;
+                                            $_SESSION['passw']   = $passw;
+                                            $_SESSION['profile'] = $profile;
+                                            
+                                            // show account created message
+                                            echo "<h5 class='text-success text-center'>
+                                            account created!</h5>";
+                                            
+                                            // wait 1.0s then redirect to dashboard
+                                            echo " 
+                                            <script>
+                                                setTimeout(function(){
+                                                    window.location.href = 'index.php';
+                                                }, 1000);
+                                            </script>";
+    
+                                        }   
+                                        else { // if the account was not inserted
+                                            echo "<h5 class='text-danger text-center'>
+                                            an error occured, account was not created</h5>";
+                                        }
                                     }
                                     else {
-                                        // insert query values to mysql without profile
-                                        $sql = "
-                                        INSERT INTO CREDENTIALS (user, email, passw)   
-                                        VALUES ('$user', '$email', '$passw') ";
-                                    }           
-                                    // send the query to database
-                                    if ($conn -> query($sql) === TRUE) {
-
-                                        // get the username if email was input
-                                        $sql = "SELECT user FROM CREDENTIALS 
-                                        WHERE email='$user' 
-                                        OR user='$user';";
-                                        // get query result as an array
-                                        $row = $conn->query($sql)->fetch_assoc();
-                                        // get the username on the first row 
-                                        $user = $row['user'];
-
-                                        // get the profile path of user
-                                        $sql = "SELECT profile FROM CREDENTIALS 
-                                                WHERE user='$user';";
-                                        // get query result as an array
-                                        $row = $conn->query($sql)->fetch_assoc();
-                                        // get the profile path on the first row 
-                                        $profile = ($row['profile'] == NULL)? 
-                                            'assets/img/placeholder.png' : $row['profile'];
-
-                                        // initialize the session and profile
-                                        $_SESSION['user']    = $user;
-                                        $_SESSION['passw']   = $passw;
-                                        $_SESSION['profile'] = $profile;
-                                        
-                                        // show account created message
-                                        echo "<h5 class='text-success text-center'>
-                                        account created!</h5>";
-                                        
-                                        // wait 1.0s then redirect to dashboard
-                                        echo " 
-                                        <script>
-                                            setTimeout(function(){
-                                                window.location.href = 'index.php';
-                                            }, 1000);
-                                        </script>";
-
-                                    }   
-                                    else { // if the account was not inserted
                                         echo "<h5 class='text-danger text-center'>
-                                        an error occured, account was not created</h5>";
+                                        creating the user database failed</h5>";
                                     }
-                                }
+                                }                                  
                                 // close mysql connection
                                 $conn->close(); // imported from dbconnect
                             }
-                        
                         }
                     }
                     // cleans input values
