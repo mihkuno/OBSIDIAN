@@ -565,8 +565,8 @@ class RemoveRow {
 					// stops the 'last updated' interval
 					this.row.stopInterval();
 					
-					// deletes entire row (button -> div) -> td -> tr
-					document.getElementById(this.parentID).parentElement.parentElement.remove(); 
+					// remove entire row
+					this.row.remove();
 				
 					// notification
 					$.notify({
@@ -612,7 +612,6 @@ class RemoveRow {
 				}
 			});
 		});
-
 	}
 }
 
@@ -738,6 +737,8 @@ class Row {
 					e.setAttribute('data-container', '.page-content');
 				}
 			);
+
+		// update 'modified' interval every 100ms
 		this.interval = this.setIntervalAndExecute(() => {
 			document.getElementById(timestampID).innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
 		}, 100);
@@ -766,6 +767,8 @@ class TableCard {
 		this.removeID    = `${this.componentID}-remove`; // button
 		this.addRowID    = `${this.componentID}-addrow`; // button
 		this.tbodyID  	 = `${this.componentID}-tbody`;  // rows
+
+		this.rows = []; // store all the created rows of this table 
 
 		// table content
 		this.content = `
@@ -987,7 +990,13 @@ class TableCard {
 					}
 				}).then((Delete) => {
 					if (Delete) {
-						$(`#${this.componentID}`).remove(); // delete table
+
+						// stop all rows timestamp update
+						this.rows.forEach((e) => {e.stopInterval();});
+
+						// delete table
+						$(`#${this.componentID}`).remove(); 
+						
 						// notification
 						$.notify({
 							// options
@@ -1026,6 +1035,7 @@ class TableCard {
 							icon: 'success',
 							timer: 650
 						});
+
 					} else {
 						swal.close();
 					}
@@ -1038,17 +1048,17 @@ class TableCard {
 
 	// add a row method
 	addRow(label, status, datestart, dateend, timestamp) {
-		this.rowCount++; 
 
 		const rowID = `${this.tbodyID}-${this.rowCount}`;  
-		new Row(rowID, this.tbodyID, label, status, datestart, dateend, timestamp);
+		this.rows[this.rowCount++] = new Row(rowID, this.tbodyID, label, status, datestart, dateend, timestamp);
+
 	}
 }
 
 // create a table template
 let mytable = new TableCard('Grocery List');
 // mytable.addRow('sdfasdfsadf', 'Complete', '03/01/2022', '03/31/2022', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
-// mytable.addRow('BUY BROWN EGGS', 'Complete', 'Mar 01, 2022', 'Mar 05, 2022', Date.now());
+mytable.addRow('BUY BROWN EGGS', 'Complete', 'Mar 01, 2022', 'Mar 05, 2022', Date.now());
 mytable.addRow('DYNARIMA SHEET', 'Stuck', 'Feb 05, 2022', 'Mar 15, 2022', 1651420206620);
 // mytable.addRow('Buy some eggs', 'Complete');
 
