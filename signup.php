@@ -4,7 +4,7 @@ define('_DEFVAR', 1);
 
 include 'components/head.php';
 // a user is already logged in
-if(isset($_SESSION['user'], $_COOKIE['user'], $_COOKIE['profile']) 
+if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile']) 
 ){
     // bring them back to the dashboard 
     header("Location: index.php");

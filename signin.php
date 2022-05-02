@@ -4,7 +4,7 @@ define('_DEFVAR', 1);
 
 include 'components/head.php';
 // a user is already logged in
-if(isset($_SESSION['user'], $_COOKIE['user'], $_COOKIE['profile']) 
+if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile']) 
 ){
     // bring them back to the dashboard 
     header("Location: index.php");
@@ -103,7 +103,7 @@ if(isset($_SESSION['user'], $_COOKIE['user'], $_COOKIE['profile'])
                                     $_SESSION['profile'] = $profile;
 
                                     // if 'remember me' is checked, create a cookie
-                                    if ($_POST['remember'] == true) {
+                                    if ((isset($_POST['remember'])) && $_POST['remember'] == true) {
                                         setcookie('user', $user, time() + (86400*3));
                                         setcookie('passw', $passw, time() + (86400*3));
                                         setcookie('profile', $profile, time() + (86400*3));
