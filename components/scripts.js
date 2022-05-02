@@ -1,20 +1,44 @@
 // PREEFINED USERS ... TO CONFIG IN PHP
 const USERS = [
 	{
+		user: 'qmiko',
 		image: "assets/img/profile2.jpg",
 		email: "caindayjoeninyo@gmail.com"
 	},
 	{
+		user: 'dmiko',
+		image: "assets/img/profile2.jpg",
+		email: "caindayjoeninyo@gmail.com"
+	},
+	{
+		user: 'mhiko',
+		image: "assets/img/profile2.jpg",
+		email: "caindayjoeninyo@gmail.com"
+	},
+	{
+		user: 'miko',
+		image: "assets/img/profile2.jpg",
+		email: "caindayjoeninyo@gmail.com"
+	},
+	{
+		user: 'mimi',
 		image: "assets/img/mlane.jpg",
 		email: "micahellareal@gmail.com"
 	},
 	{
+		user: 'mami',
 		image: "assets/img/jm_denis.jpg",
 		email: "ljisaac@gmail.com"
 	},
 	{
+		user: 'jeane',
 		image: "assets/img/talha.jpg",
 		email: "kenrian.boleche@gmail.com"
+	},
+	{
+		user: 'amaterasu',
+		image: "assets/img/sauro.jpg",
+		email: "yuikasdfasdfsadfasdf@gmail.com"
 	}
 ];
 
@@ -264,6 +288,7 @@ class OwnerGroup {
 		this.select.setAttribute('data-live-search', 'true');
 		this.select.setAttribute('data-selected-text-format', 'static');
 		this.select.setAttribute('multiple', 'true');
+		this.select.setAttribute('data-max-options', '5'); // set maximum number of owners
 
 		document.getElementById(this.parentID).appendChild(this.select);
 
@@ -279,9 +304,15 @@ class OwnerGroup {
 
 			// menu container
 			this.avatar = document.createElement('div');
-			this.avatar.setAttribute('class', 'avatar avatar-xs');
+			this.avatar.setAttribute('class', 'avatar avatar-xs mt-2');
+			this.avatar.setAttribute('style', 'display: flex;');
 			// menu avatar and image
-			this.avatar.innerHTML = `<img src="${info['image']}" class="avatar-img rounded-circle"> &nbsp; ${info['email']}`
+			this.avatar.innerHTML = `
+				<img src="${info['image']}" class="avatar-img rounded-circle mr-2"> 
+				<div style="display: flex; flex-direction: column; justify-content: center" >
+					<span style='font-size: 14px;'><b>${info['user']}</b></span>
+					<span style='font-size: 11px; margin-top: -7px'>${info['email']}</span>	
+				</div>`
 
 			// menu option
 			this.option[count] = document.createElement('option');
@@ -1058,11 +1089,9 @@ class TableCard {
 
 // create a table template
 let mytable = new TableCard('Grocery List');
-// mytable.addRow('sdfasdfsadf', 'Complete', '03/01/2022', '03/31/2022', ['caindayjoeninyo@gmail.com', 'micahellareal@gmail.com']);
-mytable.addRow('BUY BROWN EGGS', 'Complete', 'Mar 01, 2022', 'Mar 05, 2022', Date.now());
-mytable.addRow('DYNARIMA SHEET', 'Stuck', 'Feb 05, 2022', 'Mar 15, 2022', 1651420206620);
-// mytable.addRow('Buy some eggs', 'Complete');
-
+// mytable.addRow('sdfasdfsadf', 'Complete', '03/01/2022', '03/31/2022', ['miku', 'mami']);
+mytable.addRow('BUY BROWN EGGS', 'Complete', 'Mar 01, 2022', 'Mar 05, 2022', 1651457868731);
+mytable.addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', 1651420206620);
 
 // create table button functionality
 const createTableID = 'table-create';

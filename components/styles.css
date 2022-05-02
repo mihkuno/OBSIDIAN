@@ -52,13 +52,15 @@ input.row-label:focus, input.table-label:focus { color: #7d5fff !important; }
 /* adjust owner 'no result' font size */
 .bootstrap-select .no-results { font-size: 14px !important; margin-left: 10px; background-color: #303b55; color: grey}
 /* change width */
-.bootstrap-select .dropdown-menu { min-width: 260px !important; background-color: #303b55;}
+.bootstrap-select .dropdown-menu { min-width: 250px !important; background-color: #303b55;}
 /* adjust owner search padding */
 div.bs-searchbox > input { padding: 5px !important; }
 /* change hover and focus backgorund color */
 .dropdown-item:focus, .dropdown-item:hover {background-color: #1f283e;}
 /* change option text color */
 .ownerEmail {color: whitesmoke !important;}
+/* adjust selected check icon */
+span.bs-ok-default.check-mark {margin-top: 13px;}
 
 /* -- DROPDOWN MENU ARROW -- */
 .dropdown-menu:before {
