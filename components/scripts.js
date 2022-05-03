@@ -108,11 +108,15 @@ class LabelInput {
 
 		// add onclick event
 		this.input.addEventListener('change', (e) => {
+			const value = e.target.value.trim()
+			this.label = value;
+			
 			// update the row timestamp
 			this.row.timestamp = Date.now();
 
-			const value = e.target.value.trim()
-			this.label = value;
+			// update the row label
+			this.row.label = this.label;
+			
 			// notification
 			$.notify({
 				// options
@@ -212,9 +216,6 @@ class StatusButton {
 
 			// add onclick event
 			$(this.buttonItem[count]).click((e)=> {		
-				// update the row timestamp
-				this.row.timestamp = Date.now();
-
 				// change text, icon, color when dropdown item is clicked
 				const st = e.currentTarget.outerText.trim(); 
 				const cc = states[st][0];
@@ -225,6 +226,14 @@ class StatusButton {
 				this.buttonDrop.setAttribute('class', `btn dropdown-toggle ${cc}`)
 				this.buttonDrop.insertAdjacentHTML('beforeend',
 					`<span class="btn-label"><i class="fa ${ii}"></i></span> ${st}`);
+
+
+				// update the row timestamp
+				this.row.timestamp = Date.now();
+				
+				// update the row status
+				this.row.status = this.status;
+
 
 				// notification
 				$.notify({
@@ -452,6 +461,10 @@ class DatePicker {
 			// update the row timestamp
 			this.row.timestamp = Date.now();
 
+			// update the row date start and end
+			this.row.datestart = start.format('MMM DD YYYY');
+			this.row.dateend = end.format('MMM DD YYYY')
+
 			// format to send in database
 			const queryFormat = { year: 'numeric', month: 'short', day: 'numeric' };
 			this.startQuery = new Date(start).toLocaleDateString(undefined, queryFormat);  
@@ -460,7 +473,9 @@ class DatePicker {
 			// only show end milestone if both (start & end) date is the same
 			if (start.format('MMM DD YYYY') == end.format('MMM DD YYYY')) {
 				// update the date range label (milestone)
-				$(this.datePickedID).html(start.format('MMM DD'));
+				$(`#${datePickedID}`).html(start.format('MMM DD'));
+				// add a value attribute for row id value extraction
+				$(`#${datePickedID}`).attr('value', start.format('MMM DD YYYY'));
 				
 				// notification
 				$.notify({
@@ -499,6 +514,8 @@ class DatePicker {
 			else {
 				// update the date range label (timeline)
 				$(`#${datePickedID}`).html(start.format('MMM DD')+' - '+end.format('MMM DD'));
+				// add a value attribute for row id value extraction
+				$(`#${datePickedID}`).attr('value', `${start.format('MMM DD YYYY')}-${end.format('MMM DD YYYY')}`);
 				
 				// notification
 				$.notify({
@@ -540,16 +557,29 @@ class DatePicker {
 		if (datestart!='' && dateend!='') {
 
 			// change range of menu using the object
-			$(`#${datePickerID}`).data('daterangepicker').setStartDate(new Date(datestart));
-			$(`#${datePickerID}`).data('daterangepicker').setEndDate(new Date(dateend));
+			$(`#${this.datePickerID}`).data('daterangepicker').setStartDate(new Date(datestart));
+			$(`#${this.datePickerID}`).data('daterangepicker').setEndDate(new Date(dateend));
 
-			// change label format
+			// database format to send
+			const queryFormat = { year: 'numeric', month: 'short', day: 'numeric' };
+			this.startQuery = new Date(datestart).toLocaleDateString(undefined, queryFormat);  
+			this.endQuery = new Date(dateend).toLocaleDateString(undefined, queryFormat);	
+
+			// display label format
 			const displayFormat = { month: 'short', day: 'numeric' };
 			this.startDisplay = new Date(datestart).toLocaleDateString(undefined, displayFormat);   
 			this.endDisplay   = new Date(dateend).toLocaleDateString(undefined, displayFormat);	
 
-			// display the date range 
-			$(`#${this.datePickedID}`).html(`${this.startDisplay} - ${this.endDisplay}`);
+			if (this.startDisplay == this.endDisplay) {
+				// update the date range label (milestone)
+				$(`#${this.datePickedID}`).html(this.startDisplay);
+			}
+			else {
+				// update the date range label (timeline)
+				$(`#${this.datePickedID}`).html(`${this.startDisplay} - ${this.endDisplay}`);
+			}
+			// set the display attributes
+			$(`#${this.datePickedID}`).attr('value', `${this.startQuery}-${this.endQuery}`);
 		}
 	}
 }
@@ -594,7 +624,7 @@ class RemoveRow {
 			}).then((Delete) => {
 				if (Delete) {
 					// remove all rows and stop timestamp update
-					this.row.remove();
+					this.row.drop();
 				
 					// notification
 					$.notify({
@@ -654,65 +684,62 @@ class Row {
 		this.dateend 	 = dateend;
 	 // this.owner 		 = owner;
 		this.timestamp 	 = timestamp;
+		this.interval = '';
 
-		const labelID       = `${this.componentID}-label`;
-		const labelContID   = `${this.componentID}-labelCont`;
-	
-		const statusID      = `${this.componentID}-status`;
-		const statusContID  = `${this.componentID}-statusCont`;
-		const statusMenuID  = `${this.componentID}-statusMenu`;
-	
-		const datePickerID  = `${this.componentID}-datePicker`;
-		const datePickedID  = `${this.componentID}-datePicked`;
-	
-		const ownerGroupID  = `${this.componentID}-avatarGroup`
-		const ownerSelectID = `${this.componentID}-owner`;
-
-		const timestampID    = `${this.componentID}-modified`;
-	
-		const removeID      = `${this.componentID}-remove`;
-		const actionContID  = `${this.componentID}-actionCont`;
-		
+		this.labelID       = `${this.componentID}-label`;
+		this.labelContID   = `${this.componentID}-labelCont`;
+		this.statusID      = `${this.componentID}-status`;
+		this.statusContID  = `${this.componentID}-statusCont`;
+		this.statusMenuID  = `${this.componentID}-statusMenu`;
+		this.datePickerID  = `${this.componentID}-datePicker`;
+		this.datePickedID  = `${this.componentID}-datePicked`;
+		this.ownerGroupID  = `${this.componentID}-avatarGroup`
+		this.ownerSelectID = `${this.componentID}-owner`;
+		this.timestampID   = `${this.componentID}-modified`;
+		this.removeID      = `${this.componentID}-remove`;
+		this.actionContID  = `${this.componentID}-actionCont`;
+	}
+	create() {
 		const rowContent = `
 		<tr draggable="true" id="${this.componentID}">
 			<!-- LABEL -->
 			<td>
-				<div class="form-group" id='${labelContID}'>
+				<div class="form-group" id='${this.labelContID}'>
 					<!-- LABEL INPUT -->
 				</div>
 			</td>
 			<!-- STATUS -->
 			<td>
-				<div class="btn-group" id="${statusContID}">
+				<div class="btn-group" id="${this.statusContID}">
 					<!-- STATUS BUTTON -->
-					<div class="dropdown-status dropdown-menu dropdown" id="${statusMenuID}">
+					<div class="dropdown-status dropdown-menu dropdown" id="${this.statusMenuID}">
 						<!-- DROPDOWN STATUS BUTTONS-->
 					</div>
 				</div>
 			</td>
 			<!-- TIMELINE -->
 			<td>
-				<div id="${datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:120px"> 
+				<div id="${this.datePickerID}" class="btn btn-secondary btn-border btn-round datetimepicker-input" style="min-width:120px"> 
 				&nbsp;
 					<i class="fa fa-calendar">
-						<span id="${datePickedID}"></span>
+						<span id="${this.datePickedID}" value=''></span>
 						<i class="fa fa-caret-down"></i>
 					</i>
 				</div>
 			</td>
 			<!-- OWNER -->
 			<td>
-				<div class="avatar-group" id="${ownerGroupID}">
+				<div class="avatar-group" id="${this.ownerGroupID}">
 					<!-- OWNER AVATAR -->
 				</div>
 			</td>
 			<!-- LAST UPDATED -->
-			<td id="${timestampID}">
+			<td id="${this.timestampID}">
 				<!-- TIMESTAMP -->
 			</td>
 			<!-- REMOVE | SORTABLE -->
 			<td>
-				<div class="form-button-action" id="${actionContID}">
+				<div class="form-button-action" id="${this.actionContID}">
 					<!-- REMOVE ROW -->
 					
 					<button class="btn btn-link btn-secondary row-handle row-listener">
@@ -729,33 +756,33 @@ class Row {
 		// -- row components --
 		new LabelInput(
 			this,		    // pass self (this object)
-			labelID, 		// label input
-			labelContID, 	// label container
+			this.labelID, 		// label input
+			this.labelContID, 	// label container
 			this.label);	// label text
 		
 		new StatusButton(
 			this,			// pass self (this object)
-			statusID,		// status button 
-			statusContID,	// status container 
-			statusMenuID, 	// status menu
+			this.statusID,		// status button 
+			this.statusContID,	// status container 
+			this.statusMenuID, 	// status menu
 			this.status);	// status text
 		
 		new DatePicker(
 			this,			// pass self (this object)
-			datePickerID, 	// datepicker button
-			datePickedID,	// datepicker text
+			this.datePickerID, 	// datepicker button
+			this.datePickedID,	// datepicker text
 			this.datestart, // start date
 			this.dateend);	// end date
 
 		new OwnerGroup(
 			this,			// pass self (this object)
-			ownerSelectID,	// owner button 
-			ownerGroupID); 	// owner container
+			this.ownerSelectID,	// owner button 
+			this.ownerGroupID); 	// owner container
 
 		new RemoveRow(
 			this,			// pass self (this object)
-			this.removeID,	// remove button 
-			actionContID);	// remove container
+			this.removeID,		// remove button 
+			this.actionContID);	// remove container
 		
 		// make all dropdowns visible overflow off its container		
 		document.querySelectorAll('button.dropdown-toggle')
@@ -764,21 +791,36 @@ class Row {
 					e.setAttribute('data-boundary', 'window');
 					e.setAttribute('data-container', '.page-content');
 				}
-			);
+			);	
+			
+			// disable dragging ghost
+			document.getElementById(this.componentID)
+				.addEventListener("dragstart", function(e) {
+					var crt = this.cloneNode(true);
+					e.dataTransfer.setDragImage(crt, 0, 0);
+			}, false);
 
-		// update 'modified' interval every 100ms
-		this.interval = this.setIntervalAndExecute(() => {
-			document.getElementById(timestampID).innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
-		}, 100);
+		this.startInterval();
 	}
-	setIntervalAndExecute(fn, t) { // create an interval thread
+	setIntervalAndExecute(fn, t) { // create interval thread
 		fn();
 		return(setInterval(fn, t));
+	}
+	startInterval() {
+		// update 'modified' timestamp interval every 100ms
+		this.interval = this.setIntervalAndExecute(() => {	
+			// add timestamp attribute
+			document.getElementById(this.timestampID) // attribute
+			.setAttribute('value', this.timestamp);
+
+			document.getElementById(this.timestampID) // display
+				.innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
+		}, 100); // 100ms delay
 	}
 	stopInterval() { // stops timestamp update
 		clearInterval(this.interval);
 	}
-	remove() { // remove row and stop timestamp update
+	drop() { // remove row and stop timestamp update
 		this.stopInterval();
 		document.getElementById(this.componentID).remove();
 	}
@@ -792,7 +834,7 @@ class TableCard {
 		this.componentID = `tablecard-${tableCardCount}`;
 		this.parentID 	 = "index-content";
 		this.cardLabel   = cardLabel; // set table header
-		this.rowCount    = 0; // set number of rows
+		this.rowCount; // set number of rows
  
 		this.headerID    = `${this.componentID}-header`; // head 
 		this.labelID 	 = `${this.componentID}-label`;  // input  
@@ -888,8 +930,9 @@ class TableCard {
 			.insertAdjacentHTML('beforeend', this.content);
 
 		// sortable rows
-		new Sortable(
-			document.getElementById(this.tbodyID), 
+		const element = $(`#${this.tbodyID}`)[0];
+		const rowSort = new Sortable(
+			element, 
 			{ 
 				selectedClass: 'row-selected', // color of multidrag
 				handle: '.row-handle', //  a component to drag on
@@ -897,11 +940,174 @@ class TableCard {
 				group: 'shared-row', // make rows movable to different tables
 				multiDrag: true, // enable selection of multiple rows
 				animation: 200, // animation speed
+				onEnd: (/**Event*/evt) => { // UPDATE THE ID'S OF EVERY TABLE ROW (tr)
+
+					var result = evt.item;  // dragged HTMLElement
+					evt.to;    // target list
+					evt.from;  // previous list
+					evt.oldIndex;  // element's old index within old parent
+					evt.newIndex;  // element's new index within new parent
+					evt.clone // the clone element
+					evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
+
+
+					// this tbody
+					const tbody = evt.to;
+					const tbodyLength = tbody.children.length;
+
+					// get the target table html element
+					this.rowCount = tbodyLength; // update `this` row count
+					
+					// previous tbody
+					const prevTbody = evt.from;
+					const prevTbodyLength = prevTbody.children.length;
+
+					// UPDATE 'THIS' ROW-OBJECT COLLECTION
+					let collection = [];
+
+					// loop through target tbody every single tr
+					for (var row=0; row < tbodyLength; row++) {
+						const tr = tbody.children[row]; 	  	    // a row in the target tbody
+						const initial_trID = `${tr.id}`;		    // tr id value before change (tablecard-0-tbody-0)
+						const transfer_trID = `${tbody.id}-${row}`; // tf id string to change (tablecard-0-tbody-1) 
+
+
+						// update children of the tr
+						document.getElementById(`${transfer_trID}-label`	  ).setAttribute('id', `${initial_trID}-label`);
+						document.getElementById(`${transfer_trID}-labelCont`  ).setAttribute('id', `${initial_trID}-labelCont`);
+						document.getElementById(`${transfer_trID}-status`     ).setAttribute('id', `${initial_trID}-status`);
+						document.getElementById(`${transfer_trID}-statusCont` ).setAttribute('id', `${initial_trID}-statusCont`);
+						document.getElementById(`${transfer_trID}-statusMenu` ).setAttribute('id', `${initial_trID}-statusMenu`);
+						document.getElementById(`${transfer_trID}-datePicker` ).setAttribute('id', `${initial_trID}-datePicker`);
+						document.getElementById(`${transfer_trID}-datePicked` ).setAttribute('id', `${initial_trID}-datePicked`);
+						document.getElementById(`${transfer_trID}-avatarGroup`).setAttribute('id', `${initial_trID}-avatarGroup`);
+						document.getElementById(`${transfer_trID}-owner`      ).setAttribute('id', `${initial_trID}-owner`);
+						document.getElementById(`${transfer_trID}-modified`   ).setAttribute('id', `${initial_trID}-modified`);
+						document.getElementById(`${transfer_trID}-remove`     ).setAttribute('id', `${initial_trID}-remove`);
+						document.getElementById(`${transfer_trID}-actionCont` ).setAttribute('id', `${initial_trID}-actionCont`);
+
+						// for creating the object
+						let label, status, daterange, timestamp;
+
+						// update row object
+						// get the label
+						label = tr // tr
+								.children[0] // td
+								.children[0] // div
+								.children[0] // input
+								.attributes[5] // input attributes
+								.value; // string value
+						
+						// get the status
+						status = tr // tr
+								.children[1] // td
+								.children[0] // btn-group
+								.children[1] // button
+								.textContent.trim(); // html text
+
+						// get the date range
+						daterange = tr // tr
+								.children[2] // td
+								.children[0]  // div
+								.children[0] // i
+								.children[0] // span
+								.attributes[1] // span attributes
+								.value.split('-'); // string value
+
+						// get the timestamp
+						timestamp = tr // tr
+								.children[4] // td
+								.attributes[1] // td attributes
+								.value; // string value
+
+						// update the tr id
+						tr.id = transfer_trID;
+
+						collection.push([tr.id, tbody.id, label, status, daterange[0], daterange[1], parseInt(timestamp)]);
+					}
+
+					// stop the timestamp from updating
+					this.rows.forEach(e => e.stopInterval());
+					this.rows = []; // empty the `this` rows collection
+					// replace collection 
+					collection.forEach(e => this.rows.push(new Row(e[0],e[1],e[2],e[3],e[4],e[5],e[6])));
+					this.rows.forEach(e => e.startInterval());
+					console.log('targetTable::',this.rows);
+
+
+					// UPDATE 'PREVIOUS' ROW-OBJECT COLLECTION
+					// was the sort transferred to another table?
+	
+					// if (prevTbody != tbody) {
+					// 	collection = []; // empty the collection
+						
+					// 	// loop through previousious table's every single row
+					// 	for (var row=0; row < prevTbodyLength; row++) {
+					// 		const tr = prevTbody.children[row]; 	  	   // a row in the target tbody
+					// 		const initial_trID = `${tr.id}`;		   // tr id value before change (tablecard-0-tbody-0)
+					// 		const transfer_trID = `${prevTbody.id}-${row}`; // tf id string to change (tablecard-0-tbody-1)
+
+					// 		// for creating the object
+					// 		let label, status, daterange, timestamp;
+
+					// 		// update row object
+					// 		// get the label
+					// 		label = tr // tr
+					// 				.children[0] // td
+					// 				.children[0] // div
+					// 				.children[0] // input
+					// 				.attributes[5] // input attributes
+					// 				.value; // string value
+							
+					// 		// get the status
+					// 		status = tr // tr
+					// 				.children[1] // td
+					// 				.children[0] // btn-group
+					// 				.children[1] // button
+					// 				.textContent.trim(); // html text
+
+					// 		// get the date range
+					// 		daterange = tr // tr
+					// 				.children[2] // td
+					// 				.children[0]  // div
+					// 				.children[0] // i
+					// 				.children[0] // span
+					// 				.attributes[1] // span attributes
+					// 				.value.split('-'); // string value
+
+					// 		// get the timestamp
+					// 		timestamp = tr // tr
+					// 				.children[4] // td
+					// 				.attributes[1] // td attributes
+					// 				.value; // string value
+
+					// 		collection.push([tr.id, prevTbody.id, label, status, daterange[0], daterange[1], parseInt(timestamp)]);
+					// 	}
+						
+					// 	// get the target table object
+					// 	// find the global tableCard Object with componentID == previousTableID
+					// 	tableCard.forEach(prevTableObj => { // remove tablecard-0 >> {-tbody}
+					// 		if (prevTableObj['componentID'] == prevTbody.id.slice(0,-6)) {
+					// 			// stop the timestamp from updating
+					// 			prevTableObj.rows.forEach(e => e.stopInterval());
+					// 			prevTableObj.rowCount = prevTbodyLength;
+					// 			prevTableObj.rows = []; // empty 'previous' rows collection
+					// 			// replace collection 
+					// 			collection.forEach(e => prevTableObj.rows.push(new Row(e[0],e[1],e[2],e[3],e[4],e[5],e[6])));
+					// 			prevTableObj.rows.forEach(e => e.startInterval());
+					// 			console.log('prevTable::',prevTableObj.rows);
+					// 		}
+					// 	});
+					// }
+
+
+
+				}
 			}
 		);
 
 		// sortable table
-		new Sortable(
+		const tableSort = new Sortable(
 			document.getElementById(this.parentID), 
 			{
 				selectedClass: 'table-selected',
@@ -928,6 +1134,7 @@ class TableCard {
 			.addEventListener('change', () => 
 			{
 				this.cardLabel = document.getElementById(this.labelID).value;
+
 				// notification
 				$.notify({
 					// options
@@ -966,7 +1173,7 @@ class TableCard {
 		// add-row button listener
 		document.getElementById(this.addRowID)
 			.addEventListener('click', () => {
-				this.addRow('', 'Soon', '','',Date.now());
+				this.addRow('', 'Soon', '', '','');
 				
 				// notification
 				$.notify({
@@ -1002,7 +1209,7 @@ class TableCard {
 			});
 		});
 
-		// del-table button listener
+		// del-table button listener (INSTEAD OF REMOVING THE TABLE, CHECK THE ROW CONTENT)
 		document.getElementById(this.removeID)
 			.addEventListener('click', () => {
 				// MODAL CONFIRMATION
@@ -1023,11 +1230,13 @@ class TableCard {
 				}).then((Delete) => {
 					if (Delete) {
 
+						// MUST UPDATE THIS.ROWS WHENEVER A SORT CHANGE IS DONE BEFORE DELETING EACH ROWS
+
 						// remove all rows and stop timestamp update
 						this.rows.forEach((e) => {e.remove();});
 
 						// delete table
-						$(`#${this.componentID}`).remove(); 
+						document.getElementById(this.componentID).remove(); 
 						
 						// notification
 						$.notify({
@@ -1081,24 +1290,40 @@ class TableCard {
 	// add a row method
 	addRow(label, status, datestart, dateend, timestamp) {
 
-		const rowID = `${this.tbodyID}-${this.rowCount}`;  
-		this.rows[this.rowCount++] = new Row(rowID, this.tbodyID, label, status, datestart, dateend, timestamp);
+		// UPDATE TARGET TABLE
+		// get the target table html element
+		const targetID = this.tbodyID;
+		const target = document.getElementById(targetID);
+		const length = target.children.length;
 
+		this.rowCount = length; // update `this` row count
+
+		// if timestamp is empty
+		const current = Date.now();
+		timestamp = (timestamp == '')? current : timestamp;
+
+		// MUST UPDATE ROW ID BASED ON FIRST INDEX
+		const newID = `${this.tbodyID}-${this.rowCount}`;  
+		this.rows[this.rowCount] = new Row(newID, this.tbodyID, label, status, datestart, dateend, timestamp);
+		this.rows[this.rowCount].create();
+		this.rowCount++;
 	}
 }
 
+var tableCard = [];
+
 // create a table template
-let mytable = new TableCard('Grocery List');
+tableCard.push(new TableCard('Grocery List'));
 // mytable.addRow('sdfasdfsadf', 'Complete', '03/01/2022', '03/31/2022', ['miku', 'mami']);
-mytable.addRow('BUY BROWN EGGS', 'Complete', 'Mar 01, 2022', 'Mar 05, 2022', 1651457868731);
-mytable.addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', 1651420206620);
+tableCard[0].addRow('BUY BROWN EGGS', 'Complete', 'Mar 05, 2022', 'Mar 05, 2022', 1651457868731);
+tableCard[0].addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', 1651420206620);
 
 // create table button functionality
 const createTableID = 'table-create';
 document.getElementById(createTableID)
 	.addEventListener('click', () => 
 	{
-		const table = new TableCard('');
+		tableCard.push(new TableCard(''));
 		
 		// notification
 		$.notify({
