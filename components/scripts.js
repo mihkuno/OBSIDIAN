@@ -815,15 +815,18 @@ class Row {
 	}
 	startInterval() {
 
-		try {
-			// update 'modified' timestamp interval every 100ms
-			this.interval = this.setIntervalAndExecute(() => {	
+		// update 'modified' timestamp interval every 100ms
+		this.interval = this.setIntervalAndExecute(() => {	
+
+			try {
 				document.getElementById(this.timestampID) // display
-					.innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
-			}, 100); // 100ms delay
-		} catch (error) {
-			console.log('dragging an element');
-		}
+				.innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
+			}
+			catch (error) {
+				console.log('multiple dragging detected.. pausing hidden timestamp');
+			}
+			
+		}, 100); // 100ms delay
 
 	}
 	stopInterval() { // stops timestamp update
@@ -1189,6 +1192,7 @@ class TableCard {
 
 						// MUST UPDATE THIS.ROWS WHENEVER A SORT CHANGE IS DONE BEFORE DELETING EACH ROWS
 						this.rows.forEach(e => e.drop());
+						document.getElementById(this.componentID).remove();
 
 						
 						// notification
