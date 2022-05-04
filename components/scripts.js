@@ -698,6 +698,7 @@ class Row {
 		this.timestampID   = `${this.componentID}-modified`;
 		this.removeID      = `${this.componentID}-remove`;
 		this.actionContID  = `${this.componentID}-actionCont`;
+
 	}
 	create() {
 		const rowContent = `
@@ -734,7 +735,7 @@ class Row {
 				</div>
 			</td>
 			<!-- LAST UPDATED -->
-			<td id="${this.timestampID}">
+			<td id="${this.timestampID}" value="">
 				<!-- TIMESTAMP -->
 			</td>
 			<!-- REMOVE | SORTABLE -->
@@ -748,10 +749,16 @@ class Row {
 				</div>
 			</td>
 		</tr>`;
+		
 
 		// insert empty row to table
 		document.getElementById(this.parentID)
 			.insertAdjacentHTML('beforeend', rowContent);
+
+		// add timestamp attribute
+		document.getElementById(this.timestampID) // attribute
+			.setAttribute('value', this.timestamp);
+			
 
 		// -- row components --
 		new LabelInput(
@@ -792,13 +799,13 @@ class Row {
 					e.setAttribute('data-container', '.page-content');
 				}
 			);	
-			
-			// disable dragging ghost
-			document.getElementById(this.componentID)
-				.addEventListener("dragstart", function(e) {
-					var crt = this.cloneNode(true);
-					e.dataTransfer.setDragImage(crt, 0, 0);
-			}, false);
+
+		// disable dragging ghost
+		document.getElementById(this.componentID)
+		.addEventListener("dragstart", function(e) {
+			var crt = this.cloneNode(true);
+			e.dataTransfer.setDragImage(crt, 0, 0);
+		}, false);
 
 		this.startInterval();
 	}
@@ -807,21 +814,23 @@ class Row {
 		return(setInterval(fn, t));
 	}
 	startInterval() {
-		// update 'modified' timestamp interval every 100ms
-		this.interval = this.setIntervalAndExecute(() => {	
-			// add timestamp attribute
-			document.getElementById(this.timestampID) // attribute
-			.setAttribute('value', this.timestamp);
 
-			document.getElementById(this.timestampID) // display
-				.innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
-		}, 100); // 100ms delay
+		try {
+			// update 'modified' timestamp interval every 100ms
+			this.interval = this.setIntervalAndExecute(() => {	
+				document.getElementById(this.timestampID) // display
+					.innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
+			}, 100); // 100ms delay
+		} catch (error) {
+			console.log('dragging an element');
+		}
+
 	}
 	stopInterval() { // stops timestamp update
 		clearInterval(this.interval);
 	}
 	drop() { // remove row and stop timestamp update
-		this.stopInterval();
+		clearInterval(this.interval);
 		document.getElementById(this.componentID).remove();
 	}
 }
@@ -834,13 +843,13 @@ class TableCard {
 		this.componentID = `tablecard-${tableCardCount}`;
 		this.parentID 	 = "index-content";
 		this.cardLabel   = cardLabel; // set table header
-		this.rowCount; // set number of rows
  
 		this.headerID    = `${this.componentID}-header`; // head 
 		this.labelID 	 = `${this.componentID}-label`;  // input  
 		this.removeID    = `${this.componentID}-remove`; // button
 		this.addRowID    = `${this.componentID}-addrow`; // button
 		this.tbodyID  	 = `${this.componentID}-tbody`;  // rows
+		this.rowCount 	 = 0;
 
 		this.rows = []; // store all the created rows of this table 
 
@@ -951,157 +960,105 @@ class TableCard {
 					evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
 
 
-					// this tbody
-					const tbody = evt.to;
-					const tbodyLength = tbody.children.length;
+					// if the sort is on the same table
+					if (evt.from.id == evt.to.id) { // in this case, from == to						
 
-					// get the target table html element
-					this.rowCount = tbodyLength; // update `this` row count
-					
-					// previous tbody
-					const prevTbody = evt.from;
-					const prevTbodyLength = prevTbody.children.length;
+						let bucket = [];
 
-					// UPDATE 'THIS' ROW-OBJECT COLLECTION
-					let collection = [];
+						// sorting algorithm
+						for (let i=0; i < evt.from.children.length; i++) { // user sorted
+							for (let j=0; j < this.rows.length; j++) { // to sort..
+								// if equal, push to bucket list 
+								if (evt.from.children[i].id == this.rows[j].componentID) {
+									bucket.push(this.rows[j]);
+								}
+							}
+						}
+						// set bucket as row storage
+						this.rows = bucket;
 
-					// loop through target tbody every single tr
-					for (var row=0; row < tbodyLength; row++) {
-						const tr = tbody.children[row]; 	  	    // a row in the target tbody
-						const initial_trID = `${tr.id}`;		    // tr id value before change (tablecard-0-tbody-0)
-						const transfer_trID = `${tbody.id}-${row}`; // tf id string to change (tablecard-0-tbody-1) 
-
-
-						// update children of the tr
-						document.getElementById(`${transfer_trID}-label`	  ).setAttribute('id', `${initial_trID}-label`);
-						document.getElementById(`${transfer_trID}-labelCont`  ).setAttribute('id', `${initial_trID}-labelCont`);
-						document.getElementById(`${transfer_trID}-status`     ).setAttribute('id', `${initial_trID}-status`);
-						document.getElementById(`${transfer_trID}-statusCont` ).setAttribute('id', `${initial_trID}-statusCont`);
-						document.getElementById(`${transfer_trID}-statusMenu` ).setAttribute('id', `${initial_trID}-statusMenu`);
-						document.getElementById(`${transfer_trID}-datePicker` ).setAttribute('id', `${initial_trID}-datePicker`);
-						document.getElementById(`${transfer_trID}-datePicked` ).setAttribute('id', `${initial_trID}-datePicked`);
-						document.getElementById(`${transfer_trID}-avatarGroup`).setAttribute('id', `${initial_trID}-avatarGroup`);
-						document.getElementById(`${transfer_trID}-owner`      ).setAttribute('id', `${initial_trID}-owner`);
-						document.getElementById(`${transfer_trID}-modified`   ).setAttribute('id', `${initial_trID}-modified`);
-						document.getElementById(`${transfer_trID}-remove`     ).setAttribute('id', `${initial_trID}-remove`);
-						document.getElementById(`${transfer_trID}-actionCont` ).setAttribute('id', `${initial_trID}-actionCont`);
-
-						// for creating the object
-						let label, status, daterange, timestamp;
-
-						// update row object
-						// get the label
-						label = tr // tr
-								.children[0] // td
-								.children[0] // div
-								.children[0] // input
-								.attributes[5] // input attributes
-								.value; // string value
-						
-						// get the status
-						status = tr // tr
-								.children[1] // td
-								.children[0] // btn-group
-								.children[1] // button
-								.textContent.trim(); // html text
-
-						// get the date range
-						daterange = tr // tr
-								.children[2] // td
-								.children[0]  // div
-								.children[0] // i
-								.children[0] // span
-								.attributes[1] // span attributes
-								.value.split('-'); // string value
-
-						// get the timestamp
-						timestamp = tr // tr
-								.children[4] // td
-								.attributes[1] // td attributes
-								.value; // string value
-
-						// update the tr id
-						tr.id = transfer_trID;
-
-						collection.push([tr.id, tbody.id, label, status, daterange[0], daterange[1], parseInt(timestamp)]);
+						console.log(this.rows);
 					}
-
-					// stop the timestamp from updating
-					this.rows.forEach(e => e.stopInterval());
-					this.rows = []; // empty the `this` rows collection
-					// replace collection 
-					collection.forEach(e => this.rows.push(new Row(e[0],e[1],e[2],e[3],e[4],e[5],e[6])));
-					this.rows.forEach(e => e.startInterval());
-					console.log('targetTable::',this.rows);
+					else {
+					
+						console.log('from-->',evt.from.id,'<-to-->', evt.to.id);
 
 
-					// UPDATE 'PREVIOUS' ROW-OBJECT COLLECTION
-					// was the sort transferred to another table?
-	
-					// if (prevTbody != tbody) {
-					// 	collection = []; // empty the collection
-						
-					// 	// loop through previousious table's every single row
-					// 	for (var row=0; row < prevTbodyLength; row++) {
-					// 		const tr = prevTbody.children[row]; 	  	   // a row in the target tbody
-					// 		const initial_trID = `${tr.id}`;		   // tr id value before change (tablecard-0-tbody-0)
-					// 		const transfer_trID = `${prevTbody.id}-${row}`; // tf id string to change (tablecard-0-tbody-1)
+						// previous this.'rows object
+						// from = this.rows;
 
-					// 		// for creating the object
-					// 		let label, status, daterange, timestamp;
+						// Remove element at the given index
+						Array.prototype.remove = function(index) {
+							this.splice(index, 1);
+						}
 
-					// 		// update row object
-					// 		// get the label
-					// 		label = tr // tr
-					// 				.children[0] // td
-					// 				.children[0] // div
-					// 				.children[0] // input
-					// 				.attributes[5] // input attributes
-					// 				.value; // string value
+						// Insert element at the given index
+						Array.prototype.insert = function ( index, item ) {
+							this.splice( index, 0, item );
+						};
+
+						// create a bucket (contain new state of previous table objects)
+						let bucket = [];
+						// loop previous rows (html_evt.from)
+						for (let htmfr=0; htmfr < evt.from.children.length; htmfr++) {
+						// loop previous rows (object_this)
+							for (let objpv=0; objpv < this.rows.length; objpv++) {
+								// if html == object
+								if (evt.from.children[htmfr].id == this.rows[objpv].componentID) {
+									// push object to bucket
+									bucket.push(this.rows[objpv]);
+									// remove the object_this off its collection
+									this.rows.remove(objpv);
+								}
+							}
+						}
+						// transferred  = object_this
+						let transferred = this.rows;
+						// object_this = bucket
+						this.rows = bucket;
+
+								// previous  // target 
+						// console.log(this.rows, transferred);
+
+
+
+						// update to.rows first
+						// target to.'rows' object 
+						let to;
+						for (let object of tableCard) {
+							if (object.componentID == evt.to.id.slice(0, -6)) {
+								to = object;
+								break;
+							}
+						}
+
+						function findWithAttr(array, attr, value) {
+							for(var i = 0; i < array.length; i += 1) {
+								if(array[i][attr] === value) {
+									return i;
+								}
+							}
+							return -1;
+						}
+
+
+						let translength = 0;
+						// loop current table (html_evt.to)
+						for (let htmto=0; htmto < evt.to.children.length; htmto++) {
+
+							// change this into a for-loop
+							// let index = to.rows.findIndex(tr => tr.componentID == evt.to.children[htmto].id);
+							let index = findWithAttr(to.rows, 'componentID', evt.to.children[htmto].id);
 							
-					// 		// get the status
-					// 		status = tr // tr
-					// 				.children[1] // td
-					// 				.children[0] // btn-group
-					// 				.children[1] // button
-					// 				.textContent.trim(); // html text
+				
+							if (index < 0) {
+								to.rows.insert(htmto, transferred[translength++]);
+							}
+		
+						}
 
-					// 		// get the date range
-					// 		daterange = tr // tr
-					// 				.children[2] // td
-					// 				.children[0]  // div
-					// 				.children[0] // i
-					// 				.children[0] // span
-					// 				.attributes[1] // span attributes
-					// 				.value.split('-'); // string value
-
-					// 		// get the timestamp
-					// 		timestamp = tr // tr
-					// 				.children[4] // td
-					// 				.attributes[1] // td attributes
-					// 				.value; // string value
-
-					// 		collection.push([tr.id, prevTbody.id, label, status, daterange[0], daterange[1], parseInt(timestamp)]);
-					// 	}
-						
-					// 	// get the target table object
-					// 	// find the global tableCard Object with componentID == previousTableID
-					// 	tableCard.forEach(prevTableObj => { // remove tablecard-0 >> {-tbody}
-					// 		if (prevTableObj['componentID'] == prevTbody.id.slice(0,-6)) {
-					// 			// stop the timestamp from updating
-					// 			prevTableObj.rows.forEach(e => e.stopInterval());
-					// 			prevTableObj.rowCount = prevTbodyLength;
-					// 			prevTableObj.rows = []; // empty 'previous' rows collection
-					// 			// replace collection 
-					// 			collection.forEach(e => prevTableObj.rows.push(new Row(e[0],e[1],e[2],e[3],e[4],e[5],e[6])));
-					// 			prevTableObj.rows.forEach(e => e.startInterval());
-					// 			console.log('prevTable::',prevTableObj.rows);
-					// 		}
-					// 	});
-					// }
-
-
-
+						console.log('previous:',this.rows, 'target:',to.rows);
+					}
 				}
 			}
 		);
@@ -1231,12 +1188,8 @@ class TableCard {
 					if (Delete) {
 
 						// MUST UPDATE THIS.ROWS WHENEVER A SORT CHANGE IS DONE BEFORE DELETING EACH ROWS
+						this.rows.forEach(e => e.drop());
 
-						// remove all rows and stop timestamp update
-						this.rows.forEach((e) => {e.remove();});
-
-						// delete table
-						document.getElementById(this.componentID).remove(); 
 						
 						// notification
 						$.notify({
@@ -1289,23 +1242,14 @@ class TableCard {
 
 	// add a row method
 	addRow(label, status, datestart, dateend, timestamp) {
-
-		// UPDATE TARGET TABLE
-		// get the target table html element
-		const targetID = this.tbodyID;
-		const target = document.getElementById(targetID);
-		const length = target.children.length;
-
-		this.rowCount = length; // update `this` row count
-
 		// if timestamp is empty
-		const current = Date.now();
-		timestamp = (timestamp == '')? current : timestamp;
+		timestamp = (timestamp == '')? Date.now() : timestamp;
 
 		// MUST UPDATE ROW ID BASED ON FIRST INDEX
 		const newID = `${this.tbodyID}-${this.rowCount}`;  
-		this.rows[this.rowCount] = new Row(newID, this.tbodyID, label, status, datestart, dateend, timestamp);
-		this.rows[this.rowCount].create();
+		const row = new Row(newID, this.tbodyID, label, status, datestart, dateend, timestamp);
+		row.create();
+		this.rows.push(row);
 		this.rowCount++;
 	}
 }
