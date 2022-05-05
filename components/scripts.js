@@ -823,7 +823,7 @@ class Row {
 				.innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
 			}
 			catch (error) {
-				console.log('multiple dragging detected.. pausing hidden timestamp');
+				console.log('multiple dragging.. pausing grouped timestamps');
 			}
 			
 		}, 100); // 100ms delay
@@ -952,9 +952,9 @@ class TableCard {
 				group: 'shared-row', // make rows movable to different tables
 				multiDrag: true, // enable selection of multiple rows
 				animation: 200, // animation speed
-				onEnd: (/**Event*/evt) => { // UPDATE THE ID'S OF EVERY TABLE ROW (tr)
+				onEnd: (/**Event*/evt) => { // update the index of objects based on html arrangement
+					console.log('from-->',evt.from.id,'<-to-->', evt.to.id);
 
-					var result = evt.item;  // dragged HTMLElement
 					evt.to;    // target list
 					evt.from;  // previous list
 					evt.oldIndex;  // element's old index within old parent
@@ -962,105 +962,90 @@ class TableCard {
 					evt.clone // the clone element
 					evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
 
+					// get the index of an object attribute based on given value
+					function findWithAttr(array, attr, value) {
+						for(var i = 0; i < array.length; i += 1) {
+							if(array[i][attr] === value) {
+								return i;
+							}
+						}
+						return -1;
+					}
+
+					// Remove element at the given index
+					Array.prototype.remove = function(index) {
+						this.splice(index, 1);
+					}
+
+					// Insert element at the given index
+					Array.prototype.insert = function ( index, item ) {
+						this.splice( index, 0, item );
+					};
+
+					// the table where the row was taken from
+					// from -> this
+					let from_obj = this.rows;
+
+					// the table where the row is transferred
+					let to;
+					for (let object of tableCard) {
+						if (object.componentID == evt.to.id.slice(0, -6)) {
+							to = object;
+							break;
+						}
+					}
+					// to -> to.rows
+					let to_obj = to.rows;  
 
 					// if the sort is on the same table
-					if (evt.from.id == evt.to.id) { // in this case, from == to						
+					if (evt.from.id == evt.to.id) { // in this case, from_table == to_table						
 
-						let bucket = [];
+						let bucket = []; // contain the same this.rows but on updated index
 
 						// sorting algorithm
-						for (let i=0; i < evt.from.children.length; i++) { // user sorted
-							for (let j=0; j < this.rows.length; j++) { // to sort..
-								// if equal, push to bucket list 
-								if (evt.from.children[i].id == this.rows[j].componentID) {
-									bucket.push(this.rows[j]);
-								}
+						for (let htmfr=0; htmfr < evt.from.children.length; htmfr++) { // user sorted
+							let index = findWithAttr(from_obj, 'componentID', evt.from.children[htmfr].id);
+							if (index >= 0) {
+								// append a copy of the object
+								bucket.push(from_obj[index]);
 							}
 						}
-						// set bucket as row storage
-						this.rows = bucket;
-
-						console.log(this.rows);
+						// update index of from table rows
+						from_obj = bucket;
+						console.log(from_obj);
 					}
 					else {
-					
-						console.log('from-->',evt.from.id,'<-to-->', evt.to.id);
 
+						let bucket = []; // will contain the same this.rows but on updated index
 
-						// previous this.'rows object
-						// from = this.rows;
-
-						// Remove element at the given index
-						Array.prototype.remove = function(index) {
-							this.splice(index, 1);
-						}
-
-						// Insert element at the given index
-						Array.prototype.insert = function ( index, item ) {
-							this.splice( index, 0, item );
-						};
-
-						// create a bucket (contain new state of previous table objects)
-						let bucket = [];
-						// loop previous rows (html_evt.from)
-						for (let htmfr=0; htmfr < evt.from.children.length; htmfr++) {
-						// loop previous rows (object_this)
-							for (let objpv=0; objpv < this.rows.length; objpv++) {
-								// if html == object
-								if (evt.from.children[htmfr].id == this.rows[objpv].componentID) {
-									// push object to bucket
-									bucket.push(this.rows[objpv]);
-									// remove the object_this off its collection
-									this.rows.remove(objpv);
-								}
-							}
-						}
-						// transferred  = object_this
-						let transferred = this.rows;
-						// object_this = bucket
-						this.rows = bucket;
-
-								// previous  // target 
-						// console.log(this.rows, transferred);
-
-
-
-						// update to.rows first
-						// target to.'rows' object 
-						let to;
-						for (let object of tableCard) {
-							if (object.componentID == evt.to.id.slice(0, -6)) {
-								to = object;
-								break;
+						// sorting algorithm
+						for (let htmfr=0; htmfr < evt.from.children.length; htmfr++) { // user sorted
+							let index = findWithAttr(from_obj, 'componentID', evt.from.children[htmfr].id);
+							if (index >= 0) {
+								// append a copy of the object
+								bucket.push(from_obj[index]);
+								
+								// remove the from_table rows that is still there 
+								from_obj.remove(index); // which remain rows that was transferred
 							}
 						}
 
-						function findWithAttr(array, attr, value) {
-							for(var i = 0; i < array.length; i += 1) {
-								if(array[i][attr] === value) {
-									return i;
-								}
-							}
-							return -1;
-						}
+						// changed from rows collection as the bucket to reset index
+						let transferred = from_obj;
+						from_obj = bucket;
 
-
-						let translength = 0;
 						// loop current table (html_evt.to)
 						for (let htmto=0; htmto < evt.to.children.length; htmto++) {
-
-							// change this into a for-loop
-							// let index = to.rows.findIndex(tr => tr.componentID == evt.to.children[htmto].id);
-							let index = findWithAttr(to.rows, 'componentID', evt.to.children[htmto].id);
-							
-				
+							let index = findWithAttr(to_obj, 'componentID', evt.to.children[htmto].id);
 							if (index < 0) {
-								to.rows.insert(htmto, transferred[translength++]);
+								to_obj.insert(htmto, transferred[0]);
+								transferred.shift();
 							}
-		
 						}
+						this.rows = from_obj;
+						to.rows = to_obj;
 
-						console.log('previous:',this.rows, 'target:',to.rows);
+						console.log('previous:', this.rows, 'target:', to.rows);
 					}
 				}
 			}
@@ -1255,6 +1240,8 @@ class TableCard {
 		row.create();
 		this.rows.push(row);
 		this.rowCount++;
+
+		console.log(this.rows);
 	}
 }
 
