@@ -814,10 +814,8 @@ class Row {
 		return(setInterval(fn, t));
 	}
 	startInterval() {
-
 		// update 'modified' timestamp interval every 100ms
 		this.interval = this.setIntervalAndExecute(() => {	
-
 			try {
 				document.getElementById(this.timestampID) // display
 				.innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
@@ -825,9 +823,7 @@ class Row {
 			catch (error) {
 				console.log('multiple dragging.. pausing grouped timestamps');
 			}
-			
 		}, 100); // 100ms delay
-
 	}
 	stopInterval() { // stops timestamp update
 		clearInterval(this.interval);
@@ -1038,8 +1034,8 @@ class TableCard {
 						for (let htmto=0; htmto < evt.to.children.length; htmto++) {
 							let index = findWithAttr(to_obj, 'componentID', evt.to.children[htmto].id);
 							if (index < 0) {
-								to_obj.insert(htmto, transferred[0]);
-								transferred.shift();
+								let newrow = transferred.shift();
+								to_obj.insert(htmto, newrow);
 							}
 						}
 						this.rows = from_obj;
@@ -1175,11 +1171,6 @@ class TableCard {
 				}).then((Delete) => {
 					if (Delete) {
 
-						// MUST UPDATE THIS.ROWS WHENEVER A SORT CHANGE IS DONE BEFORE DELETING EACH ROWS
-						this.rows.forEach(e => e.drop());
-						document.getElementById(this.componentID).remove();
-
-						
 						// notification
 						$.notify({
 							// options
@@ -1218,6 +1209,12 @@ class TableCard {
 							icon: 'success',
 							timer: 650
 						});
+
+
+						this.rows.forEach(row => {row.stopInterval(); row.drop()});
+						this.rows = [];
+
+						document.getElementById(this.componentID).remove();
 
 					} else {
 						swal.close();
