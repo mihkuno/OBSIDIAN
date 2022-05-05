@@ -1,3 +1,23 @@
+// get the index of an object attribute based on given value
+function findWithAttr(array, attr, value) {
+	for(var i = 0; i < array.length; i += 1) {
+		if(array[i][attr] === value) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+// Remove element at the given index
+Array.prototype.remove = function(index) {
+	this.splice(index, 1);
+}
+
+// Insert element at the given index
+Array.prototype.insert = function ( index, item ) {
+	this.splice( index, 0, item );
+};
+
 // USERS IN DATABASE ... CONFIGURED IN AJAX AND PHP 
 var USERS = [];
 
@@ -966,26 +986,6 @@ class TableCard {
 					evt.clone // the clone element
 					evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
 
-					// get the index of an object attribute based on given value
-					function findWithAttr(array, attr, value) {
-						for(var i = 0; i < array.length; i += 1) {
-							if(array[i][attr] === value) {
-								return i;
-							}
-						}
-						return -1;
-					}
-
-					// Remove element at the given index
-					Array.prototype.remove = function(index) {
-						this.splice(index, 1);
-					}
-
-					// Insert element at the given index
-					Array.prototype.insert = function ( index, item ) {
-						this.splice( index, 0, item );
-					};
-
 					// the table where the row was taken from
 					// from -> this
 					let from_obj = this.rows;
@@ -1066,6 +1066,35 @@ class TableCard {
 				swapThreshold: 0.95,
 				invertSwap: true,
 				animation: 400,
+				onEnd: (/**Event*/evt) => { // update the index of objects based on html arrangement
+					console.log('from-->',evt.from.id,'<-to-->', evt.to.id);
+
+					evt.to;    // target list
+					evt.from;  // previous list
+					evt.oldIndex;  // element's old index within old parent
+					evt.newIndex;  // element's new index within new parent
+					evt.clone // the clone element
+					evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
+
+					// if the sort is on the same container
+					if (evt.from.id == evt.to.id) { // in this case, div.index-content == div.index-content						
+
+						let bucket = []; // contain the same this.rows but on updated index
+
+						// sorting algorithm
+						for (let htmfr=0; htmfr < evt.from.children.length; htmfr++) { // user sorted
+							let index = findWithAttr(tableCard, 'componentID', evt.from.children[htmfr].id);
+							if (index >= 0) {
+								// append a copy of the object
+								bucket.push(tableCard[index]);
+							}
+						}
+						// update index of tables 
+						tableCard = bucket;
+						console.log(tableCard);
+						
+					}
+				}
 			}
 		);
 
