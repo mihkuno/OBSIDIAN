@@ -863,6 +863,7 @@ class Row {
 }
 
 // TABLE COMPONENT
+var tableCard = [];
 var tableCardCount = 0; // static to count the number of tables created
 class TableCard {
 	constructor(cardLabel) {
@@ -966,9 +967,11 @@ class TableCard {
 			.insertAdjacentHTML('beforeend', this.content);
 
 		// sortable rows
-		const element = $(`#${this.tbodyID}`)[0];
-		const rowSort = new Sortable(
-			element, 
+		const rows_body = document.getElementById(this.tbodyID);
+		const tables_body = document.getElementById(this.parentID);
+
+		new Sortable(
+			rows_body, 
 			{ 
 				selectedClass: 'row-selected', // color of multidrag
 				handle: '.row-handle', //  a component to drag on
@@ -1056,8 +1059,8 @@ class TableCard {
 		);
 
 		// sortable table
-		const tableSort = new Sortable(
-			document.getElementById(this.parentID), 
+		new Sortable(
+			tables_body, 
 			{
 				selectedClass: 'table-selected',
 				handle: '.table-handle', //  a component to drag on
@@ -1285,8 +1288,6 @@ class TableCard {
 		console.log(this.rows);
 	}
 }
-
-var tableCard = [];
 
 // create a table template
 tableCard.push(new TableCard('Grocery List'));
