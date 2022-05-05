@@ -1069,6 +1069,13 @@ class TableCard {
 			}
 		);
 
+		// disable table dragging ghost
+		document.getElementById(this.componentID)
+		.addEventListener("dragstart", function(e) {
+			var crt = this.cloneNode(true);
+			e.dataTransfer.setDragImage(crt, 0, 0);
+		}, false);
+
 		// locks row handle when select-sorting table
 		new ClassWatcher(
 			document.getElementById(this.componentID), 'table-selected', 
