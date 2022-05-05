@@ -248,6 +248,7 @@ class StatusButton {
 class OwnerGroup {
 	constructor(row, componentID, parentID) {
 		this.row = row;
+		this.owner = row.owner;
 		
 		const OWNERBUTTON = `div.filter-option-inner-inner`;
 		this.componentID = componentID;
@@ -309,10 +310,36 @@ class OwnerGroup {
 			count++;
 		}
 
-		// add static icon to owner button 
-		document.querySelectorAll(OWNERBUTTON).forEach((e) => {
-			e.innerHTML = `<i class='fa fa-plus'><i>`;
-		});
+		// initial selected option
+		if (this.owner.length > 0) {
+			// get email and image value of selected options
+			let data = [];
+			let selectedOptions = [];
+			for (let user of this.owner) {
+				for (let info of USERS) { // retrieved from ajax 
+					if (user == info.user) {
+						data.push([info.email, info.profile]);
+						selectedOptions.push(`${info.email} ${info.profile}`);
+					}
+				}
+			}
+			console.log('data', selectedOptions);
+			$(this.select).selectpicker('val', selectedOptions);
+
+			// replace old with new selections
+			this.extract = [];
+			for (let details of data) {				
+				// avatar profile html blueprint
+				const avatar = `
+				<div class="avatar">
+					<img src="${details[1]}" class="avatar-img rounded-circle border border-dark">
+				</div>`;
+				// append the new selection;
+				document.getElementById(this.parentID).insertAdjacentHTML('beforeend',avatar);
+
+				this.extract.push(details[0]); // update the selected values
+			}
+		}
 
 		// selection change listener
 		$(this.select).change((e) => { 
@@ -410,6 +437,11 @@ class OwnerGroup {
 				rf.innerHTML = `<i class='fa fa-plus'><i>`;
 			});
 		});
+
+		// add static icon to owner button 
+		document.querySelectorAll(OWNERBUTTON).forEach((e) => {
+			e.innerHTML = `<i class='fa fa-plus'><i>`;
+		});		
 	};
 }
 
@@ -651,14 +683,14 @@ class RemoveRow {
 
 // ROW COMPONENT
 class Row {
-	constructor(componentID, parentID, label, status, datestart, dateend, timestamp) {
+	constructor(componentID, parentID, label, status, datestart, dateend, owner, timestamp) {
 		this.componentID = componentID;
 		this.parentID 	 = parentID;
 		this.label 		 = label;
 		this.status 	 = status;
 		this.datestart 	 = datestart;
 		this.dateend 	 = dateend;
-	 // this.owner 		 = owner;
+	 	this.owner 		 = owner;
 		this.timestamp 	 = timestamp;
 		this.interval = '';
 
@@ -1203,13 +1235,13 @@ class TableCard {
 	}
 
 	// add a row method
-	addRow(label, status, datestart, dateend, timestamp) {
+	addRow(label, status, datestart, dateend, owner, timestamp) {
 		// if timestamp is empty
 		timestamp = (timestamp == '')? Date.now() : timestamp;
 
 		// MUST UPDATE ROW ID BASED ON FIRST INDEX
 		const newID = `${this.tbodyID}-${this.rowCount}`;  
-		const row = new Row(newID, this.tbodyID, label, status, datestart, dateend, timestamp);
+		const row = new Row(newID, this.tbodyID, label, status, datestart, dateend, owner, timestamp);
 		row.create();
 		this.rows.push(row);
 		this.rowCount++;
@@ -1222,9 +1254,9 @@ var tableCard = [];
 
 // create a table template
 tableCard.push(new TableCard('Grocery List'));
-// mytable.addRow('sdfasdfsadf', 'Complete', '03/01/2022', '03/31/2022', ['miku', 'mami']);
-tableCard[0].addRow('BUY BROWN EGGS', 'Complete', 'Mar 05, 2022', 'Mar 05, 2022', 1651457868731);
-tableCard[0].addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', 1651420206620);
+tableCard[0].addRow('BUY BROWN EGGS', 'Complete', 'Mar 05, 2022', 'Mar 05, 2022', ['miko', 'henlo'], 1651457868731);
+tableCard[0].addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', ['henlo'], 1651420206620);
+tableCard[0].addRow('OHAYOO', 'Stuck', 'Feb 08, 2022', 'Nov 12, 2022', ['hiho', 'miko'], 1651420206620);
 
 // create table button functionality
 const createTableID = 'table-create';
