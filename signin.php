@@ -58,7 +58,7 @@ if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile'])
                             $passw = test_input($_POST["passw"]);
                             
                             // connect and select the database
-                            require 'components/dbconnect.php';
+                            require 'requests/connect.php';
 
                             // check for existing user
                             $sql = "SELECT user, email FROM `CREDENTIALS` 
@@ -130,7 +130,7 @@ if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile'])
                                 echo "<h5 class='text-danger text-center'>account is not registered</h5>";
                             }
                             // close mysql connection
-                            $conn->close(); // imported from dbconnect
+                            $conn->close(); // imported from connect.php
                         }
                     }
                 }

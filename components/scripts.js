@@ -1,46 +1,17 @@
-// PREEFINED USERS ... TO CONFIG IN PHP
-const USERS = [
-	{
-		user: 'qmiko',
-		image: "assets/img/profile2.jpg",
-		email: "caindayjoeninyo@gmail.com"
-	},
-	{
-		user: 'dmiko',
-		image: "assets/img/profile2.jpg",
-		email: "caindayjoeninyo@gmail.com"
-	},
-	{
-		user: 'mhiko',
-		image: "assets/img/profile2.jpg",
-		email: "caindayjoeninyo@gmail.com"
-	},
-	{
-		user: 'miko',
-		image: "assets/img/profile2.jpg",
-		email: "caindayjoeninyo@gmail.com"
-	},
-	{
-		user: 'mimi',
-		image: "assets/img/mlane.jpg",
-		email: "micahellareal@gmail.com"
-	},
-	{
-		user: 'mami',
-		image: "assets/img/jm_denis.jpg",
-		email: "ljisaac@gmail.com"
-	},
-	{
-		user: 'jeane',
-		image: "assets/img/talha.jpg",
-		email: "kenrian.boleche@gmail.com"
-	},
-	{
-		user: 'amaterasu',
-		image: "assets/img/sauro.jpg",
-		email: "yuikasdfasdfsadfasdf@gmail.com"
-	}
-];
+// USERS IN DATABASE ... CONFIGURED IN AJAX AND PHP 
+var USERS = [];
+
+// asynchronous request to the server
+var request = new XMLHttpRequest();
+
+// `false` makes the request synchronous
+request.open('GET', "requests/users.php", false);  
+request.send(null);
+
+if (request.status === 200) {// That's HTTP for 'ok'
+	USERS = JSON.parse(request.responseText);
+	console.log(request.responseText);
+}
 
 // CLASS CHANGE EVENT LISTENER
 class ClassWatcher {
@@ -313,21 +284,26 @@ class OwnerGroup {
 
 			// menu container
 			this.avatar = document.createElement('div');
-			this.avatar.setAttribute('class', 'avatar avatar-xs mt-2');
-			this.avatar.setAttribute('style', 'display: flex;');
+			this.avatar.setAttribute('class', 'avatar avatar-sm mt-2');
+
 			// menu avatar and image
+			const user = info['user'];
+			const email = info['email'];
+			const profile = (info['profile'] == null)? 
+				'assets/img/placeholder.png' : info['profile'];
+
 			this.avatar.innerHTML = `
-				<img src="${info['image']}" class="avatar-img rounded-circle mr-2"> 
-				<div style="display: flex; flex-direction: column; justify-content: center" >
-					<span style='font-size: 14px;'><b>${info['user']}</b></span>
-					<span style='font-size: 11px; margin-top: -7px'>${info['email']}</span>	
+				<img src="${profile}" class="avatar-img rounded-circle mr-2 float-left" style="margin-top: -4px"> 
+				<div class="d-flex flex-column justify-content-center" style="margin-top: -7px">
+					<span style='font-size: 14px;'><b>${user}</b></span>
+					<span style='font-size: 11px; margin-top: -3px'>${email}</span>	
 				</div>`
 
 			// menu option
 			this.option[count] = document.createElement('option');
 			this.option[count].setAttribute('class', 'ownerEmail');
 			this.option[count].setAttribute('data-content', this.avatar.outerHTML);
-			this.option[count].setAttribute('value', `${info['email']} ${info['image']}`);
+			this.option[count].setAttribute('value', `${email} ${profile}`);
 
 			$(this.select).append(this.option[count]).selectpicker('refresh');
 			count++;

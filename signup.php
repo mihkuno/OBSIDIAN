@@ -39,7 +39,7 @@ if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile'])
                         if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             // connect and select the database
-                            include 'components/dbconnect.php';
+                            include 'requests/connect.php';
 
                             // initial profile picture variables
                             $is_image = $past_limit = false;
@@ -224,7 +224,7 @@ if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile'])
                                     }
                                 }                                  
                                 // close mysql connection
-                                $conn->close(); // imported from dbconnect
+                                $conn->close(); // imported from connect.php
                             }
                         }
                     }
