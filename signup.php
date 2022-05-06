@@ -106,9 +106,13 @@ if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile'])
                                 echo "<h5 class='text-danger text-center'>
                                 *password field is empty*</h5>";
                             } 
-                            // check if user, email or password is greater than 40
+                            // check if user is greater than 20
+                            else if (strlen($_POST['user'])  > 20) {
+                                echo "<h5 class='text-danger text-center'>
+                                *username cannot be more than 20 characters*</h5>"; 
+                            }
+                            // check if email or password is greater than 40
                             else if (
-                                strlen($_POST['user'])  > 40 ||
                                 strlen($_POST['email']) > 40 ||
                                 strlen($_POST['passw']) > 40
                             ) {
