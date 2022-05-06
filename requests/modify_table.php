@@ -133,6 +133,24 @@ else {
                 
                 echo print_r($data);
             break;
+            case "rowsort":
+                $sequence = $_POST['row'];
+
+                // returns an associative array name=>tablecard-0
+                $sql = $conn->query("SELECT `name` from `$tablename`");
+         
+                // sorted array of the rows
+                $sorted = explode(',',$sequence);
+                    
+                // starting from the sorted array
+                // reset the index associated of its name 
+                $count=0;
+                foreach($sorted as $name) {
+                    $reset = "UPDATE `$tablename` SET sort = $count WHERE name = '$name'";
+                    $conn->query($reset);
+                $count++;
+                }
+            break;
         }
     }
 }
