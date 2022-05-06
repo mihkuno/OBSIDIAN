@@ -52,14 +52,15 @@ else {
                 // create the new table component to database
                 $create_table = "
                 CREATE TABLE IF NOT EXISTS `$tablename` (
-                    `id` varchar(50) NOT NULL,
+                    `sort` int NOT NULL,
+                    `name` varchar(50) NOT NULL,
                     `label` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
                     `status` varchar(10) NOT NULL DEFAULT 'Soon',
                     `start_date` date NOT NULL,
                     `end_date` date NOT NULL,
                     `owner` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
                     `modified` int NOT NULL,
-                    PRIMARY KEY (`id`)
+                    PRIMARY KEY (`name`)
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
                 ";
                 $conn->query($create_table);
@@ -114,18 +115,19 @@ else {
                 // split by string commas except inside square brackets
                 $data = preg_split('/(,)(?![^[]*\])/',$_POST['row']);
 
-                $id         = $data[0]; // remain string
-                $label      = $data[1]; // remain string
-                $status     = $data[2]; // remain string
-                $start_date = $data[3]; // remain string
-                $end_date   = $data[4]; // remain string
-                $owner      = $data[5]; // remain string
-                $modified   = $data[6]; // remain string
+                $sort = (int) $data[0]; // integer index
+                $name       = $data[1]; // remain string
+                $label      = $data[2]; // remain string
+                $status     = $data[3]; // remain string
+                $start_date = $data[4]; // remain string
+                $end_date   = $data[5]; // remain string
+                $owner      = $data[6]; // remain string
+                $modified   = $data[7]; // remain string
 
                 // insert newrow data to user table
                 $newrow = "
-                INSERT INTO `$tablename` (`id`, `label`, `status`, `start_date`, `end_date`, `owner`, `modified`) 
-                VALUES ('$id', '$label', '$status', '$start_date', '$end_date', '$owner', '$modified');
+                INSERT INTO `$tablename` (`sort`,`name`, `label`, `status`, `start_date`, `end_date`, `owner`, `modified`) 
+                VALUES ($sort, '$name', '$label', '$status', '$start_date', '$end_date', '$owner', '$modified');
                 ";
                 $conn->query($newrow);
                 

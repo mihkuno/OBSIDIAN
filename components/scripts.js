@@ -1028,6 +1028,18 @@ class TableCard {
 						// update index of from table rows
 						from_obj = bucket;
 						console.log(from_obj);
+
+
+						// WARNING: THIS IS VULNERABLE TO HACKS
+						// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
+
+						// asynchronous request to the server
+						// let request = new XMLHttpRequest();
+
+						// request.open('POST', 'requests/modify_table.php', true);
+						// request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						// request.send(`table=${this.componentID}&operation=${'rowsort'}&row=${data}`);
+
 					}
 					else {
 
@@ -1323,17 +1335,11 @@ class TableCard {
 	// add a row method
 	addRow(label, status, datestart, dateend, owner, timestamp) {
 		// MUST UPDATE ROW ID BASED ON FIRST INDEX
-		const id = `${this.tbodyID}-${this.rowCount}`;  
+		const name = `${this.tbodyID}-${this.rowCount}`;  
 		const parent = this.tbodyID;
 
-		const row = new Row(id, parent, label, status, datestart, dateend, owner, timestamp);
+		const row = new Row(name, parent, label, status, datestart, dateend, owner, timestamp);
 		row.create();
-		this.rows.push(row);
-		this.rowCount++;
-
-		// pass data to user database using ajax
-		const data = [id, label, status, datestart, dateend, JSON.stringify(owner), timestamp];
-		// console.log(data);
 
 		// WARNING: THIS IS VULNERABLE TO HACKS
 		// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
@@ -1341,6 +1347,10 @@ class TableCard {
 		// asynchronous request to the server
 		let request = new XMLHttpRequest();
 
+		// pass data to user database using ajax
+		const data = [
+			this.rowCount, name, label, status, datestart, dateend, JSON.stringify(owner), timestamp];
+			
 		request.open('POST', 'requests/modify_table.php', true);
 		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		request.send(`table=${this.componentID}&operation=${'addrow'}&row=${data}`);
@@ -1348,6 +1358,9 @@ class TableCard {
 		if (request.status === 200) {// That's HTTP for 'ok'
 			console.log(request.responseText);
 		}
+
+		this.rows.push(row);
+		this.rowCount++;
 	}
 }
 
