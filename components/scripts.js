@@ -910,6 +910,7 @@ class TableCard {
 							class="form-control input-border-bottom ml-2 table-label" 
 							style='border: 0; font-size: 17px;' 
 							placeholder="${this.labelID}" 
+							maxlength="20"
 							id='${this.labelID}' 
 							value="${this.cardLabel}"
 						/> 
@@ -1228,7 +1229,7 @@ class TableCard {
 						// asynchronous request to the server
 						// `false` makes the request synchronous  
 
-						request.open('POST', 'requests/modify_table.php', true);
+						request.open('POST', 'requests/modify_table.php', false);
 						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 						request.send(`table=${this.componentID}&operation=${'drop'}`);
 
@@ -1242,6 +1243,10 @@ class TableCard {
 
 						// remove the table html element
 						document.getElementById(this.componentID).remove();
+
+						// remove this table object from static collection
+						let sort = findWithAttr(tableCard, 'componentID', this.componentID);
+						tableCard.remove(sort);
 
 						// notification
 						$.notify({
@@ -1320,6 +1325,11 @@ document.getElementById('table-create')
 	{
 		// variables to send in server
 		let componentID = `tablecard-${tableCardCount}`;
+		let operation 	= 'create';
+		let append 		= tableCard.length; 
+
+		// create html table
+		tableCard.push(new TableCard(''));
 
 		// WARNING: THIS IS VULNERABLE TO HACKS
 		// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
@@ -1329,14 +1339,11 @@ document.getElementById('table-create')
 
 		request.open('POST', 'requests/modify_table.php', true);
 		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		request.send(`table=${componentID}&operation=${'create'}`);
+		request.send(`table=${componentID}&operation=${operation}&sort=${append}`);
 
 		if (request.status === 200) {// That's HTTP for 'ok'
 			console.log(request.responseText);
 		}
-
-		// create html table
-		tableCard.push(new TableCard(''));
 
 		// notification
 		$.notify({

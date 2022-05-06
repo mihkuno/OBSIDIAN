@@ -20,7 +20,7 @@ else {
     // set instance variables
     $user = $_SESSION['user'];
     $database = 'user_miko';
-    $componentID = $_POST['table'];
+    $tablename = $_POST['table'];
     $operation = $_POST['operation'];
 
     // connect to user database
@@ -31,15 +31,27 @@ else {
     // Create connection
     $conn = new mysqli($dbServername, $dbUsername, $dbPassword, $database);
 
-    if ($conn -> connect_error) {
-        echo "Connection failed: " . $conn->connect_error.'<br><br>';
-    } else {
-
-
+    if ($conn -> connect_error) { echo "Connection failed"; } 
+    else {
         switch ($operation) {
             case "create":
-                $sql = "
-                CREATE TABLE `$componentID` (
+                $sort = $_POST['sort'];
+                
+                // create the information table if it doesnt exist
+                $create_information = "
+                CREATE TABLE IF NOT EXISTS `information` (
+                    `sort` int NOT NULL,
+                    `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+                    `label` varchar(20) DEFAULT NULL,
+                    UNIQUE KEY `id` (`name`),
+                    KEY `sort` (`sort`)
+                  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+                ";
+                $conn->query($create_information);
+
+                // create the new table component to database
+                $create_table = "
+                CREATE TABLE `$tablename` (
                     `id` int NOT NULL,
                     `label` varchar(50) DEFAULT NULL,
                     `status` varchar(10) NOT NULL DEFAULT 'Soon',
@@ -50,19 +62,34 @@ else {
                     PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
                 ";
-                if ($conn->query($sql)) {
-                    echo "success, table created";
-                } else {
-                    echo "failed to create table";
-                }
-            break;
+                $conn->query($create_table);
 
+                // insert table data to information
+                $update_information = "
+                INSERT INTO `information` (`sort`, `name`, `label`) VALUES ('$sort', '$tablename', 'assdfadf');
+                ";
+                $conn->query($update_information);
+                
+            break;
             case "drop":
-                $sql = "DROP TABLE `$componentID`";
-                if ($conn->query($sql)) {
-                    echo "success, table removed";
-                } else {
-                    echo "failed to remove table";
+                // remove the table
+                $sql = "DROP TABLE `$tablename`";
+                $conn->query($sql);
+
+                // remove the table info
+                $info = "DELETE FROM `information` WHERE `information`.`name` = '$tablename'";
+                $conn->query($info);
+
+                // reset the sort from 0
+                // returns an associative array name=>tablecard-0
+                $sql = $conn->query('SELECT `name` from `information`');
+                $count=0;
+                foreach($sql as $namecol) {
+                    $name = $namecol['name'];
+                    $reset = "UPDATE `information` SET sort = $count WHERE name = '$name'";
+                    $conn->query($reset);
+                    echo json_encode($name);
+                $count++;
                 }
             break;
         }
