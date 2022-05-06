@@ -21,11 +21,14 @@ Array.prototype.insert = function ( index, item ) {
 // USERS IN DATABASE ... CONFIGURED IN AJAX AND PHP 
 var USERS = [];
 
+// WARNING: THIS IS VULNERABLE TO HACKS
+// WARNING: MUST VALIDATE THE LOGIN SESSION ON GET_ACCOUNTS
+
 // asynchronous request to the server
 var request = new XMLHttpRequest();
 
 // `false` makes the request synchronous
-request.open('GET', "requests/users.php", false);  
+request.open('GET', "requests/get_accounts.php", false);  
 request.send(null);
 
 if (request.status === 200) {// That's HTTP for 'ok'
@@ -94,6 +97,7 @@ class LabelInput {
 		this.input.setAttribute('style', 'border: 0; color: #828282;');
 		this.input.setAttribute('placeholder', `${this.componentID}`);
 		this.input.setAttribute('value', `${this.label}`);
+		this.input.setAttribute('maxlength', 50);
 
 		document.getElementById(this.parentID).appendChild(this.input);
 
@@ -496,8 +500,8 @@ class DatePicker {
 			// format to send in database
 			const queryFormat = { year: 'numeric', month: 'short', day: 'numeric' };
 			this.startQuery = new Date(start).toLocaleDateString(undefined, queryFormat);  
-			this.endQuery = new Date(end).toLocaleDateString(undefined, queryFormat);	
-						
+			this.endQuery = new Date(end).toLocaleDateString(undefined, queryFormat);							
+			
 			// only show end milestone if both (start & end) date is the same
 			if (start.format('MMM DD YYYY') == end.format('MMM DD YYYY')) {
 				// update the date range label (milestone)
@@ -1218,6 +1222,27 @@ class TableCard {
 				}).then((Delete) => {
 					if (Delete) {
 
+						// WARNING: THIS IS VULNERABLE TO HACKS
+						// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
+
+						// asynchronous request to the server
+						// `false` makes the request synchronous  
+
+						request.open('POST', 'requests/modify_table.php', true);
+						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						request.send(`table=${this.componentID}&operation=${'drop'}`);
+
+						if (request.status === 200) {// That's HTTP for 'ok'
+							console.log(request.responseText);
+						}
+
+						// remove its rows and stop timestamp interval
+						this.rows.forEach(row => {row.stopInterval(); row.drop()});
+						this.rows = [];
+
+						// remove the table html element
+						document.getElementById(this.componentID).remove();
+
 						// notification
 						$.notify({
 							// options
@@ -1257,12 +1282,6 @@ class TableCard {
 							timer: 650
 						});
 
-
-						this.rows.forEach(row => {row.stopInterval(); row.drop()});
-						this.rows = [];
-
-						document.getElementById(this.componentID).remove();
-
 					} else {
 						swal.close();
 					}
@@ -1290,18 +1309,35 @@ class TableCard {
 }
 
 // create a table template
-tableCard.push(new TableCard('Grocery List'));
-tableCard[0].addRow('BUY BROWN EGGS', 'Complete', 'Mar 05, 2022', 'Mar 05, 2022', ['miko', 'henlo'], 1651457868731);
-tableCard[0].addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', ['henlo'], 1651420206620);
-tableCard[0].addRow('OHAYOO', 'Stuck', 'Feb 08, 2022', 'Nov 12, 2022', ['hiho', 'miko'], 1651420206620);
+// tableCard.push(new TableCard('Grocery List'));
+// tableCard[0].addRow('BUY BROWN EGGS', 'Complete', 'Mar 05, 2022', 'Mar 05, 2022', ['miko', 'henlo'], 1651457868731);
+// tableCard[0].addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', ['henlo'], 1651420206620);
+// tableCard[0].addRow('OHAYOO', 'Stuck', 'Feb 08, 2022', 'Nov 12, 2022', ['hiho', 'miko'], 1651420206620);
 
 // create table button functionality
-const createTableID = 'table-create';
-document.getElementById(createTableID)
+document.getElementById('table-create')
 	.addEventListener('click', () => 
 	{
+		// variables to send in server
+		let componentID = `tablecard-${tableCardCount}`;
+
+		// WARNING: THIS IS VULNERABLE TO HACKS
+		// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
+
+		// asynchronous request to the server
+		// `false` makes the request synchronous  
+
+		request.open('POST', 'requests/modify_table.php', true);
+		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		request.send(`table=${componentID}&operation=${'create'}`);
+
+		if (request.status === 200) {// That's HTTP for 'ok'
+			console.log(request.responseText);
+		}
+
+		// create html table
 		tableCard.push(new TableCard(''));
-		
+
 		// notification
 		$.notify({
 			// options
