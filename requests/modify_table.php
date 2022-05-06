@@ -51,16 +51,16 @@ else {
 
                 // create the new table component to database
                 $create_table = "
-                CREATE TABLE `$tablename` (
-                    `id` int NOT NULL,
-                    `label` varchar(50) DEFAULT NULL,
+                CREATE TABLE IF NOT EXISTS `$tablename` (
+                    `id` varchar(50) NOT NULL,
+                    `label` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
                     `status` varchar(10) NOT NULL DEFAULT 'Soon',
-                    `start_date` date DEFAULT NULL,
-                    `end_date` date DEFAULT NULL,
-                    `owner` varchar(100) DEFAULT NULL,
-                    `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    `start_date` date NOT NULL,
+                    `end_date` date NOT NULL,
+                    `owner` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+                    `modified` int NOT NULL,
                     PRIMARY KEY (`id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+                  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
                 ";
                 $conn->query($create_table);
 
@@ -107,6 +107,29 @@ else {
                     $conn->query($reset);
                 $count++;
                 }
+            break;
+            case "addrow":
+                $rowinfo = $_POST['row'];
+
+                // split by string commas except inside square brackets
+                $data = preg_split('/(,)(?![^[]*\])/',$_POST['row']);
+
+                $id         = $data[0]; // remain string
+                $label      = $data[1]; // remain string
+                $status     = $data[2]; // remain string
+                $start_date = $data[3]; // remain string
+                $end_date   = $data[4]; // remain string
+                $owner      = $data[5]; // remain string
+                $modified   = $data[6]; // remain string
+
+                // insert newrow data to user table
+                $newrow = "
+                INSERT INTO `$tablename` (`id`, `label`, `status`, `start_date`, `end_date`, `owner`, `modified`) 
+                VALUES ('$id', '$label', '$status', '$start_date', '$end_date', '$owner', '$modified');
+                ";
+                $conn->query($newrow);
+                
+                echo print_r($data);
             break;
         }
     }

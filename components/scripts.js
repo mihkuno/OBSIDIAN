@@ -91,7 +91,7 @@ class LabelInput {
 			this.label = value;
 			
 			// update the row timestamp
-			this.row.timestamp = Date.now();
+			this.row.timestamp = parseInt(Date.now()/1000);
 
 			// update the row label
 			this.row.label = this.label;
@@ -208,7 +208,7 @@ class StatusButton {
 
 
 				// update the row timestamp
-				this.row.timestamp = Date.now();
+				this.row.timestamp = parseInt(Date.now()/1000);
 				
 				// update the row status
 				this.row.status = this.status;
@@ -373,7 +373,7 @@ class OwnerGroup {
 		// selection change listener
 		$(this.select).change((e) => { 
 			// update the row timestamp
-			this.row.timestamp = Date.now();
+			this.row.timestamp = parseInt(Date.now()/1000);
 
 			// refers to the event rather than the object
 			const data = $(e.target).val();	// email and image value of selected options
@@ -496,16 +496,15 @@ class DatePicker {
 			"opens": "center",
 		}, (start, end, label) => { // start, end returns a jquery date 
 			// update the row timestamp
-			this.row.timestamp = Date.now();
+			this.row.timestamp = parseInt(Date.now()/1000);
 
 			// update the row date start and end
 			this.row.datestart = start.format('MMM DD YYYY');
 			this.row.dateend = end.format('MMM DD YYYY')
 
 			// format to send in database
-			const queryFormat = { year: 'numeric', month: 'short', day: 'numeric' };
-			this.startQuery = new Date(start).toLocaleDateString(undefined, queryFormat);  
-			this.endQuery = new Date(end).toLocaleDateString(undefined, queryFormat);							
+			this.row.datestart = start.format('YYYY/MM/DD');
+			this.row.dateend = end.format('YYYY/MM/DD');						
 			
 			// only show end milestone if both (start & end) date is the same
 			if (start.format('MMM DD YYYY') == end.format('MMM DD YYYY')) {
@@ -590,7 +589,7 @@ class DatePicker {
 			}
 		});
 
-		// if the date range was instatiated
+		// if there's parameter on the contructor
 		if (datestart!='' && dateend!='') {
 
 			// change range of menu using the object
@@ -598,9 +597,8 @@ class DatePicker {
 			$(`#${this.datePickerID}`).data('daterangepicker').setEndDate(new Date(dateend));
 
 			// database format to send
-			const queryFormat = { year: 'numeric', month: 'short', day: 'numeric' };
-			this.startQuery = new Date(datestart).toLocaleDateString(undefined, queryFormat);  
-			this.endQuery = new Date(dateend).toLocaleDateString(undefined, queryFormat);	
+			this.row.datestart = new Date(datestart).toLocaleDateString();
+			this.row.dateend = new Date(dateend).toLocaleDateString();	
 
 			// display label format
 			const displayFormat = { month: 'short', day: 'numeric' };
@@ -855,7 +853,7 @@ class Row {
 		this.interval = this.setIntervalAndExecute(() => {	
 			try {
 				document.getElementById(this.timestampID) // display
-				.innerHTML = `${this.timestamp} < ${Date.now()} -> ${moment(this.timestamp).fromNow()}`;
+				.innerHTML = `${this.timestamp} < ${Date.now()} => ${moment(this.timestamp*1000).fromNow()}`;
 			}
 			catch (error) {
 				console.log('multiple dragging.. pausing grouped timestamps');
@@ -1191,7 +1189,7 @@ class TableCard {
 		// add-row button listener
 		document.getElementById(this.addRowID)
 			.addEventListener('click', () => {
-				this.addRow('', 'Soon', '', '','',Date.now());
+				this.addRow('', 'Soon', '', '', '', parseInt(Date.now()/1000));
 				
 				// notification
 				$.notify({
@@ -1325,14 +1323,31 @@ class TableCard {
 	// add a row method
 	addRow(label, status, datestart, dateend, owner, timestamp) {
 		// MUST UPDATE ROW ID BASED ON FIRST INDEX
-		const newID = `${this.tbodyID}-${this.rowCount}`;  
+		const id = `${this.tbodyID}-${this.rowCount}`;  
+		const parent = this.tbodyID;
 
-		const row = new Row(newID, this.tbodyID, label, status, datestart, dateend, owner, timestamp);
+		const row = new Row(id, parent, label, status, datestart, dateend, owner, timestamp);
 		row.create();
 		this.rows.push(row);
 		this.rowCount++;
 
-		console.log(this.rows);
+		// pass data to user database using ajax
+		const data = [id, label, status, datestart, dateend, JSON.stringify(owner), timestamp];
+		// console.log(data);
+
+		// WARNING: THIS IS VULNERABLE TO HACKS
+		// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
+
+		// asynchronous request to the server
+		let request = new XMLHttpRequest();
+
+		request.open('POST', 'requests/modify_table.php', true);
+		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		request.send(`table=${this.componentID}&operation=${'addrow'}&row=${data}`);
+
+		if (request.status === 200) {// That's HTTP for 'ok'
+			console.log(request.responseText);
+		}
 	}
 }
 
@@ -1357,8 +1372,6 @@ document.getElementById('table-create')
 		let componentID = `tablecard-${tableCardCount}`;
 		let operation 	= 'create';
 		let append 		= tableCardCount; 
-
-		
 
 		// create html table
 		tableCard.push(new TableCard(''));
