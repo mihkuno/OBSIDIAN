@@ -92,6 +92,22 @@ else {
                 $count++;
                 }
             break;
+            case "sort":
+                // returns an associative array name=>tablecard-0
+                $sql = $conn->query('SELECT `name` from `information`');
+                
+                // sorted array of the tables
+                $sorted = explode(',',$tablename);
+                    
+                // starting from the sorted array
+                // reset the index associated of its name 
+                $count=0;
+                foreach($sorted as $name) {
+                    $reset = "UPDATE `information` SET sort = $count WHERE name = '$name'";
+                    $conn->query($reset);
+                $count++;
+                }
+            break;
         }
     }
 }

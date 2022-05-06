@@ -1,12 +1,4 @@
-// get the index of an object attribute based on given value
-function findWithAttr(array, attr, value) {
-	for(var i = 0; i < array.length; i += 1) {
-		if(array[i][attr] === value) {
-			return i;
-		}
-	}
-	return -1;
-}
+var USERS = []; // gets appended once on the first row creation
 
 // Remove element at the given index
 Array.prototype.remove = function(index) {
@@ -18,22 +10,14 @@ Array.prototype.insert = function ( index, item ) {
 	this.splice( index, 0, item );
 };
 
-// USERS IN DATABASE ... CONFIGURED IN AJAX AND PHP 
-var USERS = [];
-
-// WARNING: THIS IS VULNERABLE TO HACKS
-// WARNING: MUST VALIDATE THE LOGIN SESSION ON GET_ACCOUNTS
-
-// asynchronous request to the server
-var request = new XMLHttpRequest();
-
-// `false` makes the request synchronous
-request.open('GET', "requests/get_accounts.php", false);  
-request.send(null);
-
-if (request.status === 200) {// That's HTTP for 'ok'
-	USERS = JSON.parse(request.responseText);
-	console.log(request.responseText);
+// get the index of an object attribute based on given value
+function findWithAttr(array, attr, value) {
+	for(var i = 0; i < array.length; i += 1) {
+		if(array[i][attr] === value) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 // CLASS CHANGE EVENT LISTENER
@@ -302,6 +286,27 @@ class OwnerGroup {
 			style: "btn btn-secondary btn-border btn-round owner-select",
 			dropupAuto: false,
 		});
+
+		// if global users collection is empty
+		if (USERS.length <= 0) {
+			// GET THE USERS IN DATABASE 
+
+			// WARNING: THIS IS VULNERABLE TO HACKS
+			// WARNING: MUST VALIDATE THE LOGIN SESSION ON GET_ACCOUNTS
+
+			// asynchronous request to the server
+			let request = new XMLHttpRequest();
+			
+			// WARNING: MAJOR PIECE OF LAG
+			// `false` makes the request synchronous (pause>get>continue)
+			request.open('GET', "requests/get_accounts.php", false);  
+			request.send(null);
+
+			if (request.status === 200) {// That's HTTP for 'ok'
+				USERS = JSON.parse(request.responseText);
+				console.log(request.responseText);
+			}
+		}
 
 		// append users to the menu
 		let count = 0;
@@ -1100,7 +1105,27 @@ class TableCard {
 						// update index of tables 
 						tableCard = bucket;
 						console.log(tableCard);
+
 						
+						let sequence = [];
+						// transfer tablecard id to an array to be sent to ajax
+						tableCard.forEach(obj => sequence.push(obj.componentID));
+
+						// WARNING: THIS IS VULNERABLE TO HACKS
+						// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
+
+						// asynchronous request to the server
+						let request = new XMLHttpRequest();
+						
+						// associate object sort to database
+						let operation = 'sort';
+						request.open('POST', 'requests/modify_table.php', true);
+						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						request.send(`table=${sequence}&operation=${operation}`);
+
+						if (request.status === 200) {// That's HTTP for 'ok'
+							console.log(request.responseText);
+						}
 					}
 				}
 			}
@@ -1166,7 +1191,7 @@ class TableCard {
 		// add-row button listener
 		document.getElementById(this.addRowID)
 			.addEventListener('click', () => {
-				this.addRow('', 'Soon', '', '','');
+				this.addRow('', 'Soon', '', '','',Date.now());
 				
 				// notification
 				$.notify({
@@ -1227,9 +1252,9 @@ class TableCard {
 						// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
 
 						// asynchronous request to the server
-						// `false` makes the request synchronous  
+						let request = new XMLHttpRequest();
 
-						request.open('POST', 'requests/modify_table.php', false);
+						request.open('POST', 'requests/modify_table.php', true);
 						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 						request.send(`table=${this.componentID}&operation=${'drop'}`);
 
@@ -1299,11 +1324,9 @@ class TableCard {
 
 	// add a row method
 	addRow(label, status, datestart, dateend, owner, timestamp) {
-		// if timestamp is empty
-		timestamp = (timestamp == '')? Date.now() : timestamp;
-
 		// MUST UPDATE ROW ID BASED ON FIRST INDEX
 		const newID = `${this.tbodyID}-${this.rowCount}`;  
+
 		const row = new Row(newID, this.tbodyID, label, status, datestart, dateend, owner, timestamp);
 		row.create();
 		this.rows.push(row);
@@ -1323,10 +1346,19 @@ class TableCard {
 document.getElementById('table-create')
 	.addEventListener('click', () => 
 	{
+
+		// check if tablecard is empty
+		if (tableCard.length <= 0) {
+			// reset the table counter
+			tableCardCount = 0;
+		}
+
 		// variables to send in server
 		let componentID = `tablecard-${tableCardCount}`;
 		let operation 	= 'create';
-		let append 		= tableCard.length; 
+		let append 		= tableCardCount; 
+
+		
 
 		// create html table
 		tableCard.push(new TableCard(''));
@@ -1335,7 +1367,7 @@ document.getElementById('table-create')
 		// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
 
 		// asynchronous request to the server
-		// `false` makes the request synchronous  
+		let request = new XMLHttpRequest();
 
 		request.open('POST', 'requests/modify_table.php', true);
 		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
