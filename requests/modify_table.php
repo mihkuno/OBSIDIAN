@@ -36,13 +36,14 @@ else {
         switch ($operation) {
             case "create": // creating tables
                 $sort = $_POST['sort'];
+                $label = ($_POST['label']==null)?$_POST['label']:'';
                 
                 // create the information table if it doesnt exist
                 $create_information = "
                 CREATE TABLE IF NOT EXISTS `information` (
                     `sort` int NOT NULL,
                     `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-                    `label` varchar(20) DEFAULT NULL,
+                    `label` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
                     UNIQUE KEY `id` (`name`),
                     KEY `sort` (`sort`)
                   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -67,7 +68,7 @@ else {
 
                 // insert table data to information
                 $update_information = "
-                INSERT INTO `information` (`sort`, `name`, `label`) VALUES ('$sort', '$tablename', 'assdfadf');
+                INSERT INTO `information` (`sort`, `name`, `label`) VALUES ('$sort', '$tablename', '$label');
                 ";
                 $conn->query($update_information);
                 

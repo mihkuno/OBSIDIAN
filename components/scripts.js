@@ -1,5 +1,10 @@
 var USERS = []; // gets appended once on the first row creation
 
+// static to count the number of tables and rows created
+var table = [];
+var rowCount = 0;
+var tableCount = 0; 
+
 // Remove element at the given index
 Array.prototype.remove = function(index) {
 	this.splice(index, 1);
@@ -746,18 +751,18 @@ class Row {
 		this.timestamp 	 = timestamp;
 		this.interval = '';
 
-		this.labelID       = `${this.componentID}-label`;
-		this.labelContID   = `${this.componentID}-labelCont`;
-		this.statusID      = `${this.componentID}-status`;
-		this.statusContID  = `${this.componentID}-statusCont`;
-		this.statusMenuID  = `${this.componentID}-statusMenu`;
-		this.datePickerID  = `${this.componentID}-datePicker`;
-		this.datePickedID  = `${this.componentID}-datePicked`;
-		this.ownerGroupID  = `${this.componentID}-avatarGroup`
-		this.ownerSelectID = `${this.componentID}-owner`;
-		this.timestampID   = `${this.componentID}-modified`;
-		this.removeID      = `${this.componentID}-remove`;
-		this.actionContID  = `${this.componentID}-actionCont`;
+		this.labelID       = `row-${rowCount}-label`;
+		this.labelContID   = `row-${rowCount}-labelCont`;
+		this.statusID      = `row-${rowCount}-status`;
+		this.statusContID  = `row-${rowCount}-statusCont`;
+		this.statusMenuID  = `row-${rowCount}-statusMenu`;
+		this.datePickerID  = `row-${rowCount}-datePicker`;
+		this.datePickedID  = `row-${rowCount}-datePicked`;
+		this.ownerGroupID  = `row-${rowCount}-avatarGroup`
+		this.ownerSelectID = `row-${rowCount}-owner`;
+		this.timestampID   = `row-${rowCount}-modified`;
+		this.removeID      = `row-${rowCount}-remove`;
+		this.actionContID  = `row-${rowCount}-actionCont`;
 
 	}
 	create() {
@@ -905,12 +910,9 @@ class Row {
 }
 
 // TABLE COMPONENT
-var tableCard = [];
-var tableCardCount = 0; // static to count the number of tables created
 class TableCard {
-	constructor(cardLabel) {
-		
-		this.componentID = `tablecard-${tableCardCount}`;
+	constructor(componentID=`table-${tableCount}`,cardLabel) {
+		this.componentID = componentID;
 		this.parentID 	 = "index-content";
 		this.cardLabel   = cardLabel; // set table header
  
@@ -919,7 +921,6 @@ class TableCard {
 		this.removeID    = `${this.componentID}-remove`; // button
 		this.addRowID    = `${this.componentID}-addrow`; // button
 		this.tbodyID  	 = `${this.componentID}-tbody`;  // rows
-		this.rowCount 	 = 0;
 
 		this.rows = []; // store all the created rows of this table 
 
@@ -1038,7 +1039,7 @@ class TableCard {
 
 					// the table where the row is transferred
 					let to;
-					for (let object of tableCard) {
+					for (let object of table) {
 						if (object.componentID == evt.to.id.slice(0, -6)) {
 							to = object;
 							break;
@@ -1065,8 +1066,6 @@ class TableCard {
 
 						// update this rows 
 						this.rows = from_obj;
-
-						console.log(from_obj);
 
 						let sequence = [];
 						// transfer row object id to an array to be sent to ajax
@@ -1169,20 +1168,20 @@ class TableCard {
 
 						// sorting algorithm
 						for (let htmfr=0; htmfr < evt.from.children.length; htmfr++) { // user sorted
-							let index = findWithAttr(tableCard, 'componentID', evt.from.children[htmfr].id);
+							let index = findWithAttr(table, 'componentID', evt.from.children[htmfr].id);
 							if (index >= 0) {
 								// append a copy of the object
-								bucket.push(tableCard[index]);
+								bucket.push(table[index]);
 							}
 						}
 						// update index of tables 
-						tableCard = bucket;
-						console.log(tableCard);
+						table = bucket;
+						console.log(table);
 
 						
 						let sequence = [];
-						// transfer tablecard id to an array to be sent to ajax
-						tableCard.forEach(obj => sequence.push(obj.componentID));
+						// transfer table id to an array to be sent to ajax
+						table.forEach(obj => sequence.push(obj.componentID));
 
 						// WARNING: THIS IS VULNERABLE TO HACKS
 						// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
@@ -1343,8 +1342,8 @@ class TableCard {
 						document.getElementById(this.componentID).remove();
 
 						// remove this table object from static collection
-						let sort = findWithAttr(tableCard, 'componentID', this.componentID);
-						tableCard.remove(sort);
+						let sort = findWithAttr(table, 'componentID', this.componentID);
+						table.remove(sort);
 
 						// notification
 						$.notify({
@@ -1392,13 +1391,13 @@ class TableCard {
 			});
 
 		// increment static table count
-		tableCardCount++;
+		tableCount++;
 	}
 
 	// add a row method
 	addRow(label, status, datestart, dateend, owner, timestamp) {
 		// MUST UPDATE ROW ID BASED ON FIRST INDEX
-		const name = `${this.tbodyID}-${this.rowCount}`;  
+		const name = `row-${rowCount}`;  
 		const parent = this.tbodyID;
 
 		const row = new Row(this, name, parent, label, status, datestart, dateend, owner, timestamp);
@@ -1423,7 +1422,7 @@ class TableCard {
 		}
 
 		this.rows.push(row);
-		this.rowCount++;
+		rowCount++;
 	}
 }
 
@@ -1432,19 +1431,20 @@ document.getElementById('table-create')
 	.addEventListener('click', () => 
 	{
 
-		// check if tablecard is empty
-		if (tableCard.length <= 0) {
-			// reset the table counter
-			tableCardCount = 0;
+		// check if table is empty
+		if (table.length <= 0) {
+			// reset the table and row counter
+			tableCount = 0;
+			rowCount = 0;
 		}
 
 		// variables to send in server
-		let componentID = `tablecard-${tableCardCount}`;
+		let componentID = `table-${tableCount}`;
 		let operation 	= 'create';
-		let append 		= tableCardCount; 
+		let append 		= tableCount; 
 
 		// create html table
-		tableCard.push(new TableCard(''));
+		table.push(new TableCard('',''));
 
 		// WARNING: THIS IS VULNERABLE TO HACKS
 		// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
@@ -1494,3 +1494,48 @@ document.getElementById('table-create')
 		});
 	}
 );
+
+// -- CREATE THE TABLES FROM PERSISTENCE
+
+// -- connect and select the database -- 
+
+// asynchronous request to the server
+var request = new XMLHttpRequest();
+
+request.open('POST', 'requests/get_userdata.php', false);
+request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+// request.send(`type='table'`);
+request.send(null);
+
+// -- get the table infomation and put sorted names to an array --
+
+var tables = []; 
+if (request.status === 200) {// That's HTTP for 'ok'	
+	
+	// check if user table data is empty	
+	const tableData = request.responseText;
+
+	if (tableData!=='') { 
+		// parse the string array into json
+		information = JSON.parse(tableData);
+
+		information.map(info => table.push(new TableCard(info['name'],info['label'])));
+
+		console.log(table);
+		
+		// update last index of table name ex.(table-) >> (12)+1
+		// tableCount = 1+parseInt(sequence.sort().slice(-1)[0][0].slice(6));
+	}
+}
+
+// -- for each name on array select table 
+// create table
+
+// -- for each table select row
+// create row 
+
+
+// table.push(new TableCard('Grocery List'));
+// table[0].addRow('BUY BROWN EGGS', 'Complete', 'Mar 05, 2022', 'Mar 05, 2022', ['miko', 'henlo'], 1651457868731);
+// table[0].addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', ['henlo'], 1651420206620);
+// table[0].addRow('OHAYOO', 'Stuck', 'Feb 08, 2022', 'Nov 12, 2022', ['hiho', 'miko'], 1651420206620);
