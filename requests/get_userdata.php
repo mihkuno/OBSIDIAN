@@ -19,10 +19,12 @@ if (!isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile']))
 $dbServername = 'localhost';    // server address
 $dbUsername   = 'root';           // root username
 $dbPassword   = 'password_here';  // root password
-$dbUser       = 'user_'.$_SESSION['user']; // (user_name) database 
+
+// (user_name) database
+$dbUser = sprintf("user_%s",$_SESSION['user']);  
 
 // create connection
-$conn = new mysqli($dbServername, $dbUsername, $dbPassword, 'user_miko');
+$conn = new mysqli($dbServername, $dbUsername, $dbPassword, $dbUser);
 
 
 $type = $_POST['type'];

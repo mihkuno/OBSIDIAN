@@ -740,11 +740,9 @@ class RemoveRow {
 // ROW COMPONENT
 class Row {
 	constructor(table, componentID, parentID, label, status, datestart, dateend, owner, timestamp) {
-		
-		if (componentID != '') { this.componentID = componentID; }
-		else {this.componentID = `row-${rowCount}`}
 
 		this.table 		 = table; // passed table parent object
+		this.componentID = componentID;
 		this.parentID 	 = parentID;
 		this.label 		 = label;
 		this.status 	 = status;
@@ -1403,6 +1401,8 @@ class TableCard {
 	// add a row method
 	addRow(name, label, status, datestart, dateend, owner, timestamp) {
 
+		if (name=='') {name=`row-${rowCount}`}
+
 						// table, componentID, parentID, label, status, datestart, dateend, owner, timestamp
 		const row = new Row(this, name, this.tbodyID, label, status, datestart, dateend, owner, timestamp);
 		row.create();
@@ -1503,6 +1503,9 @@ document.getElementById('table-create')
 
 // -- connect and select the database -- 
 
+// sorts strings and objects
+let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+
 // asynchronous request to the server
 var request = new XMLHttpRequest();
 
@@ -1518,6 +1521,7 @@ if (request.status === 200) {// That's HTTP for 'ok'
 	// check if user table data is empty	
 	const tableData = request.responseText;
 
+	console.log(tableData);
 	// check if there are tables from the user database
 	if (tableData !== '[]') { 
 		// parse the string array into json
@@ -1530,12 +1534,12 @@ if (request.status === 200) {// That's HTTP for 'ok'
 		// create table
 		sequence.forEach(sort => table.push(new TableCard(sort[0], sort[1])));
 		console.log(table);
-		
-		// update last index of table name ex.(table-) >> (12)+1
-		tableCount = 1+parseInt(sequence.sort().slice(-1)[0][0].slice(6));
 
-		// now that tables have been created 
-		// insert its associated rows
+		// update last index of table name ex.(table-) >> (12)+1
+		tableCount = 1+parseInt(sequence.sort(collator.compare).slice(-1)[0][0].slice(6));
+
+
+		// -- INSERT TABLE ASSOCIATED ROWS --
 
 		// sequence of rows
 		let rowseq = [];
@@ -1566,19 +1570,22 @@ if (request.status === 200) {// That's HTTP for 'ok'
 					const datestart = (data['start_date'] == '0000-00-00')? '':data['start_date'];
 					const dateend 	= (data['end_date']   == '0000-00-00')? '':data['end_date'];
 
-					// send a sequence of rowname to bucket
-					rowseq.push(name);
-
 					// create the row
 					obj.addRow(name, label, status, datestart, dateend, owner, timestamp);
+
+					// send a sequence of rowname to bucket
+					rowseq.push(name);
 				}
 			}
 		});
 
 		// update last index of table name ex.(row-) >> (3)+1
-		rowCount = 1+parseInt(rowseq.sort().slice(-1)[0].slice(4));
-		console.log('rowcount',rowCount);
 
+		// check if there are rows
+		if (rowseq.length > 0) { 
+			// update last index of table name ex.(row-) >> (3)+1
+			rowCount = 1+parseInt(rowseq.sort(collator.compare).slice(-1)[0].slice(4));
+		}
 	}
 }
 

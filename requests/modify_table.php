@@ -19,17 +19,19 @@ if (!isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile']))
 else {
     // set instance variables
     $user = $_SESSION['user'];
-    $database = 'user_miko';
     $tablename = $_POST['table'];
     $operation = $_POST['operation'];
 
     // connect to user database
-    $dbServername = 'localhost';    // server address
-    $dbUsername = 'root';           // root username
-    $dbPassword = 'password_here';  // root password
+    $dbServername = 'localhost';     // server address
+    $dbUsername   = 'root';          // root username
+    $dbPassword   = 'password_here'; // root password
+    
+    // (user_name) database
+    $dbUser = sprintf("user_%s",$_SESSION['user']);  
 
     // Create connection
-    $conn = new mysqli($dbServername, $dbUsername, $dbPassword, $database);
+    $conn = new mysqli($dbServername, $dbUsername, $dbPassword, $dbUser);
 
     if ($conn -> connect_error) { echo "Connection failed"; } 
     else {
