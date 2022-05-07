@@ -24,27 +24,37 @@ $dbUser       = 'user_'.$_SESSION['user']; // (user_name) database
 // create connection
 $conn = new mysqli($dbServername, $dbUsername, $dbPassword, 'user_miko');
 
-// get the table information
 
-$namecol = $conn->query("SELECT * FROM `information` ORDER BY `sort` ASC");
+$type = $_POST['type'];
 
-// check if table is not created
-if (!empty($namecol)) { 
-    $tables = [];
-    foreach($namecol as $row) {
-        array_push($tables, $row);
-    }
-    // returning response in JSON format
-    echo json_encode($tables);
+switch ($type) {
+    case "table":
+        // get the table information
+        $namecol = $conn->query("SELECT * FROM `information` ORDER BY `sort` ASC");
 
+        // check if table is not created
+        if (!empty($namecol)) { 
+            $tables = [];
+            foreach($namecol as $row) {
+                array_push($tables, $row);
+            }
+            // returning response in JSON format
+            echo json_encode($tables);
+        }
+    break;
+    case "row":
+        // get the table name
+        $table = $_POST['table'];
 
-    // getdata from the users table
-    // $result = $conn -> query("SELECT user,email,profile FROM `credentials`");
+        $bucket = []; // get all rows of the table 
+        $rowdata = $conn->query("SELECT * FROM `$table` ORDER BY `sort` ASC");
+        
+        // bucket the row data   
+        foreach($rowdata as $data) {
+            array_push($bucket, $data);
+        }
 
-    // // storing in array
-    // $data = array();
-
-    // while($row = $result -> fetch_assoc()) {
-    //     $data[] = $row;
-    // }
+        // send the bucket
+        echo json_encode($bucket);
+    break;
 }

@@ -740,8 +740,11 @@ class RemoveRow {
 // ROW COMPONENT
 class Row {
 	constructor(table, componentID, parentID, label, status, datestart, dateend, owner, timestamp) {
+		
+		if (componentID != '') { this.componentID = componentID; }
+		else {this.componentID = `row-${rowCount}`}
+
 		this.table 		 = table; // passed table parent object
-		this.componentID = componentID;
 		this.parentID 	 = parentID;
 		this.label 		 = label;
 		this.status 	 = status;
@@ -749,20 +752,20 @@ class Row {
 		this.dateend 	 = dateend;
 	 	this.owner 		 = owner;
 		this.timestamp 	 = timestamp;
-		this.interval = '';
+		this.interval 	 = '';
 
-		this.labelID       = `row-${rowCount}-label`;
-		this.labelContID   = `row-${rowCount}-labelCont`;
-		this.statusID      = `row-${rowCount}-status`;
-		this.statusContID  = `row-${rowCount}-statusCont`;
-		this.statusMenuID  = `row-${rowCount}-statusMenu`;
-		this.datePickerID  = `row-${rowCount}-datePicker`;
-		this.datePickedID  = `row-${rowCount}-datePicked`;
-		this.ownerGroupID  = `row-${rowCount}-avatarGroup`
-		this.ownerSelectID = `row-${rowCount}-owner`;
-		this.timestampID   = `row-${rowCount}-modified`;
-		this.removeID      = `row-${rowCount}-remove`;
-		this.actionContID  = `row-${rowCount}-actionCont`;
+		this.labelID       = `${this.componentID}-label`;
+		this.labelContID   = `${this.componentID}-labelCont`;
+		this.statusID      = `${this.componentID}-status`;
+		this.statusContID  = `${this.componentID}-statusCont`;
+		this.statusMenuID  = `${this.componentID}-statusMenu`;
+		this.datePickerID  = `${this.componentID}-datePicker`;
+		this.datePickedID  = `${this.componentID}-datePicked`;
+		this.ownerGroupID  = `${this.componentID}-avatarGroup`
+		this.ownerSelectID = `${this.componentID}-owner`;
+		this.timestampID   = `${this.componentID}-modified`;
+		this.removeID      = `${this.componentID}-remove`;
+		this.actionContID  = `${this.componentID}-actionCont`;
 
 	}
 	create() {
@@ -1266,7 +1269,7 @@ class TableCard {
 		// add-row button listener
 		document.getElementById(this.addRowID)
 			.addEventListener('click', () => {
-				this.addRow('', 'Soon', '', '', '', parseInt(Date.now()/1000));
+				this.addRow('','', 'Soon', '', '', '', parseInt(Date.now()/1000));
 				
 				// notification
 				$.notify({
@@ -1398,12 +1401,10 @@ class TableCard {
 	}
 
 	// add a row method
-	addRow(label, status, datestart, dateend, owner, timestamp) {
-		// MUST UPDATE ROW ID BASED ON FIRST INDEX
-		const name = `row-${rowCount}`;  
-		const parent = this.tbodyID;
+	addRow(name, label, status, datestart, dateend, owner, timestamp) {
 
-		const row = new Row(this, name, parent, label, status, datestart, dateend, owner, timestamp);
+						// table, componentID, parentID, label, status, datestart, dateend, owner, timestamp
+		const row = new Row(this, name, this.tbodyID, label, status, datestart, dateend, owner, timestamp);
 		row.create();
 
 		// WARNING: THIS IS VULNERABLE TO HACKS
@@ -1507,8 +1508,7 @@ var request = new XMLHttpRequest();
 
 request.open('POST', 'requests/get_userdata.php', false);
 request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-// request.send(`type='table'`);
-request.send(null);
+request.send(`type=${'table'}`);
 
 // -- get the table infomation and put sorted names to an array --
 
@@ -1533,6 +1533,52 @@ if (request.status === 200) {// That's HTTP for 'ok'
 		
 		// update last index of table name ex.(table-) >> (12)+1
 		tableCount = 1+parseInt(sequence.sort().slice(-1)[0][0].slice(6));
+
+		// now that tables have been created 
+		// insert its associated rows
+
+		// sequence of rows
+		let rowseq = [];
+
+		table.forEach(obj => {
+			const tableName = obj.componentID;
+
+			request.open('POST', 'requests/get_userdata.php', false);
+			request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			request.send(`type=${'row'}&table=${tableName}`);
+
+			// -- get the table infomation and put sorted names to an array --
+	
+			if (request.status === 200) {// That's HTTP for 'ok'	
+				// return an associative array of the rows
+				const rowdata = JSON.parse(request.responseText);
+
+				for (data of rowdata) {
+
+					console.log(data);
+					const name 		= data['name']; // componentid
+					const label 	= data['label'];
+					const status 	= data['status'];
+					const owner 	= data['owner'];
+					const timestamp = data['modified'];
+
+					// return empty if format is 0*-?
+					const datestart = (data['start_date'] == '0000-00-00')? '':data['start_date'];
+					const dateend 	= (data['end_date']   == '0000-00-00')? '':data['end_date'];
+
+					// send a sequence of rowname to bucket
+					rowseq.push(name);
+
+					// create the row
+					obj.addRow(name, label, status, datestart, dateend, owner, timestamp);
+				}
+			}
+		});
+
+		// update last index of table name ex.(row-) >> (3)+1
+		rowCount = 1+parseInt(rowseq.sort().slice(-1)[0].slice(4));
+		console.log('rowcount',rowCount);
+
 	}
 }
 
