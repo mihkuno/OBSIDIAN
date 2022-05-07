@@ -1518,12 +1518,16 @@ if (request.status === 200) {// That's HTTP for 'ok'
 	// check if user table data is empty	
 	const tableData = request.responseText;
 
-	if (tableData!=='') { 
+	// check if there are tables from the user database
+	if (tableData !== '[]') { 
 		// parse the string array into json
 		information = JSON.parse(tableData);
 
 		let sequence = [];
 		information.map(info => sequence.push([info['name'],info['label']]));
+		
+		// -- for each name on array select table 
+		// create table
 		sequence.forEach(sort => table.push(new TableCard(sort[0], sort[1])));
 		console.log(table);
 		
@@ -1532,8 +1536,7 @@ if (request.status === 200) {// That's HTTP for 'ok'
 	}
 }
 
-// -- for each name on array select table 
-// create table
+
 
 // -- for each table select row
 // create row 
