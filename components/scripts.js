@@ -1039,13 +1039,13 @@ class TableCard {
 						// asynchronous request to the server
 						let request = new XMLHttpRequest();
 
-						request.open('POST', 'requests/modify_table.php', false);
+						request.open('POST', 'requests/modify_table.php', true);
 						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 						request.send(`table=${this.componentID}&operation=${'rowsort'}&row=${sequence}`);
 					
 					}
 					else {
-
+						
 						let bucket = []; // will contain the same this.rows but on updated index
 
 						// sorting algorithm
@@ -1075,7 +1075,29 @@ class TableCard {
 						this.rows = from_obj;
 						to.rows = to_obj;
 
-						console.log('previous:', this.rows, 'target:', to.rows);
+						// console.log('previous:', this.rows, 'target:', to.rows);
+
+
+						let frdata = []; 
+						let todata = [];
+						// transfer row object id to an array to be sent to ajax
+						this.rows.forEach(obj => frdata.push(obj.componentID));
+						to.rows.forEach(obj => todata.push(obj.componentID));
+
+						// WARNING: THIS IS VULNERABLE TO HACKS
+						// WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
+
+						// asynchronous request to the server
+						let request = new XMLHttpRequest();
+
+						request.open('POST', 'requests/modify_table.php', true);
+						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						request.send(`table=${this.componentID}&target=${to.componentID}&operation=${'rowpass'}&from=${frdata}&to=${todata}`);
+
+						if (request.status === 200) {// That's HTTP for 'ok'
+							console.log(request.responseText);
+						}
+
 					}
 				}
 			}

@@ -34,7 +34,7 @@ else {
     if ($conn -> connect_error) { echo "Connection failed"; } 
     else {
         switch ($operation) {
-            case "create":
+            case "create": // creating tables
                 $sort = $_POST['sort'];
                 
                 // create the information table if it doesnt exist
@@ -72,7 +72,7 @@ else {
                 $conn->query($update_information);
                 
             break;
-            case "drop":
+            case "drop": // deleting tables
                 // remove the table
                 $sql = "DROP TABLE `$tablename`";
                 $conn->query($sql);
@@ -93,7 +93,7 @@ else {
                 $count++;
                 }
             break;
-            case "sort":
+            case "sort": // sorting tables
                 // returns an associative array name=>tablecard-0
                 $sql = $conn->query('SELECT `name` from `information`');
                 
@@ -109,7 +109,7 @@ else {
                 $count++;
                 }
             break;
-            case "addrow":
+            case "addrow": // adding new row to self table
                 $rowinfo = $_POST['row'];
 
                 // split by string commas except inside square brackets
@@ -133,15 +133,17 @@ else {
                 
                 echo print_r($data);
             break;
-            case "rowsort":
+            case "rowsort": // sorting row on same table
+                // a stringed array
                 $sequence = $_POST['row'];
 
-                // returns an associative array name=>tablecard-0
-                $sql = $conn->query("SELECT `name` from `$tablename`");
-         
                 // sorted array of the rows
                 $sorted = explode(',',$sequence);
-                    
+
+                // query the name column of target table 
+                // returns an associative array name=>tablecard-0
+                $sql = $conn->query("SELECT `name` from `$tablename`");
+             
                 // starting from the sorted array
                 // reset the index associated of its name 
                 $count=0;
@@ -150,6 +152,60 @@ else {
                     $conn->query($reset);
                 $count++;
                 }
+            break;
+            case "rowpass": // transfer row to another table
+                $from_table = $tablename;
+                $to_table   = $_POST['target'];
+
+                $previous_rows = explode(',',$_POST['from']);
+                $target_rows = explode(',',$_POST['to']);
+
+                // -- COPY TARGET_ROWS INTO TO_TABLE --
+                
+                // loop target_row in from_table, then copy it to_table
+                foreach($target_rows as $row) {
+                    $sql = "INSERT INTO `$to_table` SELECT * FROM `$from_table` WHERE name='$row'";
+                    $conn->query($sql);
+                }
+                    
+
+                // -- RESET SORT INDEX ASSOCIATED TO START OF THE ARRAY --
+                
+                // query the name column of target table 
+                $sql = $conn->query("SELECT `name` from `$to_table`");
+
+                $count=0;
+                foreach($target_rows as $name) {
+                    $reset = "UPDATE `$to_table` SET sort = $count WHERE name = '$name'";
+                    $conn->query($reset);
+                $count++;
+                }
+
+                // -- DROP THE TARGET ROWS OF THE PREVIOUS TABLE --
+
+                // query the name column of target table 
+                $sql = $conn->query("SELECT `name` from `$from_table`");
+
+                $count=0;
+                foreach($target_rows as $name) {
+                    $transferred = "DELETE FROM `$from_table` WHERE name = '$name'";
+                    $conn->query($transferred);
+                $count++;
+                }
+
+                // -- RESET SORT THE PREVIOUS ROWS --
+
+                // query the name column of target table 
+                $sql = $conn->query("SELECT `name` from `$from_table`");
+
+                $count=0;
+                foreach($previous_rows as $name) {
+                    $reset = "UPDATE `$from_table` SET sort = $count WHERE name = '$name'";
+                    $conn->query($reset);
+                $count++;
+                }
+
+                echo print_r($target_rows);
             break;
         }
     }
