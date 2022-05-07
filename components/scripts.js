@@ -627,7 +627,7 @@ class DatePicker {
 // REMOVE ROW COMPONENT
 class RemoveRow {
 	constructor(row, componentID, parentID) {
-		this.row = row;
+		this.row 		 = row;
 		this.componentID = componentID;
 		this.parentID    = parentID;
 
@@ -911,8 +911,11 @@ class Row {
 
 // TABLE COMPONENT
 class TableCard {
-	constructor(componentID=`table-${tableCount}`,cardLabel) {
-		this.componentID = componentID;
+	constructor(componentID,cardLabel) {
+
+		if (componentID != '') { this.componentID = componentID; }
+		else {this.componentID = `table-${tableCount}`}
+
 		this.parentID 	 = "index-content";
 		this.cardLabel   = cardLabel; // set table header
  
@@ -1519,12 +1522,13 @@ if (request.status === 200) {// That's HTTP for 'ok'
 		// parse the string array into json
 		information = JSON.parse(tableData);
 
-		information.map(info => table.push(new TableCard(info['name'],info['label'])));
-
+		let sequence = [];
+		information.map(info => sequence.push([info['name'],info['label']]));
+		sequence.forEach(sort => table.push(new TableCard(sort[0], sort[1])));
 		console.log(table);
 		
 		// update last index of table name ex.(table-) >> (12)+1
-		// tableCount = 1+parseInt(sequence.sort().slice(-1)[0][0].slice(6));
+		tableCount = 1+parseInt(sequence.sort().slice(-1)[0][0].slice(6));
 	}
 }
 
