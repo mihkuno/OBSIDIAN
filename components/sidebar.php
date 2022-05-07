@@ -27,11 +27,11 @@ defined('_DEFVAR') or header("Location: ../index.php");
                                     <span class="link-collapse">My Profile</span>
                                 </a>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <a href="#settings">
                                     <span class="link-collapse">Settings</span>
                                 </a>
-                            </li>
+                            </li> -->
                             <li>
                                 <a href="components/logout.php">
                                     <span class="link-collapse text-danger">Log out</span>
@@ -48,30 +48,30 @@ defined('_DEFVAR') or header("Location: ../index.php");
                         <p>Dashboard</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="#charts" class="collapsed">
                         <i class="far fa-chart-bar"></i>
                         <p>Charts</p>
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a href="calendar.html">
                         <i class="far icon-calendar"></i>
                         <p>Calendar</p>
                     </a>
                 </li>
-                <li class="nav-section">
+                <!-- <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
                     </span>
                     <h4 class="text-section">Projects</h4>
-                </li>
-                <li class="mx-4 mt-2">
+                </li> -->
+                <!-- <li class="mx-4 mt-2">
                     <a href="" class="btn btn-primary btn-block">
                         <span class="btn-label mr-2"> <i class="fas fa-pen-square"></i></span>
                         Create Task
                     </a> 
-                </li>
+                </li> -->
             </ul>
         </div>
     </div>

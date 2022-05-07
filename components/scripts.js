@@ -90,7 +90,7 @@ class LabelInput {
 
 		document.getElementById(this.parentID).appendChild(this.input);
 
-		// add onclick event
+		// add onchange event
 		this.input.addEventListener('change', (e) => {
 			const value = e.target.value.trim()
 			this.label = value;
@@ -101,6 +101,17 @@ class LabelInput {
 			// update the row label
 			this.row.label = this.label;
 			
+			// change row label on database
+			const tablename = this.row.table.componentID;
+			const operation = 'rowlabel';
+			const row 		= this.row.componentID;
+			const label 	= this.label;
+			const modified  = this.row.timestamp;
+
+			request.open('POST', 'requests/modify_table.php', true);
+			request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			request.send(`table=${tablename}&row=${row}&operation=${operation}&data=${label}&timestamp=${modified}`);
+		
 			// notification
 			$.notify({
 				// options
@@ -211,14 +222,23 @@ class StatusButton {
 				this.buttonDrop.insertAdjacentHTML('beforeend',
 					`<span class="btn-label"><i class="fa ${ii}"></i></span> ${st}`);
 
-
 				// update the row timestamp
 				this.row.timestamp = parseInt(Date.now()/1000);
 				
 				// update the row status
 				this.row.status = this.status;
 
+				// change row status on database
+				const tablename = this.row.table.componentID;
+				const operation = 'rowstatus';
+				const row 		= this.row.componentID;
+				const status 	= this.status;
+				const modified  = this.row.timestamp;
 
+				request.open('POST', 'requests/modify_table.php', true);
+				request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+				request.send(`table=${tablename}&row=${row}&operation=${operation}&data=${status}&timestamp=${modified}`);
+				
 				// notification
 				$.notify({
 					// options
@@ -268,8 +288,8 @@ class OwnerGroup {
 		this.parentID = parentID;
 
 		this.extractPrev = []; // check select added and removed
-		this.extract     = []; // array of all email selected
-		this.option      = []; // list of menu options
+		this.extract     = []; // selected username in the menu
+		this.option      = []; // list of menu options objects
 		this.diff; // added or removed value
 		this.added; // is added or removed?
 
@@ -338,7 +358,7 @@ class OwnerGroup {
 			this.option[count] = document.createElement('option');
 			this.option[count].setAttribute('class', 'ownerEmail');
 			this.option[count].setAttribute('data-content', this.avatar.outerHTML);
-			this.option[count].setAttribute('value', `${email} ${profile}`);
+			this.option[count].setAttribute('value', `${user} ${profile}`);
 
 			$(this.select).append(this.option[count]).selectpicker('refresh');
 			count++;
@@ -346,14 +366,14 @@ class OwnerGroup {
 
 		// initial selected option
 		if (this.owner.length > 0) {
-			// get email and image value of selected options
+			// get user and image value of selected options
 			let data = [];
 			let selectedOptions = [];
 			for (let user of this.owner) {
 				for (let info of USERS) { // retrieved from ajax 
-					if (user == info.user) {
-						data.push([info.email, info.profile]);
-						selectedOptions.push(`${info.email} ${info.profile}`);
+					if (user == info.user) { // if username in userdb
+						data.push([info.user, info.profile]);
+						selectedOptions.push(`${info.user} ${info.profile}`);
 					}
 				}
 			}
@@ -406,6 +426,19 @@ class OwnerGroup {
 
 				this.extract.push(details[0]); // update the selected values
 			}
+
+			// change row status on database
+			const tablename = this.row.table.componentID;
+			const operation = 'rowowner';
+			const row 		= this.row.componentID;
+			const hash	 	= JSON.stringify(this.extract);
+			const modified  = this.row.timestamp;
+
+			request.open('POST', 'requests/modify_table.php', true);
+			request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			request.send(`table=${tablename}&row=${row}&operation=${operation}&data=${hash}&timestamp=${modified}`);
+
+			console.log(hash);
 
 			// get email, check if added or removed
 			if (this.extract.length > this.extractPrev.length) {
@@ -509,8 +542,8 @@ class DatePicker {
 
 			// format to send in database
 			this.row.datestart = start.format('YYYY/MM/DD');
-			this.row.dateend = end.format('YYYY/MM/DD');						
-			
+			this.row.dateend = end.format('YYYY/MM/DD');	
+					
 			// only show end milestone if both (start & end) date is the same
 			if (start.format('MMM DD YYYY') == end.format('MMM DD YYYY')) {
 				// update the date range label (milestone)
@@ -592,6 +625,19 @@ class DatePicker {
 					'</div>' 
 				});
 			}
+
+			// change row status on database
+			const tablename = this.row.table.componentID;
+			const operation = 'rowdate';
+			const row 		= this.row.componentID;
+			const startdate	= this.row.datestart;
+			const enddate 	= this.row.dateend;
+			const modified  = this.row.timestamp;
+
+			request.open('POST', 'requests/modify_table.php', true);
+			request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			request.send(`table=${tablename}&row=${row}&operation=${operation}&startdate=${startdate}&enddate=${enddate}&timestamp=${modified}`);
+			
 		});
 
 		// if there's parameter on the contructor
@@ -1229,6 +1275,17 @@ class TableCard {
 			{
 				this.cardLabel = document.getElementById(this.labelID).value;
 
+				// asynchronous request to the server
+				let request = new XMLHttpRequest();
+				let tablename = this.componentID;
+				let operation = 'label';
+				let label = this.cardLabel;
+
+				// change table label on database
+				request.open('POST', 'requests/modify_table.php', true);
+				request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+				request.send(`table=${tablename}&operation=${operation}&data=${label}`);
+
 				// notification
 				$.notify({
 					// options
@@ -1419,7 +1476,7 @@ class TableCard {
 			
 		request.open('POST', 'requests/modify_table.php', true);
 		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		request.send(`table=${this.componentID}&operation=${'addrow'}&row=${data}`);
+		request.send(`table=${this.componentID}&operation=${'rowadd'}&row=${data}`);
 
 		if (request.status === 200) {// That's HTTP for 'ok'
 			console.log(request.responseText);
@@ -1563,8 +1620,10 @@ if (request.status === 200) {// That's HTTP for 'ok'
 					const name 		= data['name']; // componentid
 					const label 	= data['label'];
 					const status 	= data['status'];
-					const owner 	= data['owner'];
 					const timestamp = data['modified'];
+					const owner 	= JSON.parse(data['owner']);
+
+					console.log(owner);
 
 					// return empty if format is 0*-?
 					const datestart = (data['start_date'] == '0000-00-00')? '':data['start_date'];

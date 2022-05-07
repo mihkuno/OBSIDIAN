@@ -112,7 +112,11 @@ else {
                 $count++;
                 }
             break;
-            case "addrow": // adding new row to self table
+            case "label": // labelling tables
+                $label = $_POST['data'];
+                $updateLabel = $conn->query("UPDATE `information` SET `label` = '$label' WHERE `name` = '$tablename'");
+            break;
+            case "rowadd": // adding new row to self table
                 $rowinfo = $_POST['row'];
 
                 // split by string commas except inside square brackets
@@ -230,6 +234,37 @@ else {
                 }
 
                 echo print_r($sequence);
+            break;
+            case "rowlabel":
+                $rowname = $_POST['row'];
+                $label = $_POST['data'];
+                $timestamp = $_POST['timestamp'];
+                // update the data and timestamp
+                $conn->query("UPDATE `$tablename` SET `label` = '$label' WHERE `name` = '$rowname'");
+                $conn->query("UPDATE `$tablename` SET `modified` = '$timestamp' WHERE `name` = '$rowname'");
+            break;
+            case "rowstatus":
+                $rowname = $_POST['row'];
+                $status = $_POST['data'];
+                $timestamp = $_POST['timestamp'];
+                $conn->query("UPDATE `$tablename` SET `status` = '$status' WHERE `name` = '$rowname'");
+                $conn->query("UPDATE `$tablename` SET `modified` = '$timestamp' WHERE `name` = '$rowname'");
+            break;
+            case "rowdate":
+                $rowname = $_POST['row'];
+                $startdate = $_POST['startdate'];
+                $enddate = $_POST['enddate'];
+                $timestamp = $_POST['timestamp'];
+                $conn->query("UPDATE `$tablename` SET `start_date` = '$startdate' WHERE `name` = '$rowname'");
+                $conn->query("UPDATE `$tablename` SET `end_date`   = '$enddate'   WHERE `name` = '$rowname'");
+                $conn->query("UPDATE `$tablename` SET `modified`  = '$timestamp' WHERE `name` = '$rowname'");
+            break;
+            case "rowowner":
+                $rowname = $_POST['row'];
+                $hash = $_POST['data'];
+                $timestamp = $_POST['timestamp'];
+                $conn->query("UPDATE `$tablename` SET `owner` = '$hash' WHERE `name` = '$rowname'");
+                $conn->query("UPDATE `$tablename` SET `modified`  = '$timestamp' WHERE `name` = '$rowname'");
             break;
         }
     }
