@@ -152,6 +152,8 @@ else {
                     $conn->query($reset);
                 $count++;
                 }
+
+                echo print_r($sorted);
             break;
             case "rowpass": // transfer row to another table
                 $from_table = $tablename;
@@ -167,7 +169,6 @@ else {
                     $sql = "INSERT INTO `$to_table` SELECT * FROM `$from_table` WHERE name='$row'";
                     $conn->query($sql);
                 }
-                    
 
                 // -- RESET SORT INDEX ASSOCIATED TO START OF THE ARRAY --
                 
@@ -206,6 +207,26 @@ else {
                 }
 
                 echo print_r($target_rows);
+            break;
+            case "rowdrop": // deleting individual rows
+                // -- DROP THE TARGET ROWS OF THE PREVIOUS TABLE --
+
+                $targetRow = $_POST['row'];
+                $sequence  = explode(',',$_POST['sort']); 
+
+                $drop = "DELETE FROM `$tablename` WHERE name = '$targetRow'";
+                $conn->query($drop);
+        
+                // -- RESET SORT THE PREVIOUS ROWS --
+
+                $count=0;
+                foreach($sequence as $rowName) {
+                    $resetIndex = "UPDATE `$tablename` SET sort = $count WHERE name = '$rowName'";
+                    $conn->query($resetIndex);
+                $count++;
+                }
+
+                echo print_r($sequence);
             break;
         }
     }

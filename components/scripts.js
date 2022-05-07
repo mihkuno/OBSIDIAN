@@ -658,9 +658,33 @@ class RemoveRow {
 				}
 			}).then((Delete) => {
 				if (Delete) {
-					// remove all rows and stop timestamp update
-					this.row.drop();
-				
+					// setup variables first to delete first then update next
+					const componentID = this.row.componentID; // save the row id before removing
+					const tablename = this.row.table.componentID; // tbody >> table
+					const operation = 'rowdrop'; // the operation to be sent to server
+			
+					// remove this row parent and get new sequence
+					const sortedRowObj = this.row.drop();
+					const sequence = sortedRowObj.map(row => row.componentID); // array comprehension
+
+					console.log('sequence',sequence);
+
+					// -- UPDATE ROW DELETION ON USER DATABASE
+
+					// // WARNING: THIS IS VULNERABLE TO HACKS
+					// // WARNING: MUST VALIDATE THE LOGIN SESSION ON CREATE_TABLE
+
+					// asynchronous request to the server
+					let request = new XMLHttpRequest();
+
+					request.open('POST', 'requests/modify_table.php', false);
+					request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					request.send(`table=${tablename}&operation=${operation}&row=${componentID}&sort=${sequence}`);
+
+					if (request.status === 200) {// That's HTTP for 'ok'
+						console.log(request.responseText);
+					}
+
 					// notification
 					$.notify({
 						// options
@@ -710,7 +734,8 @@ class RemoveRow {
 
 // ROW COMPONENT
 class Row {
-	constructor(componentID, parentID, label, status, datestart, dateend, owner, timestamp) {
+	constructor(table, componentID, parentID, label, status, datestart, dateend, owner, timestamp) {
+		this.table 		 = table; // passed table parent object
 		this.componentID = componentID;
 		this.parentID 	 = parentID;
 		this.label 		 = label;
@@ -864,8 +889,18 @@ class Row {
 		clearInterval(this.interval);
 	}
 	drop() { // remove row and stop timestamp update
-		clearInterval(this.interval);
-		document.getElementById(this.componentID).remove();
+		clearInterval(this.interval); // stop the timestamp update
+		document.getElementById(this.componentID).remove(); // remove the row
+
+		console.log('before',this.table.rows);
+
+		// find the row object
+		const index = findWithAttr(this.table.rows, 'componentID', this.componentID);
+		this.table.rows.remove(index);
+
+		console.log('after',this.table.rows);
+		// return the new sequence
+		return this.table.rows;
 	}
 }
 
@@ -1027,6 +1062,10 @@ class TableCard {
 						}
 						// update index of from table rows
 						from_obj = bucket;
+
+						// update this rows 
+						this.rows = from_obj;
+
 						console.log(from_obj);
 
 						let sequence = [];
@@ -1042,10 +1081,9 @@ class TableCard {
 						request.open('POST', 'requests/modify_table.php', true);
 						request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 						request.send(`table=${this.componentID}&operation=${'rowsort'}&row=${sequence}`);
-					
 					}
 					else {
-						
+
 						let bucket = []; // will contain the same this.rows but on updated index
 
 						// sorting algorithm
@@ -1298,7 +1336,7 @@ class TableCard {
 						}
 
 						// remove its rows and stop timestamp interval
-						this.rows.forEach(row => {row.stopInterval(); row.drop()});
+						this.rows.forEach(row => row.stopInterval());
 						this.rows = [];
 
 						// remove the table html element
@@ -1363,7 +1401,7 @@ class TableCard {
 		const name = `${this.tbodyID}-${this.rowCount}`;  
 		const parent = this.tbodyID;
 
-		const row = new Row(name, parent, label, status, datestart, dateend, owner, timestamp);
+		const row = new Row(this, name, parent, label, status, datestart, dateend, owner, timestamp);
 		row.create();
 
 		// WARNING: THIS IS VULNERABLE TO HACKS
