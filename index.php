@@ -34,7 +34,6 @@ else {
 	console.log('there were no cookies available')
 	</script>";}
 ?>
-
 <body data-background-color="dark">
 <div class="wrapper">
 	<?php include 'components/header.php'?>
@@ -48,6 +47,10 @@ else {
 
 				<div class="page-category" id="index-content">
 					<!-- Inner page content  goes here -->
+
+
+						<div id="loader" class="card-body is-loading is-loading-lg loader"></div>
+		
 					
 					<!-- TABLE APPENDED HERE -->						
 				</div>

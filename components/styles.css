@@ -84,3 +84,12 @@ span.bs-ok-default.check-mark {margin-top: 13px; margin-right: 6px;}
   border-left: 6px solid transparent;
   content: '';
 }
+
+/* -- PAGE LOADER -- */
+.loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}

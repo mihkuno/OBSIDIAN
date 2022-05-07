@@ -1589,6 +1589,9 @@ if (request.status === 200) {// That's HTTP for 'ok'
 	}
 }
 
+// hide the loader after initializing tables
+document.getElementById('loader').style = "display: none";
+
 
 
 // -- for each table select row
