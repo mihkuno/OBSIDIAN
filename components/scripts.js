@@ -677,7 +677,7 @@ class RemoveRow {
 					// asynchronous request to the server
 					let request = new XMLHttpRequest();
 
-					request.open('POST', 'requests/modify_table.php', false);
+					request.open('POST', 'requests/modify_table.php', true);
 					request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 					request.send(`table=${tablename}&operation=${operation}&row=${componentID}&sort=${sequence}`);
 
@@ -1426,12 +1426,6 @@ class TableCard {
 		this.rowCount++;
 	}
 }
-
-// create a table template
-// tableCard.push(new TableCard('Grocery List'));
-// tableCard[0].addRow('BUY BROWN EGGS', 'Complete', 'Mar 05, 2022', 'Mar 05, 2022', ['miko', 'henlo'], 1651457868731);
-// tableCard[0].addRow('DYNARIMA SHEET', 'Develop', 'Feb 05, 2022', 'Mar 15, 2022', ['henlo'], 1651420206620);
-// tableCard[0].addRow('OHAYOO', 'Stuck', 'Feb 08, 2022', 'Nov 12, 2022', ['hiho', 'miko'], 1651420206620);
 
 // create table button functionality
 document.getElementById('table-create')
