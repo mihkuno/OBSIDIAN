@@ -48,7 +48,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
                         <p>Dashboard</p>
                     </a>
                 </li>
-                <li class="nav-item <?php if ($_SESSION['active']=='charts') {echo 'active';}?>">
+                <li class="nav-item <?php if ($_SESSION['active']=='summary') {echo 'active';}?>">
                     <a href="charts.php" class="collapsed">
                         <i class="far fa-chart-bar"></i>
                         <p>Summary</p>
