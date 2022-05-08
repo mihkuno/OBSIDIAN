@@ -6,7 +6,7 @@ define('_DEFVAR', 1);
 include 'components/head.php';
 
 // pass to head to check user session
-$_SESSION['active'] = 'charts';
+$_SESSION['active'] = 'summary';
 
 // check user session
 require 'requests/chkuser.php';
@@ -20,32 +20,7 @@ require 'requests/chkuser.php';
 	<div class="main-panel">
 		<div class="content">
 			<div class="page-inner m-3">
-				<!-- HEADER -->
-				<div class="page-header">
-					<!-- PAGE TITLE -->
-					<h4 class="page-title">Summary</h4>
-					<!-- BREADCRUMBS -->
-					<ul class="breadcrumbs">
-						<li class="nav-home">
-							<a href="#">
-								<i class="flaticon-home"></i>
-							</a>
-						</li>
-						<li class="separator">
-							<i class="flaticon-right-arrow"></i>
-						</li>
-						<li class="nav-item">
-							<a href="#">Panels</a>
-						</li>
-						<li class="separator">
-							<i class="flaticon-right-arrow"></i>
-						</li>
-						<li class="nav-item">
-							<a href="#">Summary</a>
-						</li>
-					</ul>
-				</div>
-				<!-- END HEADER -->
+				<?php include 'components/navbar.php'?>
 				<div class="page-category">
 					<!-- Inner page content goes here -->
 

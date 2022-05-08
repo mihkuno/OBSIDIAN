@@ -5,7 +5,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
 
 <div class="page-header">
     <!-- PAGE TITLE -->
-    <h4 class="page-title">Dashboard</h4>
+    <h4 class="page-title"><?php echo ucfirst($_SESSION['active']) ?></h4>
     <!-- BREADCRUMBS -->
     <ul class="breadcrumbs">
         <li class="nav-home">
@@ -23,7 +23,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
             <i class="flaticon-right-arrow"></i>
         </li>
         <li class="nav-item">
-            <a href="#">Dashboard</a>
+            <a href="#"><?php echo ucfirst($_SESSION['active']) ?></a>
         </li>
     </ul>
 </div>

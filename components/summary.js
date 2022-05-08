@@ -129,8 +129,5 @@ $calendar.fullCalendar({
     },
 });
 
-// show the calendar card
-// document.getElementById('row-calendar').classList.remove('d-none');
-
 // hide the spinning loader
-document.getElementById('loader-calendar').style = 'display: none';
+document.getElementById('loader-calendar').classList.add('d-none');

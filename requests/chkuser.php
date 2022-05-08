@@ -37,7 +37,7 @@ switch ($_SESSION['active']) {
 		} 
 		else { echo "<script>console.log('there were no cookies available')</script>"; }
 	break;
-	case "charts": // on other pages - there is a user session
+	case "summary": // on other pages - there is a user session
 		// if a user-profile cookie is active
 		if (isset($_COOKIE['user'])&&isset($_COOKIE['passw'])&&isset($_COOKIE['profile']) 
 		){
