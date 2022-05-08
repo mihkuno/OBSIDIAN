@@ -38,7 +38,11 @@ require 'requests/chkuser.php';
 		<?php include 'components/footer.php'?>
 	</div>
 </div>
-<?php include 'components/scripts.php'?>
 
-<!-- LOCAL: CUSTOM SCRIPTS -->
-<script src="components/dashboard.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+<?php include 'components/scripts.php'?>

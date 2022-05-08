@@ -64,4 +64,23 @@ switch ($type) {
         // send the bucket
         echo json_encode($bucket);
     break;
+    case "daterange":
+        // (user_name) database
+        $dbUser = sprintf("user_%s",$_SESSION['user']);  
+        $conn->select_db($dbUser);
+
+        // get the table name
+        $table = $_POST['table'];
+
+        $bucket = []; // get all rows of the table 
+        $rowdata = $conn->query("SELECT * FROM `$table` ORDER BY `sort` ASC");
+
+        // bucket the row data   
+        foreach($rowdata as $data) {
+            array_push($bucket, $data);
+        }
+
+        // send the bucket
+        echo json_encode($bucket);
+    break;
 }

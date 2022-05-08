@@ -26,7 +26,7 @@ input[type="file"] {
 .calendar-timeline-3 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #7d5fff;}
 .calendar-timeline-4 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #10ac84;}
 .fc-state-default { 
-  padding: 20px !important; 
+  padding: 18px !important; 
   display: flex !important; 
   align-items: center !important; 
   font-family: 'Ubuntu', sans-serif; font-size: 15px !important;

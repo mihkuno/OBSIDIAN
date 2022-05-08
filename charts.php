@@ -34,5 +34,4 @@ require 'requests/chkuser.php';
 		<?php include 'components/footer.php'?>
 	</div>
 </div>
-<script src="components/summary.js"></script>
 <?php include 'components/scripts.php'?>

@@ -3,20 +3,8 @@
 defined('_DEFVAR') or header("Location: ../index.php");
 ?>
 
-<!-- JQUERY -->
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-
 <!-- LOCAL: Popper JS Tooltips -->
 <script src="assets/js/core/popper.min.js"></script> <!-- stable unknown ver -->
-
-<!-- WEB: Date Range Picker -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-
-<!-- WEB: jQuery UI -->
-<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery-ui.min.js'></script>
 
 <!-- WEB: BOOTSTRAP v4.3.1 Core JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -57,3 +45,6 @@ defined('_DEFVAR') or header("Location: ../index.php");
 
 <!-- WEB: Moment JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
+
+<script src="assets/js/plugin/calendar/calendar.js"></script>
+<script src="components/scripts.js"></script>
