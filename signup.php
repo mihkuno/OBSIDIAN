@@ -2,15 +2,16 @@
 // base page (allow url direct access):
 define('_DEFVAR', 1);
 
+// include head and start session
 include 'components/head.php';
-// a user is already logged in
-if(isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile']) 
-){
-    // bring them back to the dashboard 
-    header("Location: index.php");
-    die("Redirecting to: index.php"); 
-}
+
+// pass to head to check user session
+$_SESSION['active'] = 'validate';
+
+// check user session
+require 'requests/chkuser.php';
 ?>
+
 
 <body class="bg-dark d-flex align-items-center">
 <div class="container">

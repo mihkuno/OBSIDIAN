@@ -10,10 +10,11 @@ var className = Array(
 
 $calendar = $('.calendar');
 $calendar.fullCalendar({
+    themeSystem : "bootstrap",
     header: {
-        left: 'prev,next today',
+        left: 'prev',
         center: 'title',
-        right: 'month,agendaDay,listWeek'
+        right: 'next'
     },
     selectable : true,
     selectHelper: true,

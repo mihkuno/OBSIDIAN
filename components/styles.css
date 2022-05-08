@@ -19,14 +19,21 @@ input[type="file"] {
   max-height: 130px !important;
 }
 
-/* -- FULL CALENDAR --
-/* .calendar { padding: 40px; } */
+/* -- FULL CALENDAR -- */
+/* .calendar { padding: 30px !important; }  */
 .calendar-timeline-1 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #0fb9b1;}
 .calendar-timeline-2 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #4b7bec;}
 .calendar-timeline-3 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #7d5fff;}
 .calendar-timeline-4 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #10ac84;}
+.fc-state-default { 
+  padding: 20px !important; 
+  display: flex !important; 
+  align-items: center !important; 
+  font-family: 'Ubuntu', sans-serif; font-size: 15px !important;
+}
 
-.fa-calendar > span { font-family: 'Ubuntu', sans-serif; font-size: 13px;}
+/* TIMELINE DATERANGE FONT */
+.fa-calendar > span { font-family: 'Ubuntu', sans-serif; font-size: 13px !important;}
 
 /* -- SORTING -- */
 /* hide the drag n' drop ghost*/

@@ -57,6 +57,3 @@ defined('_DEFVAR') or header("Location: ../index.php");
 
 <!-- WEB: Moment JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
-
-<!-- LOCAL: CUSTOM SCRIPTS -->
-<script src="components/scripts.js"></script>

@@ -1,9 +1,7 @@
 <?php 
 // url direct access isn't permitted
 defined('_DEFVAR') or header("Location: ../index.php");
-?>
 
-<?php
 session_start();
 
 echo "<script>console.log('logged out')</script>";

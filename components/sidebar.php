@@ -22,11 +22,11 @@ defined('_DEFVAR') or header("Location: ../index.php");
                     <div class="clearfix"></div>
                     <div class="collapse in" id="collapseExample">
                         <ul class="nav">
-                            <li>
-                                <a href="signin.php">
+                            <!-- <li>
+                                <a href="profile.php">
                                     <span class="link-collapse">My Profile</span>
                                 </a>
-                            </li>
+                            </li> -->
                             <!-- <li>
                                 <a href="#settings">
                                     <span class="link-collapse">Settings</span>
@@ -42,24 +42,24 @@ defined('_DEFVAR') or header("Location: ../index.php");
                 </div>
             </div>
             <ul class="nav nav-primary">
-                <li class="nav-item active">
-                    <a href="#dashboard" class="collapsed">
+                <li class="nav-item <?php if ($_SESSION['active']=='dashboard') {echo 'active';}?>" >
+                    <a href="index.php" class="collapsed">
                         <i class="fas fa-th-list"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a href="#charts" class="collapsed">
+                <li class="nav-item <?php if ($_SESSION['active']=='charts') {echo 'active';}?>">
+                    <a href="charts.php" class="collapsed">
                         <i class="far fa-chart-bar"></i>
-                        <p>Charts</p>
+                        <p>Summary</p>
                     </a>
-                </li> -->
-                <li class="nav-item">
-                    <a href="calendar.html">
+                </li>
+                <!-- <li class="nav-item">
+                    <a href="calendar.php">
                         <i class="far icon-calendar"></i>
                         <p>Calendar</p>
                     </a>
-                </li>
+                </li> -->
                 <!-- <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
