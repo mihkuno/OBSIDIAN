@@ -13,27 +13,6 @@ document.getElementById('userdesc')
     }
 );
 
-// initialize user description
-const request = new XMLHttpRequest();
-request.open('POST', 'requests/get_userdata.php', true);
-request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-request.send(`type=${'desc'}`);
-
-request.addEventListener('loadend', () => {
-    console.log('done');
-
-    const response = JSON.parse(request.responseText);
-    console.log(response);
-    document.getElementById('userdesc').value = response['desc'];
-
-    // hide the spinning loader
-    document.getElementById('loader-profile').classList.add('d-none');
-
-    // show the description input
-    document.getElementById('userdesc').classList.remove('d-none');
-});
-
-
 
 /* initialize the calendar
 -----------------------------------------------------------------*/

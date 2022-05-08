@@ -20,14 +20,36 @@ defined('_DEFVAR') or header("Location: ../index.php");
                     <div class="name" style="font-size: 32px;"><?php echo $_SESSION['user']?></div>
                     <div class="job h3"><?php echo $_SESSION['email'] ?></div>
                     <div class="desc">
-                    <div id="loader-profile" class="card-body is-loading"></div>
-                        <input 
-                            id="userdesc"
-                            type="text" 
-                            class="form-control input-border-bottom text-center row-label ml-auto mr-auto d-none" 
-                            style="border: 0; color: #828282; max-width: 550px;"
-                            placeholder="type a cool description here :)"
-                            maxlength="100">
+
+                    <?php 
+
+                    // -- get the user description
+
+                    require 'requests/connect.php';
+                    
+                    // obsidian database
+                    $database = 'OBSIDIAN';
+                    $table = 'credentials';  
+                    $conn->select_db($database);
+
+                    $user = $_SESSION['user'];
+
+                    // get desc of user
+                    $sql = $conn->query("SELECT `desc` FROM `$table` WHERE `user` = '$user'")->fetch_assoc();
+
+                    $desc = $sql['desc'];
+          
+                    ?>
+
+                    <input 
+                        id="userdesc"
+                        type="text" 
+                        class="form-control input-border-bottom text-center row-label ml-auto mr-auto" 
+                        style="border: 0; color: #828282; max-width: 550px;"
+                        placeholder="type a cool description here :)"
+                        maxlength="100"
+                        value="<?php echo $desc ?>">
+                        
                     </div>
                     <!-- <div class="social-media"> -->
                         <!-- <a class="btn btn-info btn-twitter btn-sm btn-link" href="#"> 
@@ -61,20 +83,56 @@ defined('_DEFVAR') or header("Location: ../index.php");
             <div class="card-footer">
                 <div class="row user-stats text-center">
                     <div class="col">
-                        <div class="number">125</div>
+                        <div class="tablecount" id="tcount">
+                            <?php 
+                            
+                            // (user_name) database
+                            $dbUser = sprintf("user_%s",$_SESSION['user']);  
+                            $conn->select_db($dbUser); 
+
+                            // get the number of tables of user data
+                            $tableinfo = $conn->query("SELECT `sort` FROM `information`");
+
+                            $count=0;
+                            foreach($tableinfo as $x) {
+                                foreach($x as $tname) {
+                                    $count++;
+                                }
+                            }
+                            echo $count;
+                            ?>
+                        </div>
                         <div class="title">Tables</div>
                     </div>
                     <div class="col">
-                        <div class="number">25K</div>
+                        <div class="rowcount">
+                            <?php 
+
+                            // (user_name) database
+                            $dbUser = sprintf("user_%s",$_SESSION['user']);  
+                            $conn->select_db($dbUser); 
+
+                            // get the number of tables of user data
+                            $tableinfo = $conn->query("SELECT `name` FROM `information`");
+
+                            $count = 0;
+                            foreach($tableinfo as $x) {
+                                foreach($x as $tname) {
+                                    $rowinfo = $conn->query("SELECT `name` FROM `$tname`");
+                                    foreach($rowinfo as $y) {
+                                        foreach($y as $rname) {
+                                            $count++;
+                                        }
+                                    }
+                                }
+                            }
+                            echo $count;
+                            ?>
+                        </div>
                         <div class="title">Rows</div>
-                    </div>
-                    <div class="col">
-                        <div class="number">134</div>
-                        <div class="title">Owners</div>
                     </div>
                 </div>
             </div>
-          
         </div>
     </div>
 </div>

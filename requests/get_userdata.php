@@ -64,18 +64,4 @@ switch ($type) {
         // send the bucket
         echo json_encode($bucket);
     break;
-    case "desc":
-        // obsidian database
-        $database = 'OBSIDIAN';
-        $table = 'credentials';  
-        $conn->select_db($database);
-
-        $user = $_SESSION['user'];
-
-        // get desc of user
-        $userDesc = $conn->query("SELECT `desc` FROM `$table` WHERE `user` = '$user'")->fetch_assoc();
-
-        echo json_encode($userDesc);
-
-    break;
 }
