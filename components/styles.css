@@ -20,7 +20,7 @@ input[type="file"] {
 }
 
 /* -- FULL CALENDAR -- */
-/* .calendar { padding: 30px !important; }  */
+.calendar { padding: 30px !important; } 
 .calendar-timeline-1 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #0fb9b1;}
 .calendar-timeline-2 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #4b7bec;}
 .calendar-timeline-3 { padding: 7px; color: #f7f1e3 !important; font-size: 15px;  background-color: #7d5fff;}

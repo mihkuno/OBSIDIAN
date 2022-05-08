@@ -20,17 +20,18 @@ $dbServername = 'localhost';    // server address
 $dbUsername   = 'root';           // root username
 $dbPassword   = 'password_here';  // root password
 
-// (user_name) database
-$dbUser = sprintf("user_%s",$_SESSION['user']);  
-
 // create connection
-$conn = new mysqli($dbServername, $dbUsername, $dbPassword, $dbUser);
+$conn = new mysqli($dbServername, $dbUsername, $dbPassword);
 
 
 $type = $_POST['type'];
 
 switch ($type) {
     case "table":
+        // (user_name) database
+        $dbUser = sprintf("user_%s",$_SESSION['user']);  
+        $conn->select_db($dbUser);
+
         // get the table information
         $namecol = $conn->query("SELECT * FROM `information` ORDER BY `sort` ASC");
 
@@ -45,6 +46,10 @@ switch ($type) {
         }
     break;
     case "row":
+        // (user_name) database
+        $dbUser = sprintf("user_%s",$_SESSION['user']);  
+        $conn->select_db($dbUser);
+
         // get the table name
         $table = $_POST['table'];
 
@@ -58,5 +63,19 @@ switch ($type) {
 
         // send the bucket
         echo json_encode($bucket);
+    break;
+    case "desc":
+        // obsidian database
+        $database = 'OBSIDIAN';
+        $table = 'credentials';  
+        $conn->select_db($database);
+
+        $user = $_SESSION['user'];
+
+        // get desc of user
+        $userDesc = $conn->query("SELECT `desc` FROM `$table` WHERE `user` = '$user'")->fetch_assoc();
+
+        echo json_encode($userDesc);
+
     break;
 }

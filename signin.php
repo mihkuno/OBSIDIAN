@@ -78,16 +78,15 @@ require 'requests/chkuser.php';
                                 // user and password matches
                                 if ($conn->query($sql)->num_rows > 0) { 
                                     
-                                    
                                     // get the username if email was input
-                                    $sql = "SELECT user FROM CREDENTIALS 
+                                    $sql = "SELECT user,email FROM CREDENTIALS 
                                             WHERE email='$user' 
                                             OR user='$user';";
                                     // get query result as an array
                                     $row = $conn->query($sql)->fetch_assoc();
                                     // get the username on the first row 
                                     $user = $row['user'];
-
+                                    $email = $row['email'];
 
                                     // get the profile path of user
                                     $sql = "SELECT profile FROM CREDENTIALS 
@@ -100,12 +99,14 @@ require 'requests/chkuser.php';
 
                                     // initialize the session and profile
                                     $_SESSION['user']    = $user;
+                                    $_SESSION['email']   = $email;
                                     $_SESSION['passw']   = $passw;
                                     $_SESSION['profile'] = $profile;
 
                                     // if 'remember me' is checked, create a cookie
                                     if ((isset($_POST['remember'])) && $_POST['remember'] == true) {
                                         setcookie('user', $user, time() + (86400*3));
+                                        setcookie('email', $email, time() + (86400*3));
                                         setcookie('passw', $passw, time() + (86400*3));
                                         setcookie('profile', $profile, time() + (86400*3));
                                         // keep the cookie in a jar for 3 days before they expire
@@ -159,8 +160,9 @@ require 'requests/chkuser.php';
                                 </span>
                             </div>
                             <input 
+                                value="<?php if (isset($_GET['logout'])) { echo $_GET['logout']; }?>"
                                 class="form-control" 
-                                placeholder="Username or Email"       
+                                placeholder="Username or Email"      
                                 name="user"  
                                 type="text">
                         </div> <!-- input-group.// -->

@@ -15,7 +15,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
                     <a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
                         <span>
                             <?php echo $_SESSION['user'] ?>
-                            <span class="user-level">Administrator</span>
+                            <span class="user-level" style='font-size: 10px;'><?php echo $_SESSION['email'] ?></span>
                             <span class="caret"></span>
                         </span>
                     </a>

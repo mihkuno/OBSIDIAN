@@ -17,9 +17,12 @@ if (isset($_COOKIE['user']) ||
     setcookie('passw', null, -1, '/'); 
     setcookie('profile', null, -1, '/'); 
 }
+// get username to pass in login screen
+$user = $_SESSION['user'];
+
 // clear the session
 unset($_SESSION);
 session_destroy();
 session_write_close();
-header('Location: ../index.php');
+header('Location: ../signin.php?logout='.$user);
 die;

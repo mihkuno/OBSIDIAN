@@ -41,4 +41,4 @@ require 'requests/chkuser.php';
 <?php include 'components/scripts.php'?>
 
 <!-- LOCAL: CUSTOM SCRIPTS -->
-<script src="components/scripts.js"></script>
+<script src="components/dashboard.js"></script>
