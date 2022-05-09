@@ -438,7 +438,7 @@ class OwnerGroup {
 			request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			request.send(`table=${tablename}&row=${row}&operation=${operation}&data=${hash}&timestamp=${modified}`);
 
-			console.log(hash);
+			// console.log(hash); // get an array of the selected users
 
 			// get email, check if added or removed
 			if (this.extract.length > this.extractPrev.length) {
@@ -503,6 +503,107 @@ class OwnerGroup {
 			document.querySelectorAll(OWNERBUTTON).forEach((rf) => {
 				rf.innerHTML = `<i class='fa fa-plus'><i>`;
 			});
+
+
+			// -- send a copy of the row to the targets --
+
+			// get current user
+			const userSession = new XMLHttpRequest();
+
+			userSession.open('POST', 'requests/get_userdata.php', false);
+			userSession.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			userSession.send(`type=${'currentuser'}`);
+			
+			const currentUser = userSession.responseText;
+
+			// check if add or removed row
+			if (this.added == true) {
+
+				// check if target is current user
+				const targetUser = this.diff;
+
+				if (targetUser != currentUser) {
+
+					// get row data
+					const sort = 0;
+					const name = `shared-${currentUser}`;
+					const label = '';
+					const status = this.row.status;
+					const datestart = this.row.datestart;
+					const dateend = this.row.dateend;
+					const owner = hash;
+					const timestamp = Date.now();
+
+					// const rowdata = [sort, name, label, status, datestart, dateend, owner, timestamp];
+
+					// get the table names
+					const getTableNames = new XMLHttpRequest();
+					getTableNames.open('POST', 'requests/get_userdata.php', false);
+					getTableNames.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					getTableNames.send(`type=${'table'}&target=${targetUser}`);
+
+					// get and array of origin sort table names
+					const tableContainer = JSON.parse(getTableNames.responseText);
+					console.log('tableContainer', tableContainer); // get the last sort and maximum table 
+
+					// sorts strings and objects
+					let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+
+					// get sorted table names
+					const sortTableNames =  tableContainer.map(tableObj => tableObj.name).sort(collator.compare);
+					const sortTableLabels =  tableContainer.map(tableObj => tableObj.label).sort(collator.compare);
+					
+					// get last sort index
+					const lastSortIndex = 1+tableContainer.length;
+					
+					// get max name index, if container is empty return 0
+					const maxTableCount = (tableContainer.length <= 0)?0:1+parseInt(sortTableNames.slice(-1)[0].slice(6));
+
+
+					// check label `user_from` table is created on target
+					const tableName = 'table-'+maxTableCount;
+					const tableLabel = `Shared by ${currentUser}`;
+					let chklabel = false;
+					tableContainer.forEach(table => {
+						for (table['label']) {
+
+						}
+						console.log('comparison', chklabel, table, tableLabel);
+					});
+					console.log(tableLabel);
+					console.log(chklabel);
+
+					
+
+					if (chklabel <= 0) {
+						// create a user_from table to the target
+						let createShared = new XMLHttpRequest();
+						
+						const operation = 'create';
+
+						createShared.open('POST', 'requests/modify_table.php', false);
+						createShared.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						createShared.send(`table=${tableName}&label=${tableLabel}&operation=${operation}&sort=${lastSortIndex}&target=${targetUser}`);
+
+						if (createShared.status === 200) {// That's HTTP for 'ok'
+							console.log(createShared.responseText);
+						}
+					}			
+					else {
+						console.log('target user shared table has already been created, appending rows instead');
+					}					
+
+					// // create rows based of calendar created events
+					// const createRowEvent = new XMLHttpRequest(); 
+					// createRowEvent.open('POST', 'requests/modify_table.php', false);
+					// createRowEvent.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					// createRowEvent.send(`table=${calendarTable}&operation=${'rowadd'}&row=${data}`);
+
+					// if (createRowEvent.status === 200) {// That's HTTP for 'ok'
+					// 	console.log('createdrow',createRowEvent.responseText);
+					// }
+				}
+			}
 		});
 
 		// add static icon to owner button 
@@ -1732,6 +1833,7 @@ try {
 	'calendar-timeline-4'
 	);
 
+	// initialize the calendar
 	$calendar = $('.calendar');
 	$calendar.fullCalendar({
 	header: {
@@ -1892,16 +1994,12 @@ try {
 	}
 	});
 
-	
-
-	// get the table names
-	const getTableNames = new XMLHttpRequest();
+	// initialize calendar [start_date and end_date] from all tables
+	const getTableNames = new XMLHttpRequest(); // get the table names
 	getTableNames.open('POST', 'requests/get_userdata.php', true);
 	getTableNames.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 	getTableNames.send(`type=${'table'}`);
 
-	// get [start_date and end_date] from all tables
-	// 2d array of date ranges
 	getTableNames.addEventListener('loadend', () => {
 	const tableContainer = JSON.parse(getTableNames.responseText);
 
@@ -1944,6 +2042,8 @@ try {
 		// hide the spinning loader
 		document.getElementById('calendarloader').classList.add('d-none');
 	});
+
+
 
 } catch (error) {
 	console.log(error, 'calendar not found');

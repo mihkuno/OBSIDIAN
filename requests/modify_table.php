@@ -27,9 +27,13 @@ else {
     $dbUsername   = 'root';          // root username
     $dbPassword   = 'password_here'; // root password
     
-    // (user_name) database
-    $dbUser = sprintf("user_%s",$_SESSION['user']);  
-
+    // (user_name) database 
+    if (isset($_POST['target'])) {
+        $dbUser = sprintf("user_%s",$_POST['target']);  
+    } else {
+        $dbUser = sprintf("user_%s",$_SESSION['user']);
+    }
+    
     // Create connection
     $conn = new mysqli($dbServername, $dbUsername, $dbPassword, $dbUser);
 
@@ -39,7 +43,7 @@ else {
             case "create": // creating tables
                 $sort = $_POST['sort'];
                 $label = (isset($_POST['label']))?$_POST['label']:'';
-                
+
                 // create the information table if it doesnt exist
                 $create_information = "
                 CREATE TABLE IF NOT EXISTS `information` (

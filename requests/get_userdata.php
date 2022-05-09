@@ -28,8 +28,14 @@ $type = $_POST['type'];
 
 switch ($type) {
     case "table":
-        // (user_name) database
-        $dbUser = sprintf("user_%s",$_SESSION['user']);  
+        $dbUser = '';
+        if (isset($_POST['target'])) {
+            $dbUser = sprintf("user_%s",$_POST['target']);
+        } else {
+            // (user_name) database
+            $dbUser = sprintf("user_%s",$_SESSION['user']);  
+        }
+        
         $conn->select_db($dbUser);
 
         // get the table information
@@ -43,7 +49,7 @@ switch ($type) {
             }
             // returning response in JSON format
             echo json_encode($tables);
-        }
+        } else { echo 'nothing'; }
     break;
     case "row":
         // (user_name) database
@@ -124,5 +130,8 @@ switch ($type) {
             }
         }
         echo json_encode($originSort);
+    break;
+    case "currentuser":
+        echo $_SESSION['user'];
     break;
 }
