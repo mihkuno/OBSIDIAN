@@ -38,7 +38,7 @@ else {
         switch ($operation) {
             case "create": // creating tables
                 $sort = $_POST['sort'];
-                $label = ($_POST['label']==null)?$_POST['label']:'';
+                $label = (isset($_POST['label']))?$_POST['label']:'';
                 
                 // create the information table if it doesnt exist
                 $create_information = "

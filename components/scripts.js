@@ -1,168 +1,3 @@
-// initialize calendar
-try {
-	// START OF SUMMARY CHARTS 
-	//* -----------------------------------------------------------------*/
-
-	// profile description listener
-	document.getElementById('userdesc')
-	.addEventListener('change', (object) => {
-		const input = object.target.value;
-		
-		const request = new XMLHttpRequest();
-		request.open('POST', 'requests/modify_user.php', true);
-		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		request.send(`input=${input}`);
-
-		console.log(request.responseText);
-		console.log(request.statusText);
-	}
-	);
-
-
-	// initialize the calendar
-
-	var className = Array(
-	'calendar-timeline-1',
-	'calendar-timeline-2',
-	'calendar-timeline-3',
-	'calendar-timeline-4'
-	);
-
-	$calendar = $('.calendar');
-	$calendar.fullCalendar({
-	header: {
-		left: 'title',
-		center: '',
-		right: 'prev,next'
-	},
-	selectable : true,
-	selectHelper: true,
-	select: function(start, end) {
-
-		// on select we show the Sweet Alert modal with an input
-		swal({
-			title: 'Create an Event',
-			content: '',
-			content: {
-				element: "input",
-				attributes: {
-					placeholder: "Event Title",
-					type: "text",
-					id: "input-field",
-					className: "form-control"
-				},
-			},
-			buttons: {
-				cancel: true,
-				confirm: true,
-			},
-		}).then(
-		function() {
-			var eventData;
-			var classRandom = className[Math.floor(Math.random()*className.length)];
-			event_title = $('#input-field').val();
-
-			if (event_title) {
-				eventData = {
-					title: event_title,
-					start: start,
-					className: classRandom,
-					end: end
-				};
-				$calendar.fullCalendar('renderEvent', eventData, true); // stick? = true
-				// notification
-				$.notify({
-					// options
-					icon: 'fa fa-bell',
-					title: 'New Event Added!',
-					message: ''
-				},{
-					// settings
-					element: 'body',
-					type: "info",
-					allow_dismiss: true,
-					newest_on_top: false,
-					showProgressbar: false,
-					placement: {
-						from: "top",
-						align: "right"
-					},
-					offset: 20,
-					spacing: 10,
-					z_index: 1031,
-					delay: 700,
-					timer: 850,
-					animate: {
-						enter: 'animated fadeInDown',
-						exit: 'animated fadeOutUp'
-					},
-					icon_type: 'class',
-					template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-						'<span data-notify="icon"></span> ' +
-						'<span data-notify="title">{1}</span> ' +
-					'</div>' 
-				});
-			}
-
-			$calendar.fullCalendar('unselect');
-		}
-		);
-	}
-	});
-
-	// get the table names
-	const getTableNames = new XMLHttpRequest();
-	getTableNames.open('POST', 'requests/get_userdata.php', true);
-	getTableNames.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-	getTableNames.send(`type=${'table'}`);
-
-	// get [start_date and end_date] from all tables
-	// 2d array of date ranges
-	getTableNames.addEventListener('loadend', () => {
-	const tableContainer = JSON.parse(getTableNames.responseText);
-
-	for (let tableObj of tableContainer) {
-		const table = tableObj['name'];
-		const getDateRange = new XMLHttpRequest();
-		getDateRange.open('POST', 'requests/get_userdata.php', true);
-		getDateRange.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		getDateRange.send(`type=${'daterange'}&table=${table}`);
-
-		getDateRange.addEventListener('loadend', () => {
-			const rowContainer = JSON.parse(getDateRange.responseText);
-			console.log('rowcontainer',rowContainer);
-
-			for (let rowObj of rowContainer) {
-				const label      = rowObj['label'];
-				const start_date = rowObj['start_date'];
-				const end_date   = rowObj['end_date'];
-
-				if (start_date == '0000-00-00' || end_date == '0000-00-00') {
-					continue;
-				} else {
-
-					// intialize calendar events color
-					let randomColor = className[Math.floor(Math.random()*className.length)];
-
-					let eventTemplate = {
-						title: label,
-						start: start_date,
-						className: randomColor,
-						end: end_date
-					}
-
-					$calendar.fullCalendar('renderEvent', eventTemplate, true);
-				}
-			}
-			// hide the spinning loader
-			document.getElementById('loader-calendar').classList.add('d-none');
-		});
-	}
-	});
-} catch (error) {
-	console.log(error, 'calendar not found');
-}
-
 var USERS = []; // gets appended once on the first row creation
 
 // static to count the number of tables and rows created
@@ -1637,7 +1472,7 @@ class TableCard {
 
 		// pass data to user database using ajax
 		const data = [
-			this.rowCount, name, label, status, datestart, dateend, JSON.stringify(owner), timestamp];
+			rowCount, name, label, status, datestart, dateend, JSON.stringify(owner), timestamp];
 			
 		request.open('POST', 'requests/modify_table.php', true);
 		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -1727,9 +1562,6 @@ try {
 
 	// -- connect and select the database -- 
 
-	// sorts strings and objects
-	let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
-
 	// asynchronous request to the server
 	var request = new XMLHttpRequest();
 
@@ -1758,6 +1590,9 @@ try {
 		// create table
 		sequence.forEach(sort => table.push(new TableCard(sort[0], sort[1])));
 		console.log(table);
+		
+		// sorts strings and objects
+		let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
 
 		// update last index of table name ex.(table-) >> (12)+1
 		tableCount = 1+parseInt(sequence.sort(collator.compare).slice(-1)[0][0].slice(6));
@@ -1826,4 +1661,290 @@ try {
 
 } catch (error) {
 	console.log(error, 'dashboard not found');
+}
+
+// initialize calendar
+try {
+	// START OF SUMMARY CHARTS 
+	//* -----------------------------------------------------------------*/
+
+	// profile description listener
+	document.getElementById('userdesc')
+		.addEventListener('change', (object) => {
+			const input = object.target.value;
+			
+			const request = new XMLHttpRequest();
+			request.open('POST', 'requests/modify_user.php', true);
+			request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			request.send(`input=${input}`);
+
+			console.log(request.responseText);
+			console.log(request.statusText);
+
+			// notification
+			$.notify({
+				// options
+				icon: 'fa fa-pencil-alt',
+				title: 'Your bio has been updated',
+				message: input
+			},{
+				// settings
+				element: 'body',
+				type: "info",
+				allow_dismiss: true,
+				newest_on_top: false,
+				showProgressbar: false,
+				placement: {
+					from: "top",
+					align: "right"
+				},
+				offset: 20,
+				spacing: 10,
+				z_index: 1031,
+				delay: 700,
+				timer: 850,
+				animate: {
+					enter: 'animated fadeInDown',
+					exit: 'animated fadeOutUp'
+				},
+				icon_type: 'class',
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<span data-notify="icon"></span> ' +
+					'<span data-notify="title">{1}</span> ' +
+					'<span data-notify="message">{2}</span> ' +
+				'</div>' 
+			});
+		}
+	);
+
+
+	// checks if there's a last table created by calendar to add rows
+	let calendarTable = '';
+
+	// row counter created by the calendar
+	let calendarRowCount = 0;
+	
+	// initialize the calendar	
+	var className = Array(
+	'calendar-timeline-1',
+	'calendar-timeline-2',
+	'calendar-timeline-3',
+	'calendar-timeline-4'
+	);
+
+	$calendar = $('.calendar');
+	$calendar.fullCalendar({
+	header: {
+		left: 'title',
+		center: '',
+		right: 'prev,next'
+	},
+	selectable : true,
+	selectHelper: true,
+	select: function(start, end) {
+
+		// on select we show the Sweet Alert modal with an input
+		swal({
+			title: 'Create an Event',
+			content: '',
+			content: {
+				element: "input",
+				attributes: {
+					placeholder: "Event Title",
+					type: "text",
+					id: "input-field",
+					className: "form-control"
+				},
+			},
+			buttons: {
+				cancel: true,
+				confirm: true,
+			},
+		}).then(
+		function() {
+			var eventData;
+			var classRandom = className[Math.floor(Math.random()*className.length)];
+			event_title = $('#input-field').val();
+
+			if (event_title) {
+				eventData = {
+					title: event_title,
+					start: start,
+					className: classRandom,
+					end: end
+				};
+				$calendar.fullCalendar('renderEvent', eventData, true); // stick? = true
+
+				// CONTEXT: DRAGGING EVENTS ON THE CALENDAR 
+				// GOAL: I WANT TO CREATE ROWS TO DASHBOARD 
+				// -- BASED ON CALENDAR CREATED EVENTS	
+
+				const addRowEvent = () => {
+					// get sorted row names (for name)
+					const getRowOrigin = new XMLHttpRequest(); 
+					getRowOrigin.open('POST', 'requests/get_userdata.php', false);
+					getRowOrigin.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					getRowOrigin.send(`type=${'rownames'}`);
+
+					// get the row names
+					const rowOrigin = JSON.parse(getRowOrigin.responseText); 
+
+					// sorts strings and objects
+					let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+					
+					// asc sort the origin-sorted rows
+					const sortedRows = rowOrigin.sort(collator.compare);
+
+					// check if there are no rows at all
+					// get the maximum name index from the last row
+					const maxRowName = (sortedRows.length <= 0)? 0:1+parseInt(sortedRows.slice(-1)[0].slice(4));
+
+					// row data
+					const sort = calendarRowCount;
+					const name = 'row-'+maxRowName;
+					const label = event_title;
+					const status = 'Soon';
+					const owner = JSON.stringify([]);
+					const timestamp = parseInt(Date.now()/1000); 
+
+					// start day
+					const datestart = new Date(start).toLocaleDateString('en-CA');
+
+					// subtracy a day since selected is the day after target
+					const deadline = new Date(end);
+					const adjustDeadline = new Date(deadline.setDate(deadline.getDate() -1));
+					const dateend = adjustDeadline.toLocaleDateString('en-CA');
+
+					const data = [sort, name, label, status, datestart, dateend, owner, timestamp];
+
+					console.log('sendRows',data);
+					console.log('sortedRows',sortedRows);
+
+					// create rows based of calendar created events
+					const createRowEvent = new XMLHttpRequest(); 
+					createRowEvent.open('POST', 'requests/modify_table.php', false);
+					createRowEvent.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					createRowEvent.send(`table=${calendarTable}&operation=${'rowadd'}&row=${data}`);
+
+					if (createRowEvent.status === 200) {// That's HTTP for 'ok'
+						console.log('createdrow',createRowEvent.responseText);
+					}
+
+					calendarRowCount++;
+				}
+				
+				
+				if (calendarTable == '') {
+					// get the table names
+					const getTableNames = new XMLHttpRequest();
+					getTableNames.open('POST', 'requests/get_userdata.php', true);
+					getTableNames.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					getTableNames.send(`type=${'table'}`);
+
+					getTableNames.addEventListener('loadend', () => {
+						
+						// get and array of origin sort table names
+						const tableContainer = JSON.parse(getTableNames.responseText);
+						console.log('tableContainer', tableContainer); // get the last sort and maximum table 
+
+						// sorts strings and objects
+						let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+
+						// get sorted table names
+						const sortTableNames =  tableContainer.map(tableObj => tableObj.name).sort(collator.compare);
+						
+						// get last sort index
+						const lastSortIndex = 1+tableContainer.length;
+						
+						// get max name index, if container is empty return 0
+						const maxTableCount = (tableContainer.length <= 0)?0:1+parseInt(sortTableNames.slice(-1)[0].slice(6));
+
+						// create the variables
+						const componentID = `table-${maxTableCount}`;
+						const tableLabel = `NewCalendar-${maxTableCount}`;
+						const operation = 'create';
+						const append = lastSortIndex;
+
+						// lock the calendar from creating more tables
+						calendarTable = componentID;
+
+						// create a new table
+						let createTable = new XMLHttpRequest();
+						createTable.open('POST', 'requests/modify_table.php', true);
+						createTable.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+						createTable.send(`table=${componentID}&operation=${operation}&label=${tableLabel}&sort=${append}`);
+
+						createTable.addEventListener('loadend', () => {
+							if (createTable.status === 200) {// That's HTTP for 'ok'
+								// console.log(createTable.responseText);
+								addRowEvent();
+							}
+						});
+					})
+				}
+				else { addRowEvent(); }
+			}
+
+			$calendar.fullCalendar('unselect');
+		}
+		);
+
+	}
+	});
+
+	
+
+	// get the table names
+	const getTableNames = new XMLHttpRequest();
+	getTableNames.open('POST', 'requests/get_userdata.php', true);
+	getTableNames.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	getTableNames.send(`type=${'table'}`);
+
+	// get [start_date and end_date] from all tables
+	// 2d array of date ranges
+	getTableNames.addEventListener('loadend', () => {
+	const tableContainer = JSON.parse(getTableNames.responseText);
+
+		for (let tableObj of tableContainer) {
+			const table = tableObj['name'];
+			const getDateRange = new XMLHttpRequest();
+			getDateRange.open('POST', 'requests/get_userdata.php', true);
+			getDateRange.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			getDateRange.send(`type=${'daterange'}&table=${table}`);
+
+			getDateRange.addEventListener('loadend', () => {
+				const rowContainer = JSON.parse(getDateRange.responseText);
+				console.log('rowcontainer',rowContainer);
+
+				for (let rowObj of rowContainer) {
+					const label      = rowObj['label'];
+					const start_date = rowObj['start_date'];
+					const end_date   = rowObj['end_date'];
+
+					if (start_date == '0000-00-00' || end_date == '0000-00-00') {
+						continue;
+					} else {
+
+						// intialize calendar events color
+						let randomColor = className[Math.floor(Math.random()*className.length)];
+
+						let eventTemplate = {
+							title: label,
+							start: start_date,
+							className: randomColor,
+							end: end_date
+						}
+
+						$calendar.fullCalendar('renderEvent', eventTemplate, true);
+					}
+				}
+			});
+		}
+
+		// hide the spinning loader
+		document.getElementById('calendarloader').classList.add('d-none');
+	});
+
+} catch (error) {
+	console.log(error, 'calendar not found');
 }

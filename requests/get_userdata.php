@@ -83,4 +83,46 @@ switch ($type) {
         // send the bucket
         echo json_encode($bucket);
     break;
+    case "rowcount":
+        // (user_name) database
+        $dbUser = sprintf("user_%s",$_SESSION['user']);  
+        $conn->select_db($dbUser); 
+
+        // get the number of tables of user data
+        $tableinfo = $conn->query("SELECT `name` FROM `information`");
+
+        $count = 0;
+        foreach($tableinfo as $x) {
+            foreach($x as $tname) {
+                $rowinfo = $conn->query("SELECT `name` FROM `$tname`");
+                foreach($rowinfo as $y) {
+                    foreach($y as $rname) {
+                        $count++;
+                    }
+                }
+            }
+        }
+        echo $count;
+    break;
+    case "rownames":
+        // (user_name) database
+        $dbUser = sprintf("user_%s",$_SESSION['user']);  
+        $conn->select_db($dbUser); 
+
+        // get the number of tables of user data
+        $tableinfo = $conn->query("SELECT `name` FROM `information`");
+
+        $originSort = [];
+        foreach($tableinfo as $x) {
+            foreach($x as $tname) {
+                $rowinfo = $conn->query("SELECT `name` FROM `$tname`");
+                foreach($rowinfo as $y) {
+                    foreach($y as $rname) {
+                        array_push($originSort,$rname);
+                    }
+                }
+            }
+        }
+        echo json_encode($originSort);
+    break;
 }

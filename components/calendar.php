@@ -6,7 +6,7 @@
                     <div class="calendar "></div>
                     <!-- SPINNING LOADER -->
                     <div 
-                        id="loader-calendar" 
+                        id="calendarloader" 
                         class="card-body is-loading is-loading-lg" 
                         style="margin: -80px"></div>
                 </div>

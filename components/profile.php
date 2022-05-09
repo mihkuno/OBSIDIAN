@@ -107,7 +107,6 @@ defined('_DEFVAR') or header("Location: ../index.php");
                     <div class="col">
                         <div class="rowcount">
                             <?php 
-
                             // (user_name) database
                             $dbUser = sprintf("user_%s",$_SESSION['user']);  
                             $conn->select_db($dbUser); 
