@@ -929,13 +929,16 @@ class Row {
 		// update 'modified' timestamp interval every 100ms
 		this.interval = this.setIntervalAndExecute(() => {	
 			try {
+				// document.getElementById(this.timestampID) // display
+				// .innerHTML = `${this.timestamp} < ${Date.now()} => ${moment(this.timestamp*1000).fromNow()}`;
+			
 				document.getElementById(this.timestampID) // display
-				.innerHTML = `${this.timestamp} < ${Date.now()} => ${moment(this.timestamp*1000).fromNow()}`;
+				.innerHTML = `${moment(this.timestamp*1000).fromNow()}`;
 			}
 			catch (error) {
 				console.log('multiple dragging.. pausing grouped timestamps');
 			}
-		}, 100); // 100ms delay
+		}, 1000); // 1s delay
 	}
 	stopInterval() { // stops timestamp update
 		clearInterval(this.interval);
