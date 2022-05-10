@@ -29,7 +29,7 @@ require 'requests/chkuser.php';
 
                 <!-- Header Text -->
                 <h2 class="text-muted text-center mt-4">Create a local account</h2>
-                <h5 class="text-muted text-center">access more features using a facebook account</h5>
+                <h5 class="text-muted text-center">get the best of task management with obsidian!</h5>
                 <hr>
 
                  <!-- Form Validation -->

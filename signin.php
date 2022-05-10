@@ -28,8 +28,8 @@ require 'requests/chkuser.php';
                 <img src="assets/img/logo.svg" alt="navbar brand" class="navbar-brand">
                 
                 <!-- Header Text -->
-                <h2 class="text-muted text-center mt-4">Sign in to Facebook</h2>
-                <h5 class="text-muted text-center">you can also log in with a local account instead</h5>
+                <h2 class="text-muted text-center mt-4">Sign in to Obisidan</h2>
+                <h5 class="text-muted text-center">never miss a deadline again</h5>
                 <hr>
 
                  <!-- Form Validation -->
