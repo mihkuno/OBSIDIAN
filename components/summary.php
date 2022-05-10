@@ -139,33 +139,125 @@ defined('_DEFVAR') or header("Location: ../index.php");
             </div>
         </div>
     </div>
+
+
     <div class="col-md-7">
-        <div class="card">
-            <div class="card-header">
-            <div class="card-head-row">
-                <div class="card-title">User Statistics</div>
-                <div class="card-tools">
-                    <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
-                        <span class="btn-label">
-                            <i class="fa fa-pencil"></i>
-                        </span>
-                        Export
-                    </a>
-                    <a href="#" class="btn btn-info btn-border btn-round btn-sm">
-                        <span class="btn-label">
-                            <i class="fa fa-print"></i>
-                        </span>
-                        Print
-                    </a>
+            <div class="card">
+                <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">User Statistics</div>
+                    <div class="card-tools">
+                        <a onclick="exportCanvas()" class="btn btn-info btn-border btn-round btn-sm mr-2">
+                            <span class="btn-label">
+                                <i class="fa fa-pencil"></i>
+                            </span>
+                            Export
+                        </a>
+                        <a href="#" onclick="printCanvas()" class="btn btn-info btn-border btn-round btn-sm">
+                            <span class="btn-label">
+                                <i class="fa fa-print"></i>
+                            </span>
+                            Print
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="card-body">
-            <div class="chart-container" style="min-height: 375px"><div class="chartjs-size-monitor" style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
-                <canvas id="statisticsChart" width="983" height="375" style="display: block; width: 983px; height: 375px;" class="chartjs-render-monitor"></canvas>
+
+        
+            <div class="card-body">
+                <div class="chart-container" style="min-height: 375px"><div class="chartjs-size-monitor" style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+                    <canvas id="statusDoughnut" width="983" height="375" style="display: block; width: 983px; height: 375px;" class="chartjs-render-monitor"></canvas>
+                </div>
+                <div id="myChartLegend">
+                    <ul class="0-legend html-legend">
+                        <li>
+                            <span style="background-color:#6861CE"></span>
+                            Soon
+                        </li>
+                        
+                        <li>
+                            <span style="background-color:#F25961"></span>
+                            Stuck
+                        </li>
+                        <li>
+                            <span style="background-color:#FFAD46"></span>
+                            Develop
+                        </li>
+                        <li>
+                            <span style="background-color:#31CE36"></span>
+                            Complete
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div id="myChartLegend"><ul class="0-legend html-legend"><li><span style="background-color:#f3545d"></span>Subscribers</li><li><span style="background-color:#fdaf4b"></span>New Visitors</li><li><span style="background-color:#177dff"></span>Active Users</li></ul></div>
-        </div>
+
+            <script src="assets/scripts/chart.min.js"></script>
+            <script>
+            const ctx = document.getElementById('statusDoughnut').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                    datasets: [{
+                        label: '# of Votes',
+                        data: [12, 19, 3, 5, 2, 3],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            function exportCanvas() {
+                const canvas = document.getElementById('statusDoughnut');
+                const dataURL = canvas.toDataURL();
+                const image = new Image();
+                image.src = dataURL;            
+
+                const w = window.open('');
+                w.document.write(image.outerHTML);
+            }
+
+            function printCanvas() {  
+                var dataUrl = document.getElementById('statusDoughnut').toDataURL(); //attempt to save base64 string to server using this var  
+                var windowContent = '<!DOCTYPE html>';
+                windowContent += '<html>'
+                windowContent += '<head><title>Print canvas</title></head>';
+                windowContent += '<body>'
+                windowContent += '<img src="' + dataUrl + '">';
+                windowContent += '</body>';
+                windowContent += '</html>';
+                var printWin = window.open('','','width=340,height=260');
+                printWin.document.open();
+                printWin.document.write(windowContent);
+                printWin.document.close();
+                printWin.focus();
+                printWin.print();
+                printWin.close();
+            }
+            </script>
+
         </div>
     </div>
 </div>
