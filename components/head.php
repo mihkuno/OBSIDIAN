@@ -33,8 +33,12 @@ session_start();
 	<script src="assets/scripts/webfont.min.js"></script>
 	<script>
 		WebFont.load({
-			google: {"families":["Lato:300,400,700,900"]},
-			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['assets/css/fonts.min.css']},
+			custom: {
+				"families":
+					["Flaticon", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], 
+			
+			urls: ['assets/styles/fonts.min.css']},
+			
 			active: function() {
 				sessionStorage.fonts = true;
 			}
@@ -42,7 +46,6 @@ session_start();
 	</script>
 
 	<!-- Stylesheets -->
-	<link rel="stylesheet" href="assets/fonts/ubuntu.css">
 	<link rel="stylesheet" href="assets/styles/datepicker.css" />
 	<link rel="stylesheet" href="assets/styles/select.min.css">
 	<link rel="stylesheet" href="assets/styles/bootstrap.min.css">
