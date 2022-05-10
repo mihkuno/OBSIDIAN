@@ -94,11 +94,14 @@ defined('_DEFVAR') or header("Location: ../index.php");
                             $tableinfo = $conn->query("SELECT `sort` FROM `information`");
 
                             $count=0;
-                            foreach($tableinfo as $x) {
-                                foreach($x as $tname) {
-                                    $count++;
+                            if (is_array($tableinfo) || is_object($tableinfo)) {
+                                foreach($tableinfo as $x) {
+                                    foreach($x as $tname) {
+                                        $count++;
+                                    }
                                 }
                             }
+                            
                             echo $count;
                             ?>
                         </div>
@@ -115,12 +118,14 @@ defined('_DEFVAR') or header("Location: ../index.php");
                             $tableinfo = $conn->query("SELECT `name` FROM `information`");
 
                             $count = 0;
-                            foreach($tableinfo as $x) {
-                                foreach($x as $tname) {
-                                    $rowinfo = $conn->query("SELECT `name` FROM `$tname`");
-                                    foreach($rowinfo as $y) {
-                                        foreach($y as $rname) {
-                                            $count++;
+                            if (is_array($tableinfo) || is_object($tableinfo)) {
+                                foreach($tableinfo as $x) {
+                                    foreach($x as $tname) {
+                                        $rowinfo = $conn->query("SELECT `name` FROM `$tname`");
+                                        foreach($rowinfo as $y) {
+                                            foreach($y as $rname) {
+                                                $count++;
+                                            }
                                         }
                                     }
                                 }

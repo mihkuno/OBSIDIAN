@@ -169,15 +169,11 @@ require 'requests/chkuser.php';
                                             // display alert if image failed to upload
                                             if (!$e) { echo '<script>alert("failed uploading profile");</script>';}
                                             // insert query values to mysql with profile
-                                            $sql = "
-                                            INSERT INTO CREDENTIALS (user, email, passw, profile)   
-                                            VALUES ('$user', '$email', '$passw', '$profile') ";
+                                            $sql = "INSERT INTO CREDENTIALS (`user`, `email`, `desc`, `passw`, `profile)` VALUES ('$user', '$email', '', '$passw', '$profile') ";
                                         }
                                         else {
                                             // insert query values to mysql without profile
-                                            $sql = "
-                                            INSERT INTO CREDENTIALS (user, email, passw)   
-                                            VALUES ('$user', '$email', '$passw') ";
+                                            $sql = "INSERT INTO CREDENTIALS (`user`, `email`, `desc`, `passw`) VALUES ('$user', '$email', '', '$passw') ";
                                         }           
                                         // send the query to database
                                         if ($conn -> query($sql) === TRUE) {
@@ -202,6 +198,7 @@ require 'requests/chkuser.php';
     
                                             // initialize the session and profile
                                             $_SESSION['user']    = $user;
+                                            $_SESSION['email']   = $email;
                                             $_SESSION['passw']   = $passw;
                                             $_SESSION['profile'] = $profile;
                                             

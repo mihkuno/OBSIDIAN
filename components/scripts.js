@@ -1579,7 +1579,7 @@ try {
 
 	console.log(tableData);
 	// check if there are tables from the user database
-	if (tableData !== '[]') { 
+	if (tableData != '[]') { 
 		// parse the string array into json
 		information = JSON.parse(tableData);
 
@@ -1660,6 +1660,12 @@ try {
 	// table[0].addRow('OHAYOO', 'Stuck', 'Feb 08, 2022', 'Nov 12, 2022', ['hiho', 'miko'], 1651420206620);
 
 } catch (error) {
+	try {
+		// hide the loader after initializing tables
+		document.getElementById('loader').style = "display: none";
+	}
+	catch (no) {} 
+
 	console.log(error, 'dashboard not found');
 }
 
@@ -1844,7 +1850,12 @@ try {
 					getTableNames.addEventListener('loadend', () => {
 						
 						// get and array of origin sort table names
-						const tableContainer = JSON.parse(getTableNames.responseText);
+						try {
+							const tableContainer = JSON.parse(getTableNames.responseText);
+						}
+						catch {
+							tableContainer = [];
+						}
 						console.log('tableContainer', tableContainer); // get the last sort and maximum table 
 
 						// sorts strings and objects
@@ -1903,7 +1914,16 @@ try {
 	// get [start_date and end_date] from all tables
 	// 2d array of date ranges
 	getTableNames.addEventListener('loadend', () => {
-	const tableContainer = JSON.parse(getTableNames.responseText);
+	
+	let tableContainer = [];
+	try {
+		tableContainer = JSON.parse(getTableNames.responseText);
+		
+	}
+	catch {
+		// hide the spinning loader
+		document.getElementById('calendarloader').classList.add('d-none');
+	}
 
 		for (let tableObj of tableContainer) {
 			const table = tableObj['name'];
