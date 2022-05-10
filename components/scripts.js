@@ -1849,9 +1849,10 @@ try {
 
 					getTableNames.addEventListener('loadend', () => {
 						
+						let tableContainer = [];
 						// get and array of origin sort table names
 						try {
-							const tableContainer = JSON.parse(getTableNames.responseText);
+							tableContainer = JSON.parse(getTableNames.responseText);
 						}
 						catch {
 							tableContainer = [];

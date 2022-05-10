@@ -18,7 +18,7 @@ if (!isset($_SESSION['user'], $_SESSION['passw'], $_SESSION['profile']))
 // connecting the database
 $dbServername = 'localhost';    // server address
 $dbUsername   = 'root';           // root username
-$dbPassword   = 'password_here';  // root password
+$dbPassword   = '';  // root password
 
 // create connection
 $conn = new mysqli($dbServername, $dbUsername, $dbPassword);

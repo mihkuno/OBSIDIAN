@@ -4,7 +4,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
 
 $dbServername = 'localhost';    // server address
 $dbUsername = 'root';           // root username
-$dbPassword = 'password_here';  // root password
+$dbPassword = '';  // root password
 $dbName = 'OBSIDIAN';
 
 // Create connection

@@ -25,7 +25,7 @@ else {
     // connect to user database
     $dbServername = 'localhost';     // server address
     $dbUsername   = 'root';          // root username
-    $dbPassword   = 'password_here'; // root password
+    $dbPassword   = ''; // root password
     
     // (user_name) database
     $dbUser = sprintf("user_%s",$_SESSION['user']);  
