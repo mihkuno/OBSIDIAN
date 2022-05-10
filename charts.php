@@ -25,7 +25,7 @@ require 'requests/chkuser.php';
 					<!-- Inner page content goes here -->
 
 					<?php include 'components/profile.php'?>
-					<?php //include 'components/activity.php'?>
+					<?php include 'components/activity.php'?>
 					<?php include 'components/calendar.php'?>					
 
 				</div>
