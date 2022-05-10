@@ -24,8 +24,7 @@ require 'requests/chkuser.php';
 				<div class="page-category">
 					<!-- Inner page content goes here -->
 
-					<?php include 'components/profile.php'?>
-					<?php include 'components/activity.php'?>
+					<?php include 'components/summary.php'?>
 					<?php include 'components/calendar.php'?>					
 
 				</div>

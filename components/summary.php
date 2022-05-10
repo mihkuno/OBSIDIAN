@@ -4,7 +4,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
 ?>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-5">
         <div class="card card-profile">           
             
             <div class="card-header" style="min-height: 180px; background-image: url('../assets/img/flat-wallpaper.png')">
@@ -108,7 +108,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
                         <div class="title">Tables</div>
                     </div>
                     <div class="col">
-                        <div class="rowcount">
+                        <div class="rowcount" id='rcount'>
                             <?php 
                             // (user_name) database
                             $dbUser = sprintf("user_%s",$_SESSION['user']);  
@@ -137,6 +137,35 @@ defined('_DEFVAR') or header("Location: ../index.php");
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">
+            <div class="card-head-row">
+                <div class="card-title">User Statistics</div>
+                <div class="card-tools">
+                    <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
+                        <span class="btn-label">
+                            <i class="fa fa-pencil"></i>
+                        </span>
+                        Export
+                    </a>
+                    <a href="#" class="btn btn-info btn-border btn-round btn-sm">
+                        <span class="btn-label">
+                            <i class="fa fa-print"></i>
+                        </span>
+                        Print
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="min-height: 375px"><div class="chartjs-size-monitor" style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+                <canvas id="statisticsChart" width="983" height="375" style="display: block; width: 983px; height: 375px;" class="chartjs-render-monitor"></canvas>
+            </div>
+            <div id="myChartLegend"><ul class="0-legend html-legend"><li><span style="background-color:#f3545d"></span>Subscribers</li><li><span style="background-color:#fdaf4b"></span>New Visitors</li><li><span style="background-color:#177dff"></span>Active Users</li></ul></div>
+        </div>
         </div>
     </div>
 </div>

@@ -1788,11 +1788,12 @@ try {
 				const addRowEvent = () => {
 					// get sorted row names (for name)
 					const getRowOrigin = new XMLHttpRequest(); 
-					getRowOrigin.open('POST', 'requests/get_userdata.php', false);
+					getRowOrigin.open('POST', 'requests/get_userdata.php', true);
 					getRowOrigin.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 					getRowOrigin.send(`type=${'rownames'}`);
 
-					// get the row names
+					getRowOrigin.addEventListener('loadend', () => {
+						// get the row names
 					const rowOrigin = JSON.parse(getRowOrigin.responseText); 
 
 					// sorts strings and objects
@@ -1816,7 +1817,7 @@ try {
 					// start day
 					const datestart = new Date(start).toLocaleDateString('en-CA');
 
-					// subtracy a day since selected is the day after target
+					// subtract a day since selected is the day after target
 					const deadline = new Date(end);
 					const adjustDeadline = new Date(deadline.setDate(deadline.getDate() -1));
 					const dateend = adjustDeadline.toLocaleDateString('en-CA');
@@ -1826,17 +1827,24 @@ try {
 					console.log('sendRows',data);
 					console.log('sortedRows',sortedRows);
 
+					// +1 to the table counter
+					document.getElementById('rcount').innerText = 1+sortedRows.length;
+
 					// create rows based of calendar created events
 					const createRowEvent = new XMLHttpRequest(); 
-					createRowEvent.open('POST', 'requests/modify_table.php', false);
+					createRowEvent.open('POST', 'requests/modify_table.php', true);
 					createRowEvent.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 					createRowEvent.send(`table=${calendarTable}&operation=${'rowadd'}&row=${data}`);
 
-					if (createRowEvent.status === 200) {// That's HTTP for 'ok'
-						console.log('createdrow',createRowEvent.responseText);
-					}
-
+					createRowEvent.addEventListener('loadend', () => {
+						if (createRowEvent.status === 200) {// That's HTTP for 'ok'
+							console.log('createdrow',createRowEvent.responseText);
+						}		
+					});
 					calendarRowCount++;
+
+					});
+
 				}
 				
 				
@@ -1888,6 +1896,8 @@ try {
 
 						createTable.addEventListener('loadend', () => {
 							if (createTable.status === 200) {// That's HTTP for 'ok'
+								// +1 to the table counter
+								document.getElementById('tcount').innerText = lastSortIndex;
 								// console.log(createTable.responseText);
 								addRowEvent();
 							}
@@ -1916,50 +1926,49 @@ try {
 	// 2d array of date ranges
 	getTableNames.addEventListener('loadend', () => {
 	
-	let tableContainer = [];
-	try {
-		tableContainer = JSON.parse(getTableNames.responseText);
-		
-	}
-	catch {
-		// hide the spinning loader
-		document.getElementById('calendarloader').classList.add('d-none');
-	}
+		let tableContainer = [];
+		try {
+			tableContainer = JSON.parse(getTableNames.responseText);
+			
+		}
+		catch {
+			// hide the spinning loader
+			document.getElementById('calendarloader').classList.add('d-none');
+		}
 
 		for (let tableObj of tableContainer) {
 			const table = tableObj['name'];
 			const getDateRange = new XMLHttpRequest();
-			getDateRange.open('POST', 'requests/get_userdata.php', true);
+			getDateRange.open('POST', 'requests/get_userdata.php', false);
 			getDateRange.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			getDateRange.send(`type=${'daterange'}&table=${table}`);
 
-			getDateRange.addEventListener('loadend', () => {
-				const rowContainer = JSON.parse(getDateRange.responseText);
-				console.log('rowcontainer',rowContainer);
+			const rowContainer = JSON.parse(getDateRange.responseText);
+			console.log('rowcontainer',rowContainer);
 
-				for (let rowObj of rowContainer) {
-					const label      = rowObj['label'];
-					const start_date = rowObj['start_date'];
-					const end_date   = rowObj['end_date'];
+			for (let rowObj of rowContainer) {
+				const label      = rowObj['label'];
+				const start_date = rowObj['start_date'];
+				const end_date   = rowObj['end_date'];
 
-					if (start_date == '0000-00-00' || end_date == '0000-00-00') {
-						continue;
-					} else {
+				if (start_date == '0000-00-00' || end_date == '0000-00-00') {
+					continue;
+				} else {
 
-						// intialize calendar events color
-						let randomColor = className[Math.floor(Math.random()*className.length)];
+					// intialize calendar events color
+					let randomColor = className[Math.floor(Math.random()*className.length)];
 
-						let eventTemplate = {
-							title: label,
-							start: start_date,
-							className: randomColor,
-							end: end_date
-						}
-
-						$calendar.fullCalendar('renderEvent', eventTemplate, true);
+					let eventTemplate = {
+						title: label,
+						start: start_date,
+						className: randomColor,
+						end: end_date
 					}
+
+					$calendar.fullCalendar('renderEvent', eventTemplate, true);
 				}
-			});
+			}
+		
 		}
 
 		// hide the spinning loader

@@ -4,7 +4,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
 ?>
 
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-12">
         <div class="card">
             <div class="card-header">
                 <div class="card-head-row">
@@ -33,7 +33,7 @@ defined('_DEFVAR') or header("Location: ../index.php");
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <!-- <div class="col-md-4">
         <div class="card">
             <div class="card-header">
                 <div class="card-title">Feed Activity</div>
@@ -67,5 +67,5 @@ defined('_DEFVAR') or header("Location: ../index.php");
                 </ol>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
