@@ -39,10 +39,9 @@ require 'requests/chkuser.php';
 	</div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
+<script src="assets/scripts/jquery_v3.3.1.min.js">	   </script>
+<script src="assets/scripts/jquery-ui_v1.12.1.min.js"> </script>
+<script src="assets/scripts/moment.min.js">            </script>
+<script src="assets/scripts/daterangepicker.min.js">   </script>
 
 <?php include 'components/scripts.php'?>

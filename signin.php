@@ -29,7 +29,7 @@ require 'requests/chkuser.php';
                 
                 <!-- Header Text -->
                 <h2 class="text-muted text-center mt-4">Sign in to Obisidan</h2>
-                <h5 class="text-muted text-center">never miss a deadline again</h5>
+                <h5 class="text-muted text-center">mark milestones and never miss another deadline</h5>
                 <hr>
 
                  <!-- Form Validation -->
@@ -200,7 +200,7 @@ require 'requests/chkuser.php';
                             type="submit" 
                             name="submit" 
                             class="btn btn-block btn-secondary"> 
-                            <i class="fab fa-facebook-f"></i>   
+                            <!-- <i class="fab fa-facebook-f"></i>    -->
                             Login
                         </button>
                     </div> <!-- form-group //-->

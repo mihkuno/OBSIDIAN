@@ -3,48 +3,20 @@
 defined('_DEFVAR') or header("Location: ../index.php");
 ?>
 
-<!-- LOCAL: Popper JS Tooltips -->
-<script src="assets/js/core/popper.min.js"></script> <!-- stable unknown ver -->
-
-<!-- WEB: BOOTSTRAP v4.3.1 Core JS -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-<!-- LOCAL: jQuery Scrollbar -->
-<script src="assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
-
-<!-- LOCAL: Chart JS -->
-<script src="assets/js/plugin/chart.js/chart.min.js"></script>
-
-<!-- LOCAL: jQuery Sparkline -->
-<script src="assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
-
-<!-- LOCAL: Chart Circle -->
-<script src="assets/js/plugin/chart-circle/circles.min.js"></script>
-
-<!-- LOCAL: Datatables -->
-<script src="assets/js/plugin/datatables/datatables.min.js"></script>
-
-<!-- LOCAL: Bootstrap Notify -->
-<script src="assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
-
-<!-- LOCAL: jQuery Vector Maps -->
-<script src="assets/js/plugin/jqvmap/jquery.vmap.min.js"></script>
-<script src="assets/js/plugin/jqvmap/maps/jquery.vmap.world.js"></script>
-
-<!-- LOCAL: Sweet Alert -->
-<script src="assets/js/plugin/sweetalert/sweetalert.min.js"></script>
-
-<!-- LOCAL: Atlantis JS -->
-<script src="assets/js/atlantis.min.js"></script>
-
-<!-- WEB: Sortable JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.10.2/Sortable.min.js"></script>
-
-<!-- WEB: Bootstrap Select -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
-
-<!-- WEB: Moment JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js"></script>
-
-<script src="assets/js/plugin/calendar/calendar.js"></script>
-<script src="components/scripts.js"></script>
+<script src="assets/scripts/popper.min.js"></script>
+<script src="assets/scripts/bootstrap_v4.3.1.js"></script>
+<script src="assets/scripts/jquery.scrollbar.min.js"></script>
+<script src="assets/scripts/chart.min.js"></script>
+<script src="assets/scripts/jquery.sparkline.min.js"></script>
+<script src="assets/scripts/circles.min.js"></script>
+<script src="assets/scripts/datatables.min.js"></script>
+<script src="assets/scripts/bootstrap-notify.min.js"></script>
+<script src="assets/scripts/jquery.vmap.min.js"></script>
+<script src="assets/scripts/maps/jquery.vmap.world.js"></script>
+<script src="assets/scripts/sweetalert.min.js"></script>
+<script src="assets/scripts/atlantis.min.js"></script>
+<script src="assets/scripts/Sortable.min.js"></script>
+<script src="assets/scripts/bootstrap-select.min.js"></script>
+<script src="assets/scripts/moment.min.js"></script>
+<script src="assets/scripts/calendar.js"></script>
+<script src="assets/scripts/scripts.js"></script>
