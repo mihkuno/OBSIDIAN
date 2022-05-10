@@ -24,8 +24,13 @@ session_start();
 	<!-- VIEWPORT -->
 	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
 
-	<!-- LOCAL: Fonts and icons -->
-	<script src="assets/js/plugin/webfont/webfont.min.js"></script>
+	<!-- JQUERY -->
+	<script src="assets/scripts/jquery_v3.3.1.min.js"></script>
+	<script src="assets/scripts/jquery-ui_v1.12.1.min.js"> </script>
+
+
+	<!-- Fonts and icons -->
+	<script src="assets/scripts/webfont.min.js"></script>
 	<script>
 		WebFont.load({
 			google: {"families":["Lato:300,400,700,900"]},
@@ -36,27 +41,12 @@ session_start();
 		});
 	</script>
 
-	<!-- TEMPORARY BROWSER TIMELINE BUTTON FONT FIX -->
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet">
-	<!-- END TEMPORARY -->
-
-	<!-- WEB: Date Range Picker -->
-	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
-	<!-- WEB: Bootstrap Select -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-
-	<!-- LOCAL: BOOSTRAP MINIMUM -->
-	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
-	
-	<!-- LOCAL: ATLANTIS THEME -->
-	<link rel="stylesheet" href="assets/css/atlantis.min.css">
-
-	<!-- WEB: CALENDAR -->
-	<link rel='stylesheet' href='https://fullcalendar.io/js/fullcalendar-3.1.0/fullcalendar.css' />
-
-	<!-- CUSTOM STYLES -->
-	<link rel="stylesheet" href="components/styles.css">
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="assets/fonts/ubuntu.css">
+	<link rel="stylesheet" href="assets/styles/datepicker.css" />
+	<link rel="stylesheet" href="assets/styles/select.min.css">
+	<link rel="stylesheet" href="assets/styles/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/styles/atlantis.min.css">
+	<link rel='stylesheet' href='assets/styles/calendar.css' />
+	<link rel="stylesheet" href="assets/styles/styles.css">
 </head>

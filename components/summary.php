@@ -193,53 +193,95 @@ defined('_DEFVAR') or header("Location: ../index.php");
 
             <script src="assets/scripts/chart.min.js"></script>
             <script>
+            
             const ctx = document.getElementById('statusDoughnut').getContext('2d');
-            const myChart = new Chart(ctx, {
+
+            const statusArray = <?php 
+                // (user_name) database
+                $dbUser = sprintf("user_%s",$_SESSION['user']);  
+                $conn->select_db($dbUser); 
+
+                // get the number of tables of user data
+                $tableinfo = $conn->query("SELECT `name` FROM `information`");
+
+                $rowStatus = [];
+                if (is_array($tableinfo) || is_object($tableinfo)) {
+                    foreach($tableinfo as $x) {
+                        foreach($x as $tname) {
+                            $rowinfo = $conn->query("SELECT `status` FROM `$tname`");
+                            foreach($rowinfo as $y) {
+                                foreach($y as $rname) {
+                                    array_push($rowStatus, $rname);
+                                }
+                            }
+                        }
+                    }
+                    
+                    $complete = $develop = $stuck = $soon = 0;
+                    foreach($rowStatus as $status) {
+                        switch($status) {
+                            case "Complete":
+                                $complete++;
+                            break;
+                            case "Develop":
+                                $develop++;
+                            break;
+                            case "Stuck":
+                                $stuck++;
+                            break;
+                            case "Soon":
+                                $soon++;
+                            break;
+                        }
+                    }
+                    $statusData = [$soon, $stuck, $develop, $complete];
+                    echo json_encode($statusData);   
+                }
+            ?>
+
+            const statusChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                    labels: ['Soon', 'Stuck', 'Develop', 'Complete'],
                     datasets: [{
-                        label: '# of Votes',
-                        data: [12, 19, 3, 5, 2, 3],
+                        label: 'Progress',
+                        data: statusArray,
                         backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
+                            'rgba(104, 97, 206, 0.2)',
+                            'rgba(242, 89, 97, 0.2)',
+                            'rgba(255, 173, 70, 0.2)',
+                            'rgba(49, 206, 54, 0.2)',
                         ],
                         borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
+                            'rgba(104, 97, 206, 1)',
+                            'rgba(242, 89, 97, 1)',
+                            'rgba(255, 173, 70, 1)',
+                            'rgba(49, 206, 54, 1)',
                         ],
                         borderWidth: 1
                     }]
                 },
                 options: {
+                    plugins: {
+                        legend: {
+                        display: false
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true
-                        }
-                    }
+                        },
+                    },
+                    layout: {
+                        padding: 14,
+                    },
+                    maintainAspectRatio: false,
+                    responsive: true
                 }
             });
+            statusChart.canvas.parentNode.style.height = '128px';
 
             function exportCanvas() {
-                const canvas = document.getElementById('statusDoughnut');
-                const dataURL = canvas.toDataURL();
-                const image = new Image();
-                image.src = dataURL;            
-
-                const w = window.open('');
-                w.document.write(image.outerHTML);
-            }
-
-            function printCanvas() {  
                 var dataUrl = document.getElementById('statusDoughnut').toDataURL(); //attempt to save base64 string to server using this var  
                 var windowContent = '<!DOCTYPE html>';
                 windowContent += '<html>'
@@ -248,13 +290,26 @@ defined('_DEFVAR') or header("Location: ../index.php");
                 windowContent += '<img src="' + dataUrl + '">';
                 windowContent += '</body>';
                 windowContent += '</html>';
-                var printWin = window.open('','','width=340,height=260');
+                var printWin = window.open('','','width=900,height=640');
+                printWin.document.open();
+                printWin.document.write(windowContent);
+            }
+
+            function printCanvas()  {  
+                var dataUrl = document.getElementById('statusDoughnut').toDataURL(); //attempt to save base64 string to server using this var  
+                var windowContent = '<!DOCTYPE html>';
+                windowContent += '<html>'
+                windowContent += '<head><title>Print canvas</title></head>';
+                windowContent += '<body>'
+                windowContent += '<img src="' + dataUrl + '">';
+                windowContent += '</body>';
+                windowContent += '</html>';
+                var printWin = window.open('','','width=900,height=640');
                 printWin.document.open();
                 printWin.document.write(windowContent);
                 printWin.document.close();
                 printWin.focus();
                 printWin.print();
-                printWin.close();
             }
             </script>
 

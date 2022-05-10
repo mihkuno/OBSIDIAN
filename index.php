@@ -39,8 +39,6 @@ require 'requests/chkuser.php';
 	</div>
 </div>
 
-<script src="assets/scripts/jquery_v3.3.1.min.js">	   </script>
-<script src="assets/scripts/jquery-ui_v1.12.1.min.js"> </script>
 <script src="assets/scripts/moment.min.js">            </script>
 <script src="assets/scripts/daterangepicker.min.js">   </script>
 

@@ -16,7 +16,7 @@
 </div>
 
 <!-- CALENDAR LIBRARY -->
-<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/moment.min.js'></script>
-<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery.min.js'></script>
-<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/lib/jquery-ui.min.js'></script>
-<script src='https://fullcalendar.io/js/fullcalendar-3.1.0/fullcalendar.min.js'></script>
+<script src='assets/scripts/calendar-moment.js'></script>
+<script src='assets/scripts/calendar-jquery.js'></script>
+<script src='assets/scripts/calendar-jqueryUI.js'></script>
+<script src='assets/scripts/calendar-main.js'></script>
